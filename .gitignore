@@ -34,7 +34,5 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 
-.prettierignore
 package.json.yarn
-
 .env
