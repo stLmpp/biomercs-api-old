@@ -1,0 +1,12 @@
+{
+  "DB_HOST": "localhost",
+  "DB_PORT": 3306,
+  "DB_USERNAME": "root",
+  "DB_PASSWORD": "mysql",
+  "DB_NAME": "biomercs",
+  "DB_SYNC": true,
+  "PORT": 3000,
+  "HOST": "localhost",
+  "CONFIG_USE_ROLE": true,
+  "CONFIG_USE_AUTH": true
+}
