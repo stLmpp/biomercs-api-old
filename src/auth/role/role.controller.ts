@@ -38,7 +38,6 @@ export class RoleController {
   }
 
   @Get()
-  @ErrorMessage('Teste')
   get(@GetUser() user: User): Promise<Role[]> {
     return this.roleService.get(user);
   }

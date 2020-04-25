@@ -7,6 +7,6 @@
   "DB_SYNC": true,
   "PORT": 3000,
   "HOST": "localhost",
-  "CONFIG_USE_ROLE": true,
-  "CONFIG_USE_AUTH": true
+  "CONFIG_USE_ROLE": false,
+  "CONFIG_USE_AUTH": false
 }

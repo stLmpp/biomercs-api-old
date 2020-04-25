@@ -8,6 +8,7 @@ import { UpdateResult } from '../../util/types';
 import { User } from '../user/user.entity';
 import { FindConditions, Not } from 'typeorm';
 import { RoleEnum } from './role.enum';
+import { getEnvVar } from '../../util/env';
 
 @Injectable()
 export class RoleService {
@@ -30,7 +31,8 @@ export class RoleService {
   async get(user: User): Promise<Role[]> {
     const where: FindConditions<Role> = {};
     if (
-      user.userRoles.some(userRole => userRole.role.name !== RoleEnum.admin)
+      getEnvVar('CONFIG_USE_ROLE') &&
+      !user.userRoles.some(userRole => userRole.role.name === RoleEnum.admin)
     ) {
       where.name = Not(RoleEnum.admin);
     }
