@@ -104,20 +104,3 @@ export class HandleErrorFilter extends BaseExceptionFilter {
     );
   }
 }
-
-export function ErrorMessage(errorMessage: string): DecoratorFn {
-  return (target, propertyKey, descriptor) => {
-    const origin = descriptor.value;
-    descriptor.value = async function(...args: any[]): Promise<any> {
-      try {
-        if (origin.then) {
-          return await origin.apply(this, args);
-        } else {
-          return origin.apply(this, args);
-        }
-      } catch (err) {
-        throw { ...err, customMessage: errorMessage };
-      }
-    };
-  };
-}
