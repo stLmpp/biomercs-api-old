@@ -1,6 +1,6 @@
 export enum RoleEnum {
-  admin = 'admin',
-  user = 'user',
+  admin = 'Admin',
+  user = 'User',
 }
 
 export const ALL_ROLES = Object.values(RoleEnum);

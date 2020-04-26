@@ -3,5 +3,7 @@
   "DB_CHARSET": "utf8mb4",
   "DB_COLLATE": "utf8mb4_0900_as_cs",
   "CONFIG_USE_ROLE": true,
-  "CONFIG_USE_AUTH": true
+  "CONFIG_USE_AUTH": true,
+  "CONFIG_USE_HANDLE_ERROR": true,
+  "CONFIG_FILE_UPLOAD_PATH": "./uploads"
 }

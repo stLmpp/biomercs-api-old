@@ -9,6 +9,4 @@ export class MySqlError {
   name: string;
   query: string;
   parameters: number[];
-
-  customMessage?: string;
 }

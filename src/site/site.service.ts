@@ -37,4 +37,8 @@ export class SiteService {
   async update(idSite: number, dto: SiteUpdateDto): Promise<UpdateResult> {
     return await this.siteRepository.update(idSite, dto);
   }
+
+  async exists(idSite: number): Promise<boolean> {
+    return await this.siteRepository.exists({ id: idSite });
+  }
 }

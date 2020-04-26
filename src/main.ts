@@ -1,5 +1,5 @@
 import './config';
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { getHost, getPort, isProd } from './util/env';
 import { ValidationPipe } from '@nestjs/common';
@@ -10,7 +10,8 @@ import * as helmet from 'helmet';
 import * as compression from 'compression';
 import * as expressRateLimit from 'express-rate-limit';
 import * as morgan from 'morgan';
-import { HandleErrorFilter } from './shared/error/handle-error.filter';
+import { useContainer } from 'class-validator';
+import { ValidationModule } from './validation/validation.module';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
@@ -30,15 +31,18 @@ async function bootstrap(): Promise<void> {
 
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
+  useContainer(app.select(ValidationModule), { fallbackOnErrors: true });
+
   if (!isProd) {
     app.enableCors();
     const options = new DocumentBuilder()
       .setTitle('Biomercs api')
       .setVersion(version)
       .build();
-    const document = SwaggerModule.createDocument(app, options);
+    const document = SwaggerModule.createDocument(app, options, {});
     SwaggerModule.setup('help', app, document);
   }
+
   await app.listen(PORT, HOST);
 }
 

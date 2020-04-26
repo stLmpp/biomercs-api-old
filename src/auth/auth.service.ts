@@ -12,13 +12,18 @@ import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { RouteParamTerm, RoutePath } from '../shared/types/route-enums';
 import { getEnvVar, getHost, getPort } from '../util/env';
 import { Entity } from '../util/types';
+import { UserRoleService } from './user/user-role/user-role.service';
+import { RoleService } from './role/role.service';
+import { RoleEnum } from './role/role.enum';
 
 export class AuthService {
   constructor(
     @InjectRepository(UserRepository)
     private userRepository: UserRepository,
     private jwtService: JwtService,
-    private mailerService: MailerService
+    private mailerService: MailerService,
+    private userRoleService: UserRoleService,
+    private roleService: RoleService
   ) {}
 
   async register(dto: UserRegisterDto): Promise<UserRegisterViewModel> {
@@ -67,6 +72,8 @@ export class AuthService {
     });
     if (user.emailToken === emailToken) {
       await this.userRepository.update(user.id, { emailToken: null });
+      const userRole = await this.roleService.findByName(RoleEnum.user);
+      await this.userRoleService.add(user.id, userRole.id);
       return await this.login({ username: user.username, password: '' }, true);
     } else {
       throw new UnauthorizedException();

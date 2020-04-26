@@ -8,5 +8,6 @@ import { SiteController } from './site.controller';
   imports: [TypeOrmModule.forFeature([SiteRepository])],
   providers: [SiteService],
   controllers: [SiteController],
+  exports: [SiteService],
 })
 export class SiteModule {}

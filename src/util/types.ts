@@ -1,4 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ValidationArguments } from 'class-validator';
 
 export type Entity<T = any> = {
   [ID in string | number]: T;
@@ -6,9 +7,14 @@ export type Entity<T = any> = {
 
 export type DecoratorFn = (
   target: any,
-  key: string,
+  propertyName: string,
   propertyDescriptor: PropertyDescriptor
 ) => any;
+
+export interface CustomValidationArguments<T = Record<string, any>>
+  extends ValidationArguments {
+  object: T;
+}
 
 export class UpdateResultRaw {
   @ApiProperty() fieldCount: number;

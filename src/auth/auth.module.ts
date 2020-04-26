@@ -18,6 +18,7 @@ import { RoleController } from './role/role.controller';
 import { UserRoleRepository } from './user/user-role/user-role.repository';
 import { UserRoleService } from './user/user-role/user-role.service';
 import { UserRoleController } from './user/user-role/user-role.controller';
+import { RequestService } from './user/request.service';
 
 @Global()
 @Module({
@@ -38,13 +39,21 @@ import { UserRoleController } from './user/user-role/user-role.controller';
   ],
   providers: [
     AuthService,
+    RequestService,
     UserService,
     JwtStrategy,
     UserLinkService,
     RoleService,
     UserRoleService,
   ],
-  exports: [AuthService, JwtStrategy, PassportModule, UserService, RoleService],
+  exports: [
+    AuthService,
+    JwtStrategy,
+    PassportModule,
+    UserService,
+    RoleService,
+    RequestService,
+  ],
   controllers: [
     AuthController,
     UserController,

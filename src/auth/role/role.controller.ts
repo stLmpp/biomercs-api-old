@@ -13,14 +13,11 @@ import { RoleUpdateDto } from './dto/update.dto';
 import { UpdateResult } from '../../util/types';
 import { GetUser } from '../get-user.decorator';
 import { User } from '../user/user.entity';
-import { ErrorMessage } from '../../shared/error/handle-error.filter';
-
-export const RoleControllerPath = 'role';
 
 @ApiTags('Role')
 @Roles(RoleEnum.admin)
 @Auth()
-@Controller(RoleControllerPath)
+@Controller('role')
 export class RoleController {
   constructor(private roleService: RoleService) {}
 

@@ -8,5 +8,6 @@
   "PORT": 3000,
   "HOST": "localhost",
   "CONFIG_USE_ROLE": false,
-  "CONFIG_USE_AUTH": false
+  "CONFIG_USE_AUTH": false,
+  "CONFIG_USE_HANDLE_ERROR": true
 }

@@ -13,10 +13,15 @@ import { flattenObject } from '../../util/util';
 import { Response } from 'express';
 import { DecoratorFn } from '../../util/types';
 import { isError } from 'is-what';
+import { getUseHandleError } from '../../util/env';
 
 @Catch()
 export class HandleErrorFilter extends BaseExceptionFilter {
   catch(exception: any, host: ArgumentsHost): void {
+    if (!getUseHandleError()) {
+      super.catch(exception, host);
+      return;
+    }
     let error: HttpException;
     if (this.isSqlError(exception)) {
       error = this.handleSqlError(exception);
@@ -29,16 +34,17 @@ export class HandleErrorFilter extends BaseExceptionFilter {
     host
       .switchToHttp()
       .getResponse<Response>()
-      .status(error.getStatus())
-      .json(flattenObject(error, 'response'));
+      .status(error?.getStatus?.() ?? 500)
+      .json(
+        (error as any)?.response ? flattenObject(error, 'response') : error
+      );
   }
 
   handleSqlError(exception: MySqlError): HttpException {
-    const { message, errno, customMessage } = exception;
+    const { message, errno } = exception;
     const errorObj = {
       sqlMessage: message,
       sqlErrno: errno,
-      error: customMessage,
     };
     switch (errno) {
       case 1452:
@@ -47,9 +53,15 @@ export class HandleErrorFilter extends BaseExceptionFilter {
       case 1557:
       case 1062:
         return new ConflictException(errorObj);
+      case 1451:
+        return new ConflictException({
+          ...errorObj,
+          error: `Can't finish operation because of relationship`,
+        });
       case 1048:
       case 1054:
       case 1265:
+      case 1364:
         return new BadRequestException(errorObj);
       default:
         return new InternalServerErrorException(errorObj);
@@ -61,16 +73,19 @@ export class HandleErrorFilter extends BaseExceptionFilter {
   }
 
   isLogicError(exception: any): exception is Error {
-    return isError(exception);
+    return !(exception instanceof HttpException) && isError(exception);
   }
 
-  handleLogicError({ name, message, stack }: Error): HttpException {
+  handleLogicError({ name, message, stack, ...rest }: Error): HttpException {
     const errorObj = {
       error: message,
       stack: this.handleStack(stack),
+      ...rest,
     };
     switch (name) {
-      case 'TypeError':
+      case 'EntityNotFound':
+        return new NotFoundException(errorObj);
+      default:
         return new InternalServerErrorException(errorObj);
     }
   }

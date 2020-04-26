@@ -37,3 +37,15 @@ export function getHost(): string {
 export function getPort(): string {
   return getEnvVar('PORT') ?? getEnvVar('$PORT');
 }
+
+export function getUseAuth(): boolean {
+  return getEnvVar('CONFIG_USE_AUTH');
+}
+
+export function getUseRoles(): boolean {
+  return getEnvVar('CONFIG_USE_ROLE');
+}
+
+export function getUseHandleError(): boolean {
+  return getEnvVar('CONFIG_USE_HANDLE_ERROR');
+}

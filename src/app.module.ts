@@ -9,6 +9,11 @@ import { join } from 'path';
 import { getEnvVar } from './util/env';
 import { APP_FILTER } from '@nestjs/core';
 import { HandleErrorFilter } from './shared/error/handle-error.filter';
+import { LikeModule } from './like/like.module';
+import { ValidationModule } from './validation/validation.module';
+import { GameModule } from './game/game.module';
+import { FileUploadModule } from './file-upload/file-upload.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -32,8 +37,13 @@ import { HandleErrorFilter } from './shared/error/handle-error.filter';
         },
       },
     }),
+    MulterModule.register({ dest: getEnvVar('CONFIG_FILE_UPLOAD_PATH') }),
     AuthModule,
     SiteModule,
+    LikeModule,
+    GameModule,
+    ValidationModule,
+    FileUploadModule,
   ],
   controllers: [AppController],
   providers: [
