@@ -1,6 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { CommonColumns } from '../../shared/super-entities/common-columns';
 import { FileUpload } from '../../file-upload/file-upload.entity';
+import { GameModeCharacter } from '../game-mode-character/game-mode-character.entity';
 
 @Entity()
 export class Character extends CommonColumns {
@@ -13,7 +14,14 @@ export class Character extends CommonColumns {
   @Column({ nullable: true })
   idImage: number;
 
-  @ManyToOne(() => FileUpload, { nullable: true })
+  @OneToOne(() => FileUpload, { nullable: true })
   @JoinColumn({ name: 'idImage' })
   image: FileUpload;
+
+  @OneToMany(
+    () => GameModeCharacter,
+    gameModeCharacter => gameModeCharacter.character
+  )
+  @JoinColumn()
+  gameModeCharacters: GameModeCharacter[];
 }

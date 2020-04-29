@@ -6,25 +6,29 @@ import {
 } from 'class-validator';
 import { CustomValidationArguments } from '../../util/types';
 import { UserService } from '../../auth/user/user.service';
-import { LikeTypeInterface } from '../../like/like-type.interface';
-import { LikeTypeEnum } from '../../like/like-type.enum';
 import { Injectable } from '@nestjs/common';
+import { ReferenceTypeEnum } from '../../shared/types/reference-type.enum';
+import { ReferenceTypeInterface } from '../../shared/types/reference-type.interface';
+import { ScoreService } from '../../score/score.service';
 
 @ValidatorConstraint({ name: 'idReferenceExists', async: true })
 @Injectable()
-export class IdReferenceExistsValidator<T extends LikeTypeInterface>
+export class IdReferenceExistsValidator<T extends ReferenceTypeInterface>
   implements ValidatorConstraintInterface {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private scoreService: ScoreService
+  ) {}
 
   async validate(
     idReference: number,
     { object }: CustomValidationArguments<T>
   ): Promise<boolean> {
     switch (object.type) {
-      case LikeTypeEnum.user:
+      case ReferenceTypeEnum.user:
         return await this.userService.exists(idReference);
-      case LikeTypeEnum.score:
-        return true; // TODO score exists
+      case ReferenceTypeEnum.score:
+        return await this.scoreService.exists(idReference);
       default:
         return false;
     }

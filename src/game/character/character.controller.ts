@@ -1,16 +1,17 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Patch,
   Post,
-  Put,
+  Query,
   UploadedFile,
 } from '@nestjs/common';
 import { Auth } from '../../auth/auth.decorator';
 import { Roles } from '../../auth/role/role.guard';
 import { RoleEnum } from '../../auth/role/role.enum';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { CharacterService } from './character.service';
 import { CharacterAddDto } from './dto/add.dto';
 import { Character } from './character.entity';
@@ -50,7 +51,19 @@ export class CharacterController {
     @Param(RouteParamId.idCharacter) idCharacter: number,
     @UploadedFile('file') file: FileType,
     @GetUser() user: User
-  ): Promise<UpdateResult> {
+  ): Promise<Character> {
     return this.characterService.uploadImage(idCharacter, file, user);
+  }
+
+  @Get('params')
+  @ApiQuery({ name: 'idGameMode', required: false })
+  @ApiQuery({ name: 'idGame', required: false })
+  @ApiQuery({ name: 'idMode', required: false })
+  findByParams(
+    @Query('idGameMode') idGameMode?: number,
+    @Query('idGame') idGame?: number,
+    @Query('idMode') idMode?: number
+  ): Promise<Character[]> {
+    return this.characterService.findByParam(idGameMode, idGame, idMode);
   }
 }

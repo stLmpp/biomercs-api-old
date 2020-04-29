@@ -1,8 +1,7 @@
-import { EntityRepository } from 'typeorm';
+import { EntityRepository, Repository } from 'typeorm';
 import { GameModeCharacter } from './game-mode-character.entity';
-import { CustomRepository } from '../../shared/types/custom-repository';
 
 @EntityRepository(GameModeCharacter)
-export class GameModeCharacterRepository extends CustomRepository<
+export class GameModeCharacterRepository extends Repository<
   GameModeCharacter
 > {}

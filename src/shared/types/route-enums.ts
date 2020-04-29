@@ -1,5 +1,6 @@
 export enum RouteParamId {
   idCharacter = 'idCharacter',
+  idFileUpload = 'idFileUpload',
   idGame = 'idGame',
   idGameMode = 'idGameMode',
   idGameModeCharacter = 'idGameModeCharacter',
@@ -9,15 +10,17 @@ export enum RouteParamId {
   idStage = 'idStage',
   idUser = 'idUser',
   idUserLink = 'idUserLink',
+  idReference = 'idReference',
   idRole = 'idRole',
   idUserRole = 'idUserRole',
-  idFileUpload = 'idFileUpload',
+  idType = 'idType',
 }
 
 export enum RouteParamTerm {
   term = 'term',
   emailToken = 'emailToken',
   imageName = 'imageName',
+  type = 'type',
 }
 
 export enum RoutePath {

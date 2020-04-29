@@ -1,6 +1,5 @@
-import { EntityRepository } from 'typeorm';
+import { EntityRepository, Repository } from 'typeorm';
 import { FileUpload } from './file-upload.entity';
-import { CustomRepository } from '../shared/types/custom-repository';
 
 @EntityRepository(FileUpload)
-export class FileUploadRepository extends CustomRepository<FileUpload> {}
+export class FileUploadRepository extends Repository<FileUpload> {}

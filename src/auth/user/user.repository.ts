@@ -1,13 +1,12 @@
-import { EntityRepository, IsNull } from 'typeorm';
+import { EntityRepository, IsNull, Repository } from 'typeorm';
 import { genSalt, hash } from 'bcryptjs';
 import { UnauthorizedException } from '@nestjs/common';
 import { User } from './user.entity';
 import { UserRegisterDto } from './dto/register.dto';
 import { UserCredentialsDto } from './dto/credentials.dto';
-import { CustomRepository } from '../../shared/types/custom-repository';
 
 @EntityRepository(User)
-export class UserRepository extends CustomRepository<User> {
+export class UserRepository extends Repository<User> {
   async register(dto: UserRegisterDto): Promise<User> {
     const user = new User().extendDto(dto);
     user.salt = await genSalt();

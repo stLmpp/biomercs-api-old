@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { CommonColumns } from '../shared/super-entities/common-columns';
 import { GameMode } from './game-mode/game-mode.entity';
 import { Stage } from './stage/stage.entity';
@@ -29,7 +29,7 @@ export class Game extends CommonColumns {
   @Column({ nullable: true })
   idLogo: number;
 
-  @ManyToOne(() => FileUpload, { nullable: true })
+  @OneToOne(() => FileUpload, { nullable: true })
   @JoinColumn({ name: 'idLogo' })
   logo: FileUpload;
 }

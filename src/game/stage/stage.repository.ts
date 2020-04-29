@@ -1,6 +1,5 @@
-import { EntityRepository } from 'typeorm';
+import { EntityRepository, Repository } from 'typeorm';
 import { Stage } from './stage.entity';
-import { CustomRepository } from '../../shared/types/custom-repository';
 
 @EntityRepository(Stage)
-export class StageRepository extends CustomRepository<Stage> {}
+export class StageRepository extends Repository<Stage> {}

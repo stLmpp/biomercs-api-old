@@ -14,6 +14,8 @@ import { ValidationModule } from './validation/validation.module';
 import { GameModule } from './game/game.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { MulterModule } from '@nestjs/platform-express';
+import { ScoreModule } from './score/score.module';
+import { ReportModule } from './report/report.module';
 
 @Module({
   imports: [
@@ -44,6 +46,8 @@ import { MulterModule } from '@nestjs/platform-express';
     GameModule,
     ValidationModule,
     FileUploadModule,
+    ScoreModule,
+    ReportModule,
   ],
   controllers: [AppController],
   providers: [

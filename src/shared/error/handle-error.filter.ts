@@ -11,7 +11,6 @@ import { BaseExceptionFilter } from '@nestjs/core';
 import { MySqlError } from './my-sql-error';
 import { flattenObject } from '../../util/util';
 import { Response } from 'express';
-import { DecoratorFn } from '../../util/types';
 import { isError } from 'is-what';
 import { getUseHandleError } from '../../util/env';
 

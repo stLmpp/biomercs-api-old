@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import {
   registerDecorator,
+  ValidationArguments,
   ValidationOptions,
   ValidatorConstraint,
   ValidatorConstraintInterface,
-  ValidationArguments,
 } from 'class-validator';
 import { GameService } from '../../game/game.service';
 

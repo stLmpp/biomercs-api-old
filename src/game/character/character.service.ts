@@ -33,21 +33,31 @@ export class CharacterService {
     idCharacter: number,
     file: FileType,
     user: User
-  ): Promise<UpdateResult> {
+  ): Promise<Character> {
     const character = await this.characterRepository.findOneOrFail(idCharacter);
-    const fileUpload = await this.fileUploadService.addByFile(file);
-    const update: CharacterUpdateDto = updateLastUpdatedBy(
-      { idImage: fileUpload.id },
-      user
-    );
-    const result = await this.update(idCharacter, update);
     if (character.idImage) {
-      await this.fileUploadService.deleteFile(character.idImage);
+      await this.fileUploadService.replaceFile(character.idImage, file, user);
+      return character;
+    } else {
+      const fileUpload = await this.fileUploadService.addByFile(file);
+      const update: CharacterUpdateDto = updateLastUpdatedBy(
+        { idImage: fileUpload.id },
+        user
+      );
+      await this.update(idCharacter, update);
+      return character.extendDto(update);
     }
-    return result;
   }
 
   async exists(idCharacter: number): Promise<boolean> {
     return await this.characterRepository.exists({ id: idCharacter });
+  }
+
+  async findByParam(
+    idGameMode?: number,
+    idGame?: number,
+    idMode?: number
+  ): Promise<Character[]> {
+    return this.characterRepository.findByParam(idGameMode, idGame, idMode);
   }
 }

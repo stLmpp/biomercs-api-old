@@ -9,10 +9,11 @@ import { ModeExistsValidator } from './game/mode-exists.validator';
 import { GameModeExistsValidator } from './game/game-mode-exists.validator';
 import { FileUploadExistsValidator } from './file-upload/file-upload-exists.validator';
 import { FileUploadModule } from '../file-upload/file-upload.module';
+import { ScoreModule } from '../score/score.module';
 
 @Global()
 @Module({
-  imports: [SiteModule, GameModule, FileUploadModule],
+  imports: [SiteModule, GameModule, FileUploadModule, ScoreModule],
   providers: [
     UserExistsValidator,
     IdReferenceExistsValidator,

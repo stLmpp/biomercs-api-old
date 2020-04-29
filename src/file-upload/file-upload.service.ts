@@ -7,6 +7,9 @@ import { extname } from 'path';
 import { FileType } from './file-type.interface';
 import { DeleteResult } from '../util/types';
 import { unlink } from 'fs';
+import { UpdateResult } from 'typeorm';
+import { User } from '../auth/user/user.entity';
+import { updateLastUpdatedBy } from '../shared/pipes/updated-by.pipe';
 
 @Injectable()
 export class FileUploadService {
@@ -43,8 +46,32 @@ export class FileUploadService {
     });
   }
 
+  async replaceFile(
+    idFileUpload: number,
+    { path, originalname, mimetype, filename, destination }: FileType,
+    user: User
+  ): Promise<UpdateResult> {
+    const file = await this.findById(idFileUpload);
+    await this.delete(file.path);
+    return await this.fileUploadRepository.update(
+      idFileUpload,
+      updateLastUpdatedBy(
+        {
+          path,
+          url: `/upload/name/${filename}`,
+          filename,
+          extension: extname(originalname).replace('.', ''),
+          destination,
+          mimetype,
+          originalFilename: originalname,
+        },
+        user
+      )
+    );
+  }
+
   private async delete(filepath: string): Promise<boolean> {
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       unlink(filepath, () => {
         resolve(true);
       });

@@ -1,19 +1,13 @@
 import { IsDefined, IsEnum, IsNumber } from 'class-validator';
-import { LikeTypeEnum } from '../like-type.enum';
 import { LikeStyleEnum } from '../like-style.enum';
-import { UserExists } from '../../validation/user/user-exists.validator';
-import { LikeTypeInterface } from '../like-type.interface';
 import { IdReferenceExists } from '../../validation/like/id-reference-exists.validator';
+import { ReferenceTypeInterface } from '../../shared/types/reference-type.interface';
+import { ReferenceTypeEnum } from '../../shared/types/reference-type.enum';
 
-export class LikeAddDto implements LikeTypeInterface {
+export class LikeAddDto implements ReferenceTypeInterface {
+  @IsEnum(ReferenceTypeEnum)
   @IsDefined()
-  @IsNumber()
-  @UserExists()
-  idUser: number;
-
-  @IsEnum(LikeTypeEnum)
-  @IsDefined()
-  type: LikeTypeEnum;
+  type: ReferenceTypeEnum;
 
   @IsDefined()
   @IsEnum(LikeStyleEnum)

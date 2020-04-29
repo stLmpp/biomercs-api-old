@@ -19,6 +19,15 @@ import { StageController } from './stage/stage.controller';
 import { StageService } from './stage/stage.service';
 import { StageRepository } from './stage/stage.repository';
 import { FileUploadModule } from '../file-upload/file-upload.module';
+import { TypeController } from './type/type.controller';
+import { TypeService } from './type/type.service';
+import { TypeRepository } from './type/type.repository';
+import { PlatformController } from './platform/platform.controller';
+import { PlatformService } from './platform/platform.service';
+import { PlatformRepository } from './platform/platform.repository';
+import { GameModePlatformController } from './game-mode-platform/game-mode-platform.controller';
+import { GameModePlatformService } from './game-mode-platform/game-mode-platform.service';
+import { GameModePlatformRepository } from './game-mode-platform/game-mode-platform.repository';
 
 @Module({
   imports: [
@@ -29,6 +38,9 @@ import { FileUploadModule } from '../file-upload/file-upload.module';
       CharacterRepository,
       GameModeCharacterRepository,
       StageRepository,
+      TypeRepository,
+      PlatformRepository,
+      GameModePlatformRepository,
     ]),
     FileUploadModule,
   ],
@@ -39,6 +51,9 @@ import { FileUploadModule } from '../file-upload/file-upload.module';
     CharacterService,
     GameModeCharacterService,
     StageService,
+    TypeService,
+    PlatformService,
+    GameModePlatformService,
   ],
   controllers: [
     GameController,
@@ -47,6 +62,9 @@ import { FileUploadModule } from '../file-upload/file-upload.module';
     CharacterController,
     GameModeCharacterController,
     StageController,
+    TypeController,
+    PlatformController,
+    GameModePlatformController,
   ],
   exports: [
     GameService,
@@ -55,6 +73,9 @@ import { FileUploadModule } from '../file-upload/file-upload.module';
     CharacterService,
     GameModeCharacterService,
     StageService,
+    TypeService,
+    PlatformService,
+    GameModePlatformService,
   ],
 })
 export class GameModule {}

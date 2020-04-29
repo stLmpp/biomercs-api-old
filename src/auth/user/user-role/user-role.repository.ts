@@ -1,6 +1,5 @@
-import { CustomRepository } from '../../../shared/types/custom-repository';
 import { UserRole } from './user-role.entity';
-import { EntityRepository } from 'typeorm';
+import { EntityRepository, Repository } from 'typeorm';
 
 @EntityRepository(UserRole)
-export class UserRoleRepository extends CustomRepository<UserRole> {}
+export class UserRoleRepository extends Repository<UserRole> {}
