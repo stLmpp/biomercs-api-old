@@ -7,8 +7,8 @@ import { CharacterUpdateDto } from './dto/update.dto';
 import { UpdateResult } from '../../util/types';
 import { FileUploadService } from '../../file-upload/file-upload.service';
 import { FileType } from '../../file-upload/file-type.interface';
-import { updateLastUpdatedBy } from '../../shared/pipes/updated-by.pipe';
 import { User } from '../../auth/user/user.entity';
+import { FileUpload } from '../../file-upload/file-upload.entity';
 
 @Injectable()
 export class CharacterService {
@@ -33,20 +33,13 @@ export class CharacterService {
     idCharacter: number,
     file: FileType,
     user: User
-  ): Promise<Character> {
-    const character = await this.characterRepository.findOneOrFail(idCharacter);
-    if (character.idImage) {
-      await this.fileUploadService.replaceFile(character.idImage, file, user);
-      return character;
-    } else {
-      const fileUpload = await this.fileUploadService.addByFile(file);
-      const update: CharacterUpdateDto = updateLastUpdatedBy(
-        { idImage: fileUpload.id },
-        user
-      );
-      await this.update(idCharacter, update);
-      return character.extendDto(update);
-    }
+  ): Promise<FileUpload> {
+    return this.fileUploadService.uploadImageToEntity(
+      this.characterRepository,
+      [idCharacter, 'idImage'],
+      file,
+      user
+    );
   }
 
   async exists(idCharacter: number): Promise<boolean> {
@@ -58,6 +51,10 @@ export class CharacterService {
     idGame?: number,
     idMode?: number
   ): Promise<Character[]> {
-    return this.characterRepository.findByParam(idGameMode, idGame, idMode);
+    return await this.characterRepository.findByParam(
+      idGameMode,
+      idGame,
+      idMode
+    );
   }
 }

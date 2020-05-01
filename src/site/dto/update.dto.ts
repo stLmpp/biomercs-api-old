@@ -9,4 +9,8 @@ export class SiteUpdateDto {
   @IsString()
   @IsNotEmpty()
   name?: string;
+
+  @IsString()
+  @IsOptional()
+  icon?: string;
 }

@@ -19,6 +19,7 @@ import { UserRoleRepository } from './user/user-role/user-role.repository';
 import { UserRoleService } from './user/user-role/user-role.service';
 import { UserRoleController } from './user/user-role/user-role.controller';
 import { RequestService } from './user/request.service';
+import { FileUploadModule } from '../file-upload/file-upload.module';
 
 @Global()
 @Module({
@@ -36,6 +37,7 @@ import { RequestService } from './user/request.service';
       RoleRepository,
       UserRoleRepository,
     ]),
+    FileUploadModule,
   ],
   providers: [
     AuthService,

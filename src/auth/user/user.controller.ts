@@ -1,4 +1,11 @@
-import { Body, Controller, Param, Patch, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Patch,
+  Put,
+  UploadedFile,
+} from '@nestjs/common';
 import { Auth } from '../auth.decorator';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { UpdateResult } from '../../util/types';
@@ -12,6 +19,12 @@ import { UserLink } from './user-link/user-link.entity';
 import { RouteParamId } from '../../shared/types/route-enums';
 import { Roles } from '../role/role.guard';
 import { RoleEnum } from '../role/role.enum';
+import { UseFileUpload } from '../../file-upload/file-upload.decorator';
+import { getImagesAllowed } from '../../util/env';
+import { FileUpload } from '../../file-upload/file-upload.entity';
+import { GetUser } from '../get-user.decorator';
+import { User } from './user.entity';
+import { FileType } from '../../file-upload/file-type.interface';
 
 @ApiTags('User')
 @Roles(RoleEnum.admin, RoleEnum.user)
@@ -46,5 +59,15 @@ export class UserController {
     @Body(CreatedByPipe) dto: UserLinkAddDto[]
   ): Promise<UserLink[]> {
     return this.userLinkService.addMany(idUser, dto);
+  }
+
+  @Patch(`:${RouteParamId.idUser}/avatar`)
+  @UseFileUpload({ filesAllowed: getImagesAllowed() })
+  uploadAvatar(
+    @Param(RouteParamId.idUser) idUser: number,
+    @UploadedFile('file') file: FileType,
+    @GetUser() user: User
+  ): Promise<FileUpload> {
+    return this.userService.uploadAvatar(idUser, file, user);
   }
 }

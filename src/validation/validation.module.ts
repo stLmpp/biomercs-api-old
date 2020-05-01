@@ -10,6 +10,8 @@ import { GameModeExistsValidator } from './game/game-mode-exists.validator';
 import { FileUploadExistsValidator } from './file-upload/file-upload-exists.validator';
 import { FileUploadModule } from '../file-upload/file-upload.module';
 import { ScoreModule } from '../score/score.module';
+import { ScorePlayerExistsValidator } from './score/score-player-exists.validator';
+import { PlatformExistsValidator } from './game/platform-exists.validator';
 
 @Global()
 @Module({
@@ -22,6 +24,8 @@ import { ScoreModule } from '../score/score.module';
     ModeExistsValidator,
     GameModeExistsValidator,
     FileUploadExistsValidator,
+    ScorePlayerExistsValidator,
+    PlatformExistsValidator,
   ],
 })
 export class ValidationModule {}

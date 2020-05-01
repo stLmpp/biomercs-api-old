@@ -15,6 +15,9 @@ export class ScorePlayerProof extends CommonColumns {
   @JoinColumn({ name: 'idImage' })
   image: FileUpload;
 
+  @Column()
+  idScorePlayer: number;
+
   @ManyToOne(() => ScorePlayer)
   @JoinColumn()
   scorePlayer: ScorePlayer;

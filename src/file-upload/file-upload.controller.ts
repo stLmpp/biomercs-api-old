@@ -19,6 +19,8 @@ import { Response } from 'express';
 import { getEnvVar } from '../util/env';
 import { RouteParamId, RouteParamTerm } from '../shared/types/route-enums';
 import { DeleteResult } from '../util/types';
+import { GetUser } from '../auth/get-user.decorator';
+import { User } from '../auth/user/user.entity';
 
 @ApiTags('File upload')
 @Auth()
@@ -29,8 +31,11 @@ export class FileUploadController {
   @Post()
   @UseFileUpload()
   @Roles(RoleEnum.admin)
-  add(@UploadedFile('file') file: FileType): Promise<FileUploadEntity> {
-    return this.fileUploadService.addByFile(file);
+  add(
+    @UploadedFile('file') file: FileType,
+    @GetUser() user: User
+  ): Promise<FileUploadEntity> {
+    return this.fileUploadService.addByFile(file, user);
   }
 
   @Get(`name/:${RouteParamTerm.imageName}`)

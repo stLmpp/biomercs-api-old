@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { Auth } from '../../auth/auth.decorator';
 import { Roles } from '../../auth/role/role.guard';
 import { RoleEnum } from '../../auth/role/role.enum';
@@ -30,5 +30,10 @@ export class ModeController {
     @Body(UpdatedByPipe) dto: ModeUpdateDto
   ): Promise<UpdateResult> {
     return this.modeService.update(idMode, dto);
+  }
+
+  @Get()
+  findAll(): Promise<Mode[]> {
+    return this.modeService.findAll();
   }
 }

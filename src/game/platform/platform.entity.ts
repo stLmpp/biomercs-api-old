@@ -9,6 +9,9 @@ export class Platform extends CommonColumns {
   @Column()
   name: string;
 
+  @Column()
+  shortName: string;
+
   @Column({ type: 'enum', enum: PlatformTypeEnum })
   type: PlatformTypeEnum;
 

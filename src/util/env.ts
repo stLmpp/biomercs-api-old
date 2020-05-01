@@ -49,3 +49,7 @@ export function getUseRoles(): boolean {
 export function getUseHandleError(): boolean {
   return getEnvVar('CONFIG_USE_HANDLE_ERROR');
 }
+
+export function getImagesAllowed(): string[] {
+  return getEnvVar('CONFIG_FILE_IMAGE_EXTENSIONS_ALLOWED');
+}

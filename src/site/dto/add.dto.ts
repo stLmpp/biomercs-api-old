@@ -1,4 +1,10 @@
-import { IsDefined, IsNotEmpty, IsString, IsUrl } from 'class-validator';
+import {
+  IsDefined,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUrl,
+} from 'class-validator';
 
 export class SiteAddDto {
   @IsUrl()
@@ -10,4 +16,8 @@ export class SiteAddDto {
   @IsDefined()
   @IsNotEmpty()
   name: string;
+
+  @IsString()
+  @IsOptional()
+  icon?: string;
 }

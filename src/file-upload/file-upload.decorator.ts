@@ -18,6 +18,7 @@ export interface FileUploadOptions {
   multiple?: boolean;
   maxFiles?: number;
   keepFileExtension?: boolean;
+  required?: boolean;
 }
 
 export function UseFileUpload(
@@ -27,24 +28,11 @@ export function UseFileUpload(
     ...{ fieldName: 'file', maxFiles: 5, keepFileExtension: true },
     ...options,
   };
-  const decorators: any[] = [
-    ApiConsumes('multipart/form-data'),
-    ApiBody({
-      schema: {
-        type: 'object',
-        properties: {
-          file: {
-            type: 'string',
-            format: 'binary',
-          },
-        },
-      },
-    }),
-  ];
+  const decorators: any[] = [];
   const destination = getEnvVar('CONFIG_FILE_UPLOAD_PATH');
   const multerOptions: MulterOptions = {
     storage: diskStorage({
-      destination: getEnvVar('CONFIG_FILE_UPLOAD_PATH'),
+      destination,
       filename: (req, file, callback) => {
         const fileNameHash = sha1(file.originalname);
         callback(null, fileNameHash + v1() + extname(file.originalname));
@@ -80,6 +68,21 @@ export function UseFileUpload(
       UseInterceptors(FileInterceptor(options.fieldName, multerOptions))
     );
   }
-
+  decorators.push(
+    ApiConsumes('multipart/form-data'),
+    ApiBody({
+      type: 'multipart/form-data',
+      required: true,
+      schema: {
+        type: 'object',
+        properties: {
+          [options.fieldName]: {
+            type: 'string',
+            format: 'binary',
+          },
+        },
+      },
+    })
+  );
   return applyDecorators(...decorators);
 }

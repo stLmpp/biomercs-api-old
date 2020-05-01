@@ -1,4 +1,12 @@
-import { Body, Controller, Param, Patch, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  UploadedFile,
+} from '@nestjs/common';
 import { GameService } from './game.service';
 import { Auth } from '../auth/auth.decorator';
 import { Roles } from '../auth/role/role.guard';
@@ -11,6 +19,12 @@ import { UpdateResult } from '../util/types';
 import { Game } from './game.entity';
 import { GameUpdateDto } from './dto/update.dto';
 import { GameAddDto } from './dto/add.dto';
+import { UseFileUpload } from '../file-upload/file-upload.decorator';
+import { getImagesAllowed } from '../util/env';
+import { FileUpload } from '../file-upload/file-upload.entity';
+import { FileType } from '../file-upload/file-type.interface';
+import { GetUser } from '../auth/get-user.decorator';
+import { User } from '../auth/user/user.entity';
 
 @ApiTags('Game')
 @Roles(RoleEnum.admin)
@@ -30,5 +44,20 @@ export class GameController {
     @Body(UpdatedByPipe) dto: GameUpdateDto
   ): Promise<UpdateResult> {
     return this.gameService.update(idGame, dto);
+  }
+
+  @Patch(`:${RouteParamId.idGame}/logo`)
+  @UseFileUpload({ filesAllowed: getImagesAllowed() })
+  uploadLogo(
+    @Param(RouteParamId.idGame) idGame: number,
+    @UploadedFile('file') file: FileType,
+    @GetUser() user: User
+  ): Promise<FileUpload> {
+    return this.gameService.uploadLogo(idGame, file, user);
+  }
+
+  @Get()
+  findAll(): Promise<Game[]> {
+    return this.gameService.findAll();
   }
 }

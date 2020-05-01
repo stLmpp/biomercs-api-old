@@ -7,9 +7,10 @@ import { extname } from 'path';
 import { FileType } from './file-type.interface';
 import { DeleteResult } from '../util/types';
 import { unlink } from 'fs';
-import { UpdateResult } from 'typeorm';
+import { Repository, UpdateResult } from 'typeorm';
 import { User } from '../auth/user/user.entity';
 import { updateLastUpdatedBy } from '../shared/pipes/updated-by.pipe';
+import { updateCreatedBy } from '../shared/pipes/created-by.pipe';
 
 @Injectable()
 export class FileUploadService {
@@ -18,7 +19,8 @@ export class FileUploadService {
     private fileUploadRepository: FileUploadRepository
   ) {}
 
-  async add(dto: FileUploadAddDto): Promise<FileUpload> {
+  async add(dto: FileUploadAddDto, user: User): Promise<FileUpload> {
+    dto = updateCreatedBy(dto, user);
     return await this.fileUploadRepository.save(
       new FileUpload().extendDto({
         ...dto,
@@ -28,22 +30,21 @@ export class FileUploadService {
     );
   }
 
-  async addByFile({
-    originalname,
-    destination,
-    filename,
-    mimetype,
-    path,
-    size,
-  }: FileType): Promise<FileUpload> {
-    return await this.add({
-      destination,
-      originalFilename: originalname,
-      filename,
-      mimetype,
-      path,
-      size,
-    });
+  async addByFile(
+    { originalname, destination, filename, mimetype, path, size }: FileType,
+    user: User
+  ): Promise<FileUpload> {
+    return await this.add(
+      {
+        destination,
+        originalFilename: originalname,
+        filename,
+        mimetype,
+        path,
+        size,
+      },
+      user
+    );
   }
 
   async replaceFile(
@@ -90,5 +91,26 @@ export class FileUploadService {
 
   async exists(idFileUpload: number): Promise<boolean> {
     return await this.fileUploadRepository.exists({ id: idFileUpload });
+  }
+
+  async uploadImageToEntity<T>(
+    repository: Repository<T>,
+    [id, key]: [number, keyof T],
+    file: FileType,
+    user: User
+  ): Promise<FileUpload> {
+    const entity = await repository.findOneOrFail(id);
+    const property = entity[key as string];
+    if (property) {
+      await this.replaceFile(property, file, user);
+      return await this.findById(property);
+    } else {
+      const newFile = await this.addByFile(file, user);
+      await repository.update(
+        id,
+        updateLastUpdatedBy({ [key]: newFile.id }, user) as any
+      );
+      return newFile;
+    }
   }
 }

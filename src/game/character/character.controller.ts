@@ -24,6 +24,8 @@ import { UseFileUpload } from '../../file-upload/file-upload.decorator';
 import { FileType } from '../../file-upload/file-type.interface';
 import { GetUser } from '../../auth/get-user.decorator';
 import { User } from '../../auth/user/user.entity';
+import { getImagesAllowed } from '../../util/env';
+import { FileUpload } from '../../file-upload/file-upload.entity';
 
 @ApiTags('Character')
 @Roles(RoleEnum.admin)
@@ -46,12 +48,12 @@ export class CharacterController {
   }
 
   @Patch(`:${RouteParamId.idCharacter}/image`)
-  @UseFileUpload()
+  @UseFileUpload({ filesAllowed: getImagesAllowed() })
   uploadImage(
     @Param(RouteParamId.idCharacter) idCharacter: number,
     @UploadedFile('file') file: FileType,
     @GetUser() user: User
-  ): Promise<Character> {
+  ): Promise<FileUpload> {
     return this.characterService.uploadImage(idCharacter, file, user);
   }
 

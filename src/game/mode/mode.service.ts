@@ -23,4 +23,8 @@ export class ModeService {
   async exists(idMode: number): Promise<boolean> {
     return await this.modeRepository.exists({ id: idMode });
   }
+
+  async findAll(): Promise<Mode[]> {
+    return await this.modeRepository.find();
+  }
 }

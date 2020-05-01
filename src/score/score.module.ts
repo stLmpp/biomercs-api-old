@@ -10,6 +10,7 @@ import { ScorePlayerRepository } from './score-player/score-player.repository';
 import { ScorePlayerProofController } from './score-player-proof/score-player-proof.controller';
 import { ScorePlayerProofService } from './score-player-proof/score-player-proof.service';
 import { ScorePlayerProofRepository } from './score-player-proof/score-player-proof.repository';
+import { FileUploadModule } from '../file-upload/file-upload.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ScorePlayerProofRepository } from './score-player-proof/score-player-pr
       ScorePlayerProofRepository,
     ]),
     GameModule,
+    FileUploadModule,
   ],
   controllers: [
     ScoreController,
@@ -26,6 +28,6 @@ import { ScorePlayerProofRepository } from './score-player-proof/score-player-pr
     ScorePlayerProofController,
   ],
   providers: [ScoreService, ScorePlayerService, ScorePlayerProofService],
-  exports: [ScoreService],
+  exports: [ScoreService, ScorePlayerService, ScorePlayerProofService],
 })
 export class ScoreModule {}
