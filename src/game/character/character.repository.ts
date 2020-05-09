@@ -1,35 +1,27 @@
 import { EntityRepository, Repository } from 'typeorm';
 import { Character } from './character.entity';
-import { GameModeCharacter } from '../game-mode-character/game-mode-character.entity';
+import { CharacterParamsDto } from './character.dto';
 
 @EntityRepository(Character)
 export class CharacterRepository extends Repository<Character> {
-  async findByParam(
-    idGameMode?: number,
-    idGame?: number,
-    idMode?: number
-  ): Promise<Character[]> {
+  async findByParams({
+    idGame,
+    idMode,
+    ...dto
+  }: CharacterParamsDto): Promise<Character[]> {
     const qb = this.createQueryBuilder('char');
-    if (idGameMode || idGame || idMode) {
-      qb.andExists(sbq => {
-        const subQuery = sbq
-          .from(GameModeCharacter, 'gmc')
-          .andWhere('char.id = gmc.idCharacter');
-        if (idGameMode) {
-          subQuery.andWhere('gmc.idGameMode = :idGameMode', { idGameMode });
-        }
-        if (idGame || idMode) {
-          subQuery.innerJoin('gmc.gameMode', 'gm');
-          if (idGame) {
-            subQuery.andWhere('gm.idGame = :idGame', { idGame });
-          }
-          if (idMode) {
-            subQuery.andWhere('gm.idMode = :idMode', { idMode });
-          }
-        }
-        return subQuery;
-      });
+    if (idGame || idMode) {
+      qb.innerJoin('char.gameModeCharacters', 'gmc').innerJoin(
+        'gmc.gameMode',
+        'gm'
+      );
+      if (idGame) {
+        qb.andWhere('gm.idGame = :idGame', { idGame });
+      }
+      if (idMode) {
+        qb.andWhere('gm.idMode = :idMode', { idMode });
+      }
     }
-    return qb.getMany();
+    return this.fillAndWhere('char', dto, qb).getMany();
   }
 }

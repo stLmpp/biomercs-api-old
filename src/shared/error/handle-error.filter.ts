@@ -12,12 +12,12 @@ import { MySqlError } from './my-sql-error';
 import { flattenObject } from '../../util/util';
 import { Response } from 'express';
 import { isError } from 'is-what';
-import { getUseHandleError } from '../../util/env';
+import { environment } from '../env/env';
 
 @Catch()
 export class HandleErrorFilter extends BaseExceptionFilter {
   catch(exception: any, host: ArgumentsHost): void {
-    if (!getUseHandleError()) {
+    if (!environment.config('USE_HANDLE_ERROR')) {
       super.catch(exception, host);
       return;
     }
@@ -76,11 +76,13 @@ export class HandleErrorFilter extends BaseExceptionFilter {
   }
 
   handleLogicError({ name, message, stack, ...rest }: Error): HttpException {
-    const errorObj = {
+    const errorObj: { [key: string]: any } = {
       error: message,
-      stack: this.handleStack(stack),
       ...rest,
     };
+    if (!environment.production) {
+      errorObj.stack = this.handleStack(stack);
+    }
     switch (name) {
       case 'EntityNotFound':
         return new NotFoundException(errorObj);

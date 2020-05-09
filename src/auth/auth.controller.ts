@@ -46,12 +46,15 @@ export class AuthController {
   @Post('auto-login')
   @Auth()
   async autoLogin(@GetUser() user: User): Promise<User> {
+    if (user.id === -1) {
+      return null;
+    }
     user.token = await this.authService.getToken(user.id, user.rememberMe);
     return user;
   }
 
   @Get(`${RoutePath.confirmEmail}/:${RouteParamId.idUser}`)
-  @Redirect('http://192.168.15.14:4200/') // TODO real url
+  @Redirect('http://localhost:4200/') // TODO real url
   async confirmEmail(
     @Param(RouteParamId.idUser) idUser: number,
     @Query(RouteParamTerm.emailToken) emailToken: string

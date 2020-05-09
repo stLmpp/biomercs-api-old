@@ -10,11 +10,12 @@ import { UserCredentialsDto } from './user/dto/credentials.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { RouteParamTerm, RoutePath } from '../shared/types/route-enums';
-import { getEnvVar, getHost, getPort } from '../util/env';
+import { environment } from '../shared/env/env';
 import { Entity } from '../util/types';
 import { UserRoleService } from './user/user-role/user-role.service';
 import { RoleService } from './role/role.service';
 import { RoleEnum } from './role/role.enum';
+import { updateCreatedBy } from '../shared/pipes/created-by.pipe';
 
 export class AuthService {
   constructor(
@@ -53,12 +54,10 @@ export class AuthService {
   }
 
   async sendConfirmation(user: User): Promise<void> {
-    const url = `http://${getHost()}:${getPort()}/api/auth/${
-      RoutePath.confirmEmail
-    }/${user.id}?${RouteParamTerm.emailToken}=${user.emailToken}`; // TODO url
+    const url = `http://${environment.host}:${environment.port}/api/auth/${RoutePath.confirmEmail}/${user.id}?${RouteParamTerm.emailToken}=${user.emailToken}`; // TODO url
     await this.mailerService.sendMail({
       to: user.email,
-      from: getEnvVar('MAIL'),
+      from: environment.get('MAIL'),
       subject: 'Biomercs - Confirm your e-mail',
       template: 'confirmation',
       context: { url },
@@ -73,7 +72,9 @@ export class AuthService {
     if (user.emailToken === emailToken) {
       await this.userRepository.update(user.id, { emailToken: null });
       const userRole = await this.roleService.findByName(RoleEnum.user);
-      await this.userRoleService.add(user.id, userRole.id);
+      await this.userRoleService.add(
+        updateCreatedBy({ idUser: user.id, idRole: userRole.id }, user)
+      );
       return await this.login({ username: user.username, password: '' }, true);
     } else {
       throw new UnauthorizedException();

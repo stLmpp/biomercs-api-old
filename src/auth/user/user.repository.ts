@@ -25,8 +25,9 @@ export class UserRepository extends Repository<User> {
         { username, emailToken: IsNull() },
         { email: username, emailToken: IsNull() },
       ],
+      relations: ['userRoles', 'userRoles.role'],
     });
-    const errorMessage = 'Login ou senha inválidos';
+    const errorMessage = 'Login or password invalid';
     if (!user) {
       throw new UnauthorizedException(errorMessage);
     }

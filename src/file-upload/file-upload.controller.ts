@@ -16,7 +16,7 @@ import { UseFileUpload } from './file-upload.decorator';
 import { FileUpload as FileUploadEntity } from './file-upload.entity';
 import { FileType } from './file-type.interface';
 import { Response } from 'express';
-import { getEnvVar } from '../util/env';
+import { environment } from '../shared/env/env';
 import { RouteParamId, RouteParamTerm } from '../shared/types/route-enums';
 import { DeleteResult } from '../util/types';
 import { GetUser } from '../auth/get-user.decorator';
@@ -45,7 +45,7 @@ export class FileUploadController {
     @Res() response: Response
   ): void {
     response.sendFile(imageName, {
-      root: getEnvVar('CONFIG_FILE_UPLOAD_PATH'),
+      root: environment.config('FILE_UPLOAD_PATH'),
     });
   }
 

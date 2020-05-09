@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { hash } from 'bcryptjs';
-import { CommonColumns } from '../../shared/super-entities/common-columns';
+import { CommonColumns } from '../../shared/super/common-columns';
 import { UserLink } from './user-link/user-link.entity';
 import { ApiHideProperty } from '@nestjs/swagger';
 import { UserRole } from './user-role/user-role.entity';

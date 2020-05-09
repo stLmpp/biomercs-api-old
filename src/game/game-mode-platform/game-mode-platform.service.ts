@@ -2,23 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { GameModePlatformRepository } from './game-mode-platform.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GameModePlatform } from './game-mode-platform.entity';
-import { GameModePlatformAddDto } from './dto/add.dto';
-import { DeleteResult } from '../../util/types';
+import { GameModePlatformAddDto } from './game-mode-platform.dto';
+import { SuperService } from '../../shared/super/super-service';
 
 @Injectable()
-export class GameModePlatformService {
+export class GameModePlatformService extends SuperService<
+  GameModePlatform,
+  GameModePlatformAddDto
+> {
   constructor(
     @InjectRepository(GameModePlatformRepository)
     private gameModePlatformRepository: GameModePlatformRepository
-  ) {}
-
-  async add(dto: GameModePlatformAddDto): Promise<GameModePlatform> {
-    return await this.gameModePlatformRepository.save(
-      new GameModePlatform().extendDto(dto)
-    );
-  }
-
-  async delete(idGameModePlatform: number): Promise<DeleteResult> {
-    return await this.gameModePlatformRepository.delete(idGameModePlatform);
+  ) {
+    super(GameModePlatform, gameModePlatformRepository);
   }
 }

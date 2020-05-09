@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { CommonColumns } from '../../../shared/super-entities/common-columns';
+import { CommonColumns } from '../../../shared/super/common-columns';
 import { User } from '../user.entity';
 import { Site } from '../../../site/site.entity';
 

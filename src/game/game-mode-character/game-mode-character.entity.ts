@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
-import { CommonColumns } from '../../shared/super-entities/common-columns';
+import { CommonColumns } from '../../shared/super/common-columns';
 import { GameMode } from '../game-mode/game-mode.entity';
 import { Character } from '../character/character.entity';
 

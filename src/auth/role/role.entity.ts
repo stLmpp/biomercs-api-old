@@ -1,4 +1,4 @@
-import { CommonColumns } from '../../shared/super-entities/common-columns';
+import { CommonColumns } from '../../shared/super/common-columns';
 import { Column, Entity } from 'typeorm';
 import { RoleEnum } from './role.enum';
 

@@ -1,0 +1,1 @@
+export const EXISTS_METADATA = '__B_EXISTS_METADATA__';

@@ -1,4 +1,9 @@
-import { FindConditions, ObjectLiteral, Repository } from 'typeorm';
+import {
+  FindConditions,
+  ObjectLiteral,
+  Repository,
+  SelectQueryBuilder,
+} from 'typeorm';
 
 declare module 'typeorm/repository/Repository' {
   interface Repository<Entity> {
@@ -9,6 +14,11 @@ declare module 'typeorm/repository/Repository' {
         | ObjectLiteral
         | string
     ): Promise<boolean>;
+    fillAndWhere(
+      name: string,
+      dto: FindConditions<Entity>,
+      queryBuilder: SelectQueryBuilder<Entity>
+    ): SelectQueryBuilder<Entity>;
   }
 }
 
@@ -18,4 +28,10 @@ Repository.prototype.exists = async function(where) {
   } catch (e) {
     return !!(await this.findOne({ where }));
   }
+};
+
+Repository.prototype.fillAndWhere = function(name, dto, queryBuilder) {
+  return Object.entries(dto).reduce((builder, [key, item]) => {
+    return builder.andWhere(`${name}.${key} = :${key}`, { [key]: item });
+  }, queryBuilder);
 };

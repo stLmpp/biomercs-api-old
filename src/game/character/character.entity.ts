@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
-import { CommonColumns } from '../../shared/super-entities/common-columns';
+import { CommonColumns } from '../../shared/super/common-columns';
 import { FileUpload } from '../../file-upload/file-upload.entity';
 import { GameModeCharacter } from '../game-mode-character/game-mode-character.entity';
 

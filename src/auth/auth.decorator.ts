@@ -1,10 +1,10 @@
-import { getUseAuth } from '../util/env';
+import { environment } from '../shared/env/env';
 import { applyDecorators, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
 export function Auth(): any {
-  const decorators = getUseAuth()
+  const decorators = environment.config('USE_AUTH')
     ? [
         UseGuards(AuthGuard()),
         ApiBearerAuth(),

@@ -1,9 +1,10 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
-import { CommonColumns } from '../shared/super-entities/common-columns';
+import { CommonColumns } from '../shared/super/common-columns';
 import { Type } from '../game/type/type.entity';
 import { ScorePlayer } from './score-player/score-player.entity';
 import { Stage } from '../game/stage/stage.entity';
 import { GameModePlatform } from '../game/game-mode-platform/game-mode-platform.entity';
+import { ScoreApproval } from './score-approval/score-approval.entity';
 
 @Entity()
 export class Score extends CommonColumns {
@@ -46,4 +47,11 @@ export class Score extends CommonColumns {
 
   @Column({ length: 1000, nullable: true })
   description?: string;
+
+  @OneToMany(
+    () => ScoreApproval,
+    scoreApproval => scoreApproval.score
+  )
+  @JoinColumn()
+  scoreApprovals: ScoreApproval[];
 }

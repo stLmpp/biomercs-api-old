@@ -1,4 +1,4 @@
-import { isNumber } from 'is-what';
+import { isNullOrUndefined, isNumber } from 'is-what';
 
 export function isNil(value: any): value is null | undefined {
   return value == null;
@@ -29,6 +29,10 @@ export function removeNullObject<T = any>(
     }
     return obj;
   }, {}) as T;
+}
+
+export function isObjectEmpty(obj: object): boolean {
+  return isNullOrUndefined(obj) || !Object.keys(obj).length;
 }
 
 export function flattenObject(

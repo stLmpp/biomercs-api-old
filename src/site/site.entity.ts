@@ -1,5 +1,5 @@
 import { Column, Entity } from 'typeorm';
-import { CommonColumns } from '../shared/super-entities/common-columns';
+import { CommonColumns } from '../shared/super/common-columns';
 
 @Entity()
 export class Site extends CommonColumns {

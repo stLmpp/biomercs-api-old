@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiConsumes } from '@nestjs/swagger';
 import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer-options.interface';
-import { getEnvVar } from '../util/env';
+import { environment } from '../shared/env/env';
 import { FileInterceptor, FilesInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { sha1 } from '../util/hash';
@@ -29,7 +29,7 @@ export function UseFileUpload(
     ...options,
   };
   const decorators: any[] = [];
-  const destination = getEnvVar('CONFIG_FILE_UPLOAD_PATH');
+  const destination = environment.config('FILE_UPLOAD_PATH');
   const multerOptions: MulterOptions = {
     storage: diskStorage({
       destination,
@@ -40,16 +40,16 @@ export function UseFileUpload(
     }),
     dest: destination,
   };
+  let filesMessage: string;
   if (options.filesAllowed?.length) {
+    filesMessage = `Allowed: [${options.filesAllowed
+      .map(o => o?.toUpperCase())
+      .join(', ')}]`;
     const regex = new RegExp(`\\.(${options.filesAllowed.join('|')})$`, 'i');
     multerOptions.fileFilter = (req, file, callback) => {
       if (!file.originalname.match(regex)) {
         callback(
-          new BadRequestException(
-            `File not allowed. Allowed: [${options.filesAllowed
-              .map(o => o?.toUpperCase())
-              .join(', ')}]`
-          ),
+          new BadRequestException('File not allowed. ' + filesMessage),
           false
         );
       } else {
@@ -72,6 +72,7 @@ export function UseFileUpload(
     ApiConsumes('multipart/form-data'),
     ApiBody({
       type: 'multipart/form-data',
+      description: filesMessage,
       required: true,
       schema: {
         type: 'object',

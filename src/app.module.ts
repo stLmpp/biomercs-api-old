@@ -6,7 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { SiteModule } from './site/site.module';
 import { HandlebarsAdapter, MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
-import { getEnvVar } from './util/env';
+import { environment } from './shared/env/env';
 import { APP_FILTER } from '@nestjs/core';
 import { HandleErrorFilter } from './shared/error/handle-error.filter';
 import { LikeModule } from './like/like.module';
@@ -16,20 +16,21 @@ import { FileUploadModule } from './file-upload/file-upload.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { ScoreModule } from './score/score.module';
 import { ReportModule } from './report/report.module';
+import { CHECK_PARAMS_DEFAULT } from './shared/pipes/check-params.pipe';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot(DB_TYPEORM_CONFIG),
     MailerModule.forRoot({
       transport: {
-        service: getEnvVar('MAIL_SERVICE'),
+        service: environment.get('MAIL_SERVICE'),
         auth: {
-          user: getEnvVar('MAIL'),
-          pass: getEnvVar('MAIL_PASS'),
+          user: environment.get('MAIL'),
+          pass: environment.get('MAIL_PASS'),
         },
       },
       defaults: {
-        from: `"Biomercs" <${getEnvVar('MAIL')}>`,
+        from: `"Biomercs" <${environment.get('MAIL')}>`,
       },
       template: {
         dir: join(__dirname, '..', '..', 'mail', 'templates'),
@@ -39,7 +40,7 @@ import { ReportModule } from './report/report.module';
         },
       },
     }),
-    MulterModule.register({ dest: getEnvVar('CONFIG_FILE_UPLOAD_PATH') }),
+    MulterModule.register({ dest: environment.config('FILE_UPLOAD_PATH') }),
     AuthModule,
     SiteModule,
     LikeModule,
@@ -54,6 +55,10 @@ import { ReportModule } from './report/report.module';
     {
       provide: APP_FILTER,
       useClass: HandleErrorFilter,
+    },
+    {
+      provide: CHECK_PARAMS_DEFAULT,
+      useValue: true,
     },
   ],
 })

@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserRepository } from './user/user.repository';
 import { PassportModule } from '@nestjs/passport';
 import { JwtModule } from '@nestjs/jwt';
-import { getEnvVar } from '../util/env';
+import { environment } from '../shared/env/env';
 import { AuthService } from './auth.service';
 import { UserService } from './user/user.service';
 import { AuthController } from './auth.controller';
@@ -26,9 +26,9 @@ import { FileUploadModule } from '../file-upload/file-upload.module';
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.register({
-      secret: getEnvVar('JWT_SECRET'),
+      secret: environment.get('JWT_SECRET'),
       signOptions: {
-        expiresIn: getEnvVar('JWT_EXPIRES_IN'),
+        expiresIn: environment.get('JWT_EXPIRES_IN'),
       },
     }),
     TypeOrmModule.forFeature([

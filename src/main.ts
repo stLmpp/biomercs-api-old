@@ -2,7 +2,7 @@ import './polyfills/polyfills';
 import './config';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { getHost, getPort, isProd } from './util/env';
+import { environment } from './shared/env/env';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { version } from '../package.json';
@@ -16,8 +16,6 @@ import { ValidationModule } from './validation/validation.module';
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
-  const PORT = getPort();
-  const HOST = getHost();
 
   app.setGlobalPrefix('api');
   app.use(helmet());
@@ -34,7 +32,7 @@ async function bootstrap(): Promise<void> {
 
   useContainer(app.select(ValidationModule), { fallbackOnErrors: true });
 
-  if (!isProd) {
+  if (!environment.production) {
     app.enableCors();
     const options = new DocumentBuilder()
       .setTitle('Biomercs api')
@@ -44,7 +42,7 @@ async function bootstrap(): Promise<void> {
     SwaggerModule.setup('help', app, document);
   }
 
-  await app.listen(PORT, HOST);
+  await app.listen(environment.port, environment.host);
 }
 
 bootstrap()

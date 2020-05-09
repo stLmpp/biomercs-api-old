@@ -1,33 +1,16 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRoleRepository } from './user-role.repository';
 import { UserRole } from './user-role.entity';
-import { UserService } from '../user.service';
-import { RoleService } from '../../role/role.service';
-import { DeleteResult } from '../../../util/types';
+import { UserRoleAddDto } from './user-role.dto';
+import { SuperService } from '../../../shared/super/super-service';
 
 @Injectable()
-export class UserRoleService {
+export class UserRoleService extends SuperService<UserRole, UserRoleAddDto> {
   constructor(
     @InjectRepository(UserRoleRepository)
-    private userRoleRepository: UserRoleRepository,
-    private userService: UserService,
-    private roleService: RoleService
-  ) {}
-
-  async add(idUser: number, idRole: number): Promise<UserRole> {
-    if (!(await this.userService.exists(idUser))) {
-      throw new BadRequestException(`User doesn't exist`);
-    }
-    if (!(await this.roleService.exists(idRole))) {
-      throw new BadRequestException(`Role doesn't exist`);
-    }
-    return await this.userRoleRepository.save(
-      new UserRole().extendDto({ idRole, idUser })
-    );
-  }
-
-  async delete(idUserRole: number): Promise<DeleteResult> {
-    return await this.userRoleRepository.delete(idUserRole);
+    private userRoleRepository: UserRoleRepository
+  ) {
+    super(UserRole, userRoleRepository);
   }
 }

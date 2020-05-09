@@ -35,4 +35,18 @@ export class UserService {
       userEditing
     );
   }
+
+  async existsByEmail(email: string): Promise<boolean> {
+    return await this.userRepository.exists({ email });
+  }
+
+  async existsByUsername(username: string): Promise<boolean> {
+    return await this.userRepository.exists({ username });
+  }
+
+  async findById(idUser: number): Promise<User> {
+    return await this.userRepository.findOneOrFail(idUser, {
+      relations: ['userLinks', 'userLinks.site'],
+    });
+  }
 }

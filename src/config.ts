@@ -1,6 +1,6 @@
 import { config } from 'dotenv';
-import { isProd } from './util/env';
+import { environment } from './shared/env/env';
 
-if (!isProd) {
+if (!environment.production) {
   config();
 }

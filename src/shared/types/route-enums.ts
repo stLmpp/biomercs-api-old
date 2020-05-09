@@ -9,8 +9,10 @@ export enum RouteParamId {
   idMode = 'idMode',
   idPlatform = 'idPlatform',
   idReference = 'idReference',
+  idReport = 'idReport',
   idRole = 'idRole',
   idScorePlayer = 'idScorePlayer',
+  idScorePlayerProof = 'idScorePlayerProof',
   idSite = 'idSite',
   idStage = 'idStage',
   idUser = 'idUser',
@@ -24,6 +26,8 @@ export enum RouteParamTerm {
   emailToken = 'emailToken',
   imageName = 'imageName',
   type = 'type',
+  email = 'email',
+  username = 'username',
 }
 
 export enum RoutePath {

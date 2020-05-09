@@ -6,7 +6,7 @@ import {
   OneToMany,
   OneToOne,
 } from 'typeorm';
-import { CommonColumns } from '../../shared/super-entities/common-columns';
+import { CommonColumns } from '../../shared/super/common-columns';
 import { Game } from '../game.entity';
 import { Mode } from '../mode/mode.entity';
 import { GameModeCharacter } from '../game-mode-character/game-mode-character.entity';
@@ -18,10 +18,7 @@ export class GameMode extends CommonColumns {
   @Column()
   idGame: number;
 
-  @ManyToOne(
-    () => Game,
-    game => game.gameModes
-  )
+  @ManyToOne(() => Game)
   @JoinColumn()
   game: Game;
 

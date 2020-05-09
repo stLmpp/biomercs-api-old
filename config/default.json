@@ -1,5 +1,5 @@
 {
-  "JWT_EXPIRES_IN": 3600,
+  "JWT_EXPIRES_IN": 86400,
   "DB_CHARSET": "utf8mb4",
   "DB_COLLATE": "utf8mb4_0900_as_cs",
   "CONFIG_USE_ROLE": true,

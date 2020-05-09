@@ -11,6 +11,11 @@ export type DecoratorFn = (
   propertyDescriptor: PropertyDescriptor
 ) => any;
 
+export interface KeyValue<V = any, K = string> {
+  key: K;
+  value: V;
+}
+
 export interface CustomValidationArguments<T = Record<string, any>>
   extends ValidationArguments {
   object: T;

@@ -1,8 +1,8 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
-import { CommonColumns } from '../shared/super-entities/common-columns';
-import { GameMode } from './game-mode/game-mode.entity';
+import { CommonColumns } from '../shared/super/common-columns';
 import { Stage } from './stage/stage.entity';
 import { FileUpload } from '../file-upload/file-upload.entity';
+import { GameMode } from './game-mode/game-mode.entity';
 
 @Entity()
 export class Game extends CommonColumns {
@@ -11,13 +11,6 @@ export class Game extends CommonColumns {
 
   @Column({ length: 10 })
   shortName: string;
-
-  @OneToMany(
-    () => GameMode,
-    gameMode => gameMode.game
-  )
-  @JoinColumn()
-  gameModes: GameMode[];
 
   @OneToMany(
     () => Stage,
@@ -32,4 +25,11 @@ export class Game extends CommonColumns {
   @OneToOne(() => FileUpload, { nullable: true })
   @JoinColumn({ name: 'idLogo' })
   logo: FileUpload;
+
+  @OneToMany(
+    () => GameMode,
+    gameMode => gameMode.game
+  )
+  @JoinColumn()
+  gameModes: GameMode[];
 }

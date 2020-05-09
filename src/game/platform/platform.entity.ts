@@ -1,5 +1,5 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
-import { CommonColumns } from '../../shared/super-entities/common-columns';
+import { CommonColumns } from '../../shared/super/common-columns';
 import { PlatformTypeEnum } from './platform-type.enum';
 import { GameModePlatform } from '../game-mode-platform/game-mode-platform.entity';
 import { FileUpload } from '../../file-upload/file-upload.entity';
@@ -22,10 +22,10 @@ export class Platform extends CommonColumns {
   @JoinColumn()
   gameModePlatform: GameModePlatform[];
 
-  @Column()
+  @Column({ nullable: true })
   idLogo: number;
 
-  @OneToOne(() => FileUpload)
+  @OneToOne(() => FileUpload, { nullable: true })
   @JoinColumn({ name: 'idLogo' })
   logo: FileUpload;
 }
