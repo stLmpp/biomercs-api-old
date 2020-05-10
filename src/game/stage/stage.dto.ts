@@ -50,6 +50,11 @@ export class StageUpdateDto {
   @IsOptional()
   @IsUrl()
   customUrl?: string;
+
+  @IsNumber()
+  @IsOptional()
+  @GameExists()
+  idGame?: number;
 }
 
 export class StageParamsDto {

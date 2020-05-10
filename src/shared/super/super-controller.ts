@@ -14,7 +14,7 @@ import {
 import { CreatedByPipe } from '../pipes/created-by.pipe';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { UpdatedByPipe } from '../pipes/updated-by.pipe';
-import { DeleteResult, UpdateResult } from '../../util/types';
+import { DeleteResult } from '../../util/types';
 import { FindConditions } from 'typeorm';
 import { FileUpload } from '../../file-upload/file-upload.entity';
 import { FileType } from '../../file-upload/file-type.interface';
@@ -122,13 +122,13 @@ export function SuperController<
     @ApplyIf(!!dto?.update, [
       Patch(`:${idKey}`),
       ApiBody({ type: dto?.update }),
-      ApiOkResponse({ type: UpdateResult }),
+      ApiOkResponse({ type: entity }),
     ])
     update(
       @Param(idKey) id: number,
       @Body(UpdatedByPipe) dto: UpdateDto
-    ): Promise<UpdateResult> {
-      return this.__service.update(id, dto);
+    ): Promise<Entity> {
+      return this.__service.update(id, dto, relations ?? []);
     }
 
     @ApplyIf(!!fileUpload, [

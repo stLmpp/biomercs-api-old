@@ -21,7 +21,7 @@ export class Stage extends CommonColumns {
   @JoinColumn()
   game: Game;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, default: false })
   custom: boolean;
 
   @Column({ nullable: true })

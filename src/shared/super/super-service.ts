@@ -1,5 +1,5 @@
 import { FindConditions, In, Repository, SelectQueryBuilder } from 'typeorm';
-import { DeleteResult, UpdateResult } from '../../util/types';
+import { DeleteResult } from '../../util/types';
 import { removeNullObject } from '../../util/util';
 import { CommonColumns } from './common-columns';
 import { isNumber } from 'is-what';
@@ -63,8 +63,13 @@ export class SuperService<
     }
   }
 
-  async update(id: number, dto: UpdateDto): Promise<UpdateResult> {
-    return await this.__repository.update(id, dto);
+  async update(
+    id: number,
+    dto: UpdateDto,
+    relations: (keyof Entity)[] | string[] = []
+  ): Promise<Entity> {
+    await this.__repository.update(id, dto);
+    return await this.findById(id, relations);
   }
 
   async delete(id: number): Promise<DeleteResult>;

@@ -27,6 +27,7 @@ export class StageController extends SuperController<Stage>({
   fileUpload: {
     filesAllowed: environment.imageExtensionsAllowed,
   },
+  relations: ['game'],
 }) {
   constructor(private stageService: StageService) {
     super(stageService);
