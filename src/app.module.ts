@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DB_TYPEORM_CONFIG } from './config/db.config';
 import { AuthModule } from './auth/auth.module';
 import { SiteModule } from './site/site.module';
-import { HandlebarsAdapter, MailerModule } from '@nestjs-modules/mailer';
+import { MailerModule } from '@nestjs-modules/mailer';
 import { join } from 'path';
 import { environment } from './shared/env/env';
 import { APP_FILTER } from '@nestjs/core';
@@ -17,6 +17,7 @@ import { MulterModule } from '@nestjs/platform-express';
 import { ScoreModule } from './score/score.module';
 import { ReportModule } from './report/report.module';
 import { CHECK_PARAMS_DEFAULT } from './shared/pipes/check-params.pipe';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
