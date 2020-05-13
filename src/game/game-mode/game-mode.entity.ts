@@ -12,6 +12,7 @@ import { Mode } from '../mode/mode.entity';
 import { GameModeCharacter } from '../game-mode-character/game-mode-character.entity';
 import { FileUpload } from '../../file-upload/file-upload.entity';
 import { GameModePlatform } from '../game-mode-platform/game-mode-platform.entity';
+import { GameModeType } from '../game-mode-type/game-mode-type.entity';
 
 @Entity()
 export class GameMode extends CommonColumns {
@@ -49,4 +50,11 @@ export class GameMode extends CommonColumns {
   )
   @JoinColumn()
   gameModePlatforms: GameModePlatform[];
+
+  @OneToMany(
+    () => GameModeType,
+    gameModeType => gameModeType.gameMode
+  )
+  @JoinColumn()
+  gameModeTypes: GameModeType[];
 }

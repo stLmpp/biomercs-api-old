@@ -1,5 +1,5 @@
 export enum LikeStyleEnum {
-  like = 'Like',
-  love = 'Love',
-  dislike = 'Dislike',
+  like = 'like',
+  love = 'love',
+  dislike = 'dislike',
 }

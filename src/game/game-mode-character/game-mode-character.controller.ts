@@ -21,6 +21,7 @@ export class GameModeCharacterController extends SuperController<
     add: GameModeCharacterAddDto,
   },
   idKey: RouteParamId.idGameModeCharacter,
+  relations: ['gameMode', 'gameMode.game', 'gameMode.mode'],
 }) {
   constructor(private gameModeCharacterService: GameModeCharacterService) {
     super(gameModeCharacterService);

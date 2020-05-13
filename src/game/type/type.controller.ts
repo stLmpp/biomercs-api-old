@@ -6,7 +6,12 @@ import { ApiTags } from '@nestjs/swagger';
 import { TypeService } from './type.service';
 import { RouteParamId } from '../../shared/types/route-enums';
 import { Type } from './type.entity';
-import { TypeAddDto, TypeUpdateDto } from './type.dto';
+import {
+  TypeAddDto,
+  TypeExistsDto,
+  TypeParamsDto,
+  TypeUpdateDto,
+} from './type.dto';
 import { SuperController } from '../../shared/super/super-controller';
 
 @ApiTags('Type')
@@ -18,6 +23,8 @@ export class TypeController extends SuperController<Type>({
   dto: {
     add: TypeAddDto,
     update: TypeUpdateDto,
+    exists: TypeExistsDto,
+    params: TypeParamsDto,
   },
   idKey: RouteParamId.idType,
   searchBy: ['name'],

@@ -2,6 +2,7 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Post,
   Res,
@@ -21,6 +22,8 @@ import { RouteParamId, RouteParamTerm } from '../shared/types/route-enums';
 import { DeleteResult } from '../util/types';
 import { GetUser } from '../auth/get-user.decorator';
 import { User } from '../auth/user/user.entity';
+import { join } from 'path';
+import { fileExists } from '../util/fs';
 
 @ApiTags('File upload')
 @Auth()
@@ -40,13 +43,21 @@ export class FileUploadController {
 
   @Get(`name/:${RouteParamTerm.imageName}`)
   @Roles(RoleEnum.user)
-  findByName(
+  async findByName(
     @Param(RouteParamTerm.imageName) imageName: string,
     @Res() response: Response
-  ): void {
-    response.sendFile(imageName, {
-      root: environment.config('FILE_UPLOAD_PATH'),
-    });
+  ): Promise<void> {
+    if (
+      !(await fileExists(
+        join(__dirname, '..', '..', '..', 'uploads', imageName)
+      ))
+    ) {
+      throw new NotFoundException('File not found');
+    } else {
+      response.sendFile(imageName, {
+        root: environment.config('FILE_UPLOAD_PATH'),
+      });
+    }
   }
 
   @Get(`id/:${RouteParamId.idFileUpload}`)
@@ -57,7 +68,9 @@ export class FileUploadController {
   ): Promise<void> {
     const file = await this.fileUploadService.findById(idFileUpload);
     if (file) {
-      this.findByName(file.filename, response);
+      await this.findByName(file.filename, response);
+    } else {
+      throw new NotFoundException('File not found');
     }
   }
 

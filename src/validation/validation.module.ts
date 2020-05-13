@@ -13,6 +13,7 @@ import { ScoreModule } from '../score/score.module';
 import { ScorePlayerExistsValidator } from './score/score-player-exists.validator';
 import { PlatformExistsValidator } from './game/platform-exists.validator';
 import { ScoreExistsValidator } from './score/score-exists.validator';
+import { TypeExistsValidator } from './game/type-exists.validator';
 
 @Global()
 @Module({
@@ -28,6 +29,7 @@ import { ScoreExistsValidator } from './score/score-exists.validator';
     ScorePlayerExistsValidator,
     PlatformExistsValidator,
     ScoreExistsValidator,
+    TypeExistsValidator,
   ],
 })
 export class ValidationModule {}

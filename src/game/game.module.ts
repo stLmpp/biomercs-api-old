@@ -28,6 +28,9 @@ import { PlatformRepository } from './platform/platform.repository';
 import { GameModePlatformController } from './game-mode-platform/game-mode-platform.controller';
 import { GameModePlatformService } from './game-mode-platform/game-mode-platform.service';
 import { GameModePlatformRepository } from './game-mode-platform/game-mode-platform.repository';
+import { GameModeTypeController } from './game-mode-type/game-mode-type.controller';
+import { GameModeTypeService } from './game-mode-type/game-mode-type.service';
+import { GameModeTypeRepository } from './game-mode-type/game-mode-type.repository';
 
 @Module({
   imports: [
@@ -41,6 +44,7 @@ import { GameModePlatformRepository } from './game-mode-platform/game-mode-platf
       TypeRepository,
       PlatformRepository,
       GameModePlatformRepository,
+      GameModeTypeRepository,
     ]),
     FileUploadModule,
   ],
@@ -54,6 +58,7 @@ import { GameModePlatformRepository } from './game-mode-platform/game-mode-platf
     TypeService,
     PlatformService,
     GameModePlatformService,
+    GameModeTypeService,
   ],
   controllers: [
     GameController,
@@ -65,6 +70,7 @@ import { GameModePlatformRepository } from './game-mode-platform/game-mode-platf
     TypeController,
     PlatformController,
     GameModePlatformController,
+    GameModeTypeController,
   ],
   exports: [
     GameService,
@@ -76,6 +82,7 @@ import { GameModePlatformRepository } from './game-mode-platform/game-mode-platf
     TypeService,
     PlatformService,
     GameModePlatformService,
+    GameModeTypeService,
   ],
 })
 export class GameModule {}

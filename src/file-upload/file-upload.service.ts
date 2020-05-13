@@ -7,10 +7,11 @@ import { extname } from 'path';
 import { FileType } from './file-type.interface';
 import { DeleteResult } from '../util/types';
 import { unlink } from 'fs';
-import { Repository, UpdateResult } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from '../auth/user/user.entity';
 import { updateLastUpdatedBy } from '../shared/pipes/updated-by.pipe';
 import { updateCreatedBy } from '../shared/pipes/created-by.pipe';
+import { isArray } from 'is-what';
 
 @Injectable()
 export class FileUploadService {
@@ -47,30 +48,6 @@ export class FileUploadService {
     );
   }
 
-  async replaceFile(
-    idFileUpload: number,
-    { path, originalname, mimetype, filename, destination }: FileType,
-    user: User
-  ): Promise<UpdateResult> {
-    const file = await this.findById(idFileUpload);
-    await this.delete(file.path);
-    return await this.fileUploadRepository.update(
-      idFileUpload,
-      updateLastUpdatedBy(
-        {
-          path,
-          url: `/upload/name/${filename}`,
-          filename,
-          extension: extname(originalname).replace('.', ''),
-          destination,
-          mimetype,
-          originalFilename: originalname,
-        },
-        user
-      )
-    );
-  }
-
   private async delete(filepath: string): Promise<boolean> {
     return new Promise(resolve => {
       unlink(filepath, () => {
@@ -79,10 +56,22 @@ export class FileUploadService {
     });
   }
 
-  async deleteFile(idFileUpload: number): Promise<DeleteResult> {
-    const file = await this.findById(idFileUpload);
-    await this.delete(file.path);
-    return await this.fileUploadRepository.delete(idFileUpload);
+  async deleteFile(idFileUpload: number): Promise<DeleteResult>;
+  async deleteFile(idsFileUpload: number[]): Promise<DeleteResult>;
+  async deleteFile(idOrIds: number | number[]): Promise<DeleteResult> {
+    const fileOrFiles = await (isArray(idOrIds)
+      ? this.fileUploadRepository.findByIds(idOrIds)
+      : this.findById(idOrIds));
+    if (isArray(fileOrFiles)) {
+      let index = fileOrFiles.length;
+      while (index--) {
+        const file = fileOrFiles[index];
+        await this.delete(file.path);
+      }
+    } else {
+      await this.delete(fileOrFiles.path);
+    }
+    return await this.fileUploadRepository.delete(idOrIds);
   }
 
   async findById(idFileUpload: number): Promise<FileUpload> {
@@ -101,16 +90,14 @@ export class FileUploadService {
   ): Promise<FileUpload> {
     const entity = await repository.findOneOrFail(id);
     const property = entity[key as string];
+    const newFile = await this.addByFile(file, user);
+    await repository.update(
+      id,
+      updateLastUpdatedBy({ [key]: newFile.id }, user) as any
+    );
     if (property) {
-      await this.replaceFile(property, file, user);
-      return await this.findById(property);
-    } else {
-      const newFile = await this.addByFile(file, user);
-      await repository.update(
-        id,
-        updateLastUpdatedBy({ [key]: newFile.id }, user) as any
-      );
-      return newFile;
+      await this.deleteFile(property);
     }
+    return newFile;
   }
 }

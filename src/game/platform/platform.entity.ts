@@ -20,7 +20,7 @@ export class Platform extends CommonColumns {
     gameModePlatform => gameModePlatform.platform
   )
   @JoinColumn()
-  gameModePlatform: GameModePlatform[];
+  gameModePlatforms: GameModePlatform[];
 
   @Column({ nullable: true })
   idLogo: number;

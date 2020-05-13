@@ -1,4 +1,4 @@
 export enum ScoreApprovalStatusEnum {
-  approved = 'Approved',
-  rejected = 'Rejected',
+  approved = 'approved',
+  rejected = 'rejected',
 }

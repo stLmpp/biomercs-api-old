@@ -5,7 +5,6 @@ import {
   IsString,
   MaxLength,
 } from 'class-validator';
-import { FileUploadExists } from '../../validation/file-upload/file-upload-exists.validator';
 import { SuperParamsDto } from '../../shared/super/super-params';
 
 export class CharacterAddDto {
@@ -28,11 +27,6 @@ export class CharacterUpdateDto {
   @IsString()
   @MaxLength(15)
   shortName?: string;
-
-  @IsOptional()
-  @IsNumber()
-  @FileUploadExists()
-  idImage?: number;
 }
 
 export class CharacterExistsDto extends SuperParamsDto {

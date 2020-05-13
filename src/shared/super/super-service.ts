@@ -2,7 +2,7 @@ import { FindConditions, In, Repository, SelectQueryBuilder } from 'typeorm';
 import { DeleteResult } from '../../util/types';
 import { removeNullObject } from '../../util/util';
 import { CommonColumns } from './common-columns';
-import { isNumber } from 'is-what';
+import { isArray, isNumber } from 'is-what';
 import { FileUploadService } from '../../file-upload/file-upload.service';
 import { FileType } from '../../file-upload/file-type.interface';
 import { User } from '../../auth/user/user.entity';
@@ -75,7 +75,16 @@ export class SuperService<
   async delete(id: number): Promise<DeleteResult>;
   async delete(ids: number[]): Promise<DeleteResult>;
   async delete(idOrIds: number | number[]): Promise<DeleteResult> {
-    return await this.__repository.delete(idOrIds);
+    const entities = isArray(idOrIds)
+      ? await this.__repository.findByIds(idOrIds)
+      : [await this.findById(idOrIds)];
+    const deleteResult = await this.__repository.delete(idOrIds);
+    if (this.options.idFileKey && this.__fileUploadService) {
+      await this.__fileUploadService.deleteFile(
+        entities.map(entity => entity[this.options.idFileKey as string])
+      );
+    }
+    return deleteResult;
   }
 
   async exists(id: number): Promise<boolean>;

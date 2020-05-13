@@ -1,27 +1,26 @@
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { CommonColumns } from '../../shared/super/common-columns';
 import { GameMode } from '../game-mode/game-mode.entity';
-import { Platform } from '../platform/platform.entity';
+import { Type } from '../type/type.entity';
 
 @Entity()
-export class GameModePlatform extends CommonColumns {
+export class GameModeType extends CommonColumns {
   @Column()
   idGameMode: number;
 
   @ManyToOne(
     () => GameMode,
-    gameMode => gameMode.gameModePlatforms
+    gameMode => gameMode.gameModeTypes
   )
   @JoinColumn()
   gameMode: GameMode;
 
   @Column()
-  idPlatform: number;
+  idType: number;
 
   @ManyToOne(
-    () => Platform,
-    platform => platform.gameModePlatforms
+    () => Type,
+    type => type.gameModeTypes
   )
-  @JoinColumn()
-  platform: Platform;
+  type: Type;
 }
