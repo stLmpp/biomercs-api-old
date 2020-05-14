@@ -52,6 +52,9 @@ export class User extends CommonColumns {
   @JoinColumn({ name: 'idAvatar' })
   avatar: FileUpload;
 
+  @Column({ select: false, nullable: true })
+  resetToken?: string;
+
   token?: string;
 
   async validatePassword(password: string): Promise<boolean> {

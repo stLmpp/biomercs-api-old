@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
 import { UpdateResult } from '../../util/types';
-import { UserUpdateDto } from './dto/update.dto';
 import { FileType } from '../../file-upload/file-type.interface';
 import { User } from './user.entity';
 import { FileUpload } from '../../file-upload/file-upload.entity';
 import { FileUploadService } from '../../file-upload/file-upload.service';
+import { UserUpdateDto } from './user.dto';
 
 @Injectable()
 export class UserService {

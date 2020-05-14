@@ -12,7 +12,6 @@ import { ApiTags } from '@nestjs/swagger';
 import { UpdateResult } from '../../util/types';
 import { UserService } from './user.service';
 import { UpdatedByPipe } from '../../shared/pipes/updated-by.pipe';
-import { UserUpdateDto } from './dto/update.dto';
 import { RouteParamId, RouteParamTerm } from '../../shared/types/route-enums';
 import { Roles } from '../role/role.guard';
 import { RoleEnum } from '../role/role.enum';
@@ -22,6 +21,7 @@ import { FileUpload } from '../../file-upload/file-upload.entity';
 import { GetUser } from '../get-user.decorator';
 import { User } from './user.entity';
 import { FileType } from '../../file-upload/file-type.interface';
+import { UserUpdateDto } from './user.dto';
 
 @ApiTags('User')
 @Controller('user')

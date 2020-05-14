@@ -29,10 +29,12 @@ export enum RouteParamTerm {
   type = 'type',
   email = 'email',
   username = 'username',
+  token = 'token',
 }
 
 export enum RoutePath {
   search = 'search',
   batch = 'batch',
   confirmEmail = 'confirm-email',
+  resetPassword = 'reset-password',
 }

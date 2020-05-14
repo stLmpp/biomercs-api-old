@@ -7,7 +7,7 @@ export const getUserFromContext = (ctx: ExecutionContext): User => {
   if (user) {
     user.token = req.headers.authorization?.replace('Bearer ', '');
   }
-  return user?.removePasswordAndSalt() ?? { id: -1 };
+  return user ?? { id: -1 };
 };
 
 export const GetUser = createParamDecorator(

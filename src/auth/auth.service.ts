@@ -1,14 +1,13 @@
-import {
-  UserRegisterDto,
-  UserRegisterViewModel,
-} from './user/dto/register.dto';
 import { User } from './user/user.entity';
 import { UserRepository } from './user/user.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { UserCredentialsDto } from './user/dto/credentials.dto';
 import { MailerService } from '@nestjs-modules/mailer';
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { RouteParamTerm, RoutePath } from '../shared/types/route-enums';
 import { environment } from '../shared/env/env';
 import { Entity } from '../util/types';
@@ -16,6 +15,12 @@ import { UserRoleService } from './user/user-role/user-role.service';
 import { RoleService } from './role/role.service';
 import { RoleEnum } from './role/role.enum';
 import { updateCreatedBy } from '../shared/pipes/created-by.pipe';
+import { hash } from 'bcryptjs';
+import {
+  UserCredentialsDto,
+  UserRegisterDto,
+  UserRegisterViewModel,
+} from './user/user.dto';
 
 export class AuthService {
   constructor(
@@ -49,8 +54,8 @@ export class AuthService {
     ignorePasswordValidation?: boolean
   ): Promise<User> {
     const user = await this.userRepository.login(dto, ignorePasswordValidation);
-    user.token = await this.getToken(user.id, dto.rememberMe);
-    return user;
+    user.token = await this.getToken(user);
+    return user.removePasswordAndSalt();
   }
 
   async sendConfirmation(user: User): Promise<void> {
@@ -60,7 +65,7 @@ export class AuthService {
       from: environment.get('MAIL'),
       subject: 'Biomercs - Confirm your e-mail',
       template: 'confirmation',
-      context: { url },
+      context: { url, btnText: 'Click here to confirm' },
     });
   }
 
@@ -81,11 +86,55 @@ export class AuthService {
     }
   }
 
-  async getToken(id: number, remember: boolean): Promise<string> {
+  async getToken({ id, password, rememberMe }: User): Promise<string> {
     const options: Entity = {};
-    if (remember) {
-      options.expiresIn = 16_000_000;
+    if (rememberMe) {
+      options.expiresIn = '180 days';
     }
-    return await this.jwtService.signAsync({ id }, options);
+    return await this.jwtService.signAsync({ id, password }, options);
+  }
+
+  async forgotPassword(usernameOrEmail: string): Promise<string> {
+    const user = await this.userRepository.findOne({
+      where: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
+    });
+    if (!user) {
+      throw new NotFoundException('Username / e-mail not found');
+    }
+    const resetToken = await hash(user.password, user.salt);
+    await this.userRepository.update(user.id, { resetToken });
+    const url = `http://localhost:4200/auth/reset-password/${user.id}/${resetToken}`; // TODO url
+    await this.mailerService.sendMail({
+      to: user.email,
+      from: environment.get('MAIL'),
+      subject: 'Biomercs - Reset your password',
+      template: 'confirmation',
+      context: { url, btnText: 'Click here to reset' },
+    });
+    return 'E-mail was sent';
+  }
+
+  async confirmForgotPassword(idUser: number, token: string): Promise<boolean> {
+    const user = await this.userRepository.findOne(idUser);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    if (user.resetToken !== token) {
+      throw new UnauthorizedException();
+    }
+    return true;
+  }
+
+  async changePassword(idUser: number, newPassword: string): Promise<boolean> {
+    const user = await this.userRepository.findOne(idUser);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    const newPasswordHash = await hash(newPassword, user.salt);
+    await this.userRepository.update(idUser, {
+      password: newPasswordHash,
+      resetToken: null,
+    });
+    return true;
   }
 }

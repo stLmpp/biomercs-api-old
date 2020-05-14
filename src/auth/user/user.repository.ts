@@ -2,8 +2,7 @@ import { EntityRepository, IsNull, Repository } from 'typeorm';
 import { genSalt, hash } from 'bcryptjs';
 import { UnauthorizedException } from '@nestjs/common';
 import { User } from './user.entity';
-import { UserRegisterDto } from './dto/register.dto';
-import { UserCredentialsDto } from './dto/credentials.dto';
+import { UserCredentialsDto, UserRegisterDto } from './user.dto';
 
 @EntityRepository(User)
 export class UserRepository extends Repository<User> {
@@ -41,6 +40,6 @@ export class UserRepository extends Repository<User> {
     await this.update(user.id, { lastOnline, rememberMe });
     user.lastOnline = lastOnline;
     user.rememberMe = rememberMe;
-    return user.removePasswordAndSalt();
+    return user;
   }
 }
