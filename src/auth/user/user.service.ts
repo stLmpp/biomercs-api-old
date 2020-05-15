@@ -7,6 +7,7 @@ import { User } from './user.entity';
 import { FileUpload } from '../../file-upload/file-upload.entity';
 import { FileUploadService } from '../../file-upload/file-upload.service';
 import { UserUpdateDto } from './user.dto';
+import { LikeUppercase } from '../../util/query-operators';
 
 @Injectable()
 export class UserService {
@@ -45,8 +46,20 @@ export class UserService {
   }
 
   async findById(idUser: number): Promise<User> {
-    return await this.userRepository.findOneOrFail(idUser, {
-      relations: ['userLinks', 'userLinks.site'],
+    return (
+      await this.userRepository.findOneOrFail(idUser, {
+        relations: ['userLinks', 'userLinks.site'],
+      })
+    )?.removePasswordAndSalt();
+  }
+
+  async search(username: string, email: string): Promise<User[]> {
+    return await this.userRepository.find({
+      where: [
+        { username: LikeUppercase(`%${username}%`) },
+        { email: LikeUppercase(`%${email}%`) },
+      ],
+      take: 30,
     });
   }
 }

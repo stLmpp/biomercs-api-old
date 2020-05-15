@@ -55,9 +55,9 @@ export class UserUpdateDto {
 
 export class UserForgotPasswordDto {
   @IsDefined()
-  @IsString()
+  @IsEmail()
   @IsNotEmpty()
-  usernameOrEmail: string;
+  email: string;
 }
 
 export class UserConfirmForgotPasswordDto {
@@ -72,7 +72,7 @@ export class UserConfirmForgotPasswordDto {
 
 export class UserChangePasswordDto {
   @IsDefined()
-  @IsNumber()
+  @IsString()
   @MinLength(4)
   password: string;
 }

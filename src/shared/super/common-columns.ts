@@ -1,6 +1,7 @@
 import {
   Column,
   CreateDateColumn,
+  getMetadataArgsStorage,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -31,4 +32,17 @@ export abstract class CommonColumns {
     Object.assign(this, dto);
     return this;
   }
+}
+
+export function allColumns<T>(
+  target: any,
+  exclude: (keyof T)[] = []
+): (keyof T)[] {
+  const metadata = getMetadataArgsStorage();
+  return [
+    ...metadata.filterColumns(CommonColumns),
+    ...metadata
+      .filterColumns(target as any)
+      .filter(o => !(exclude as string[]).includes(o.propertyName)),
+  ].map(o => o.propertyName) as (keyof T)[];
 }

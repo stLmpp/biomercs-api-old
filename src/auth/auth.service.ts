@@ -94,35 +94,30 @@ export class AuthService {
     return await this.jwtService.signAsync({ id, password }, options);
   }
 
-  async forgotPassword(usernameOrEmail: string): Promise<string> {
+  async forgotPassword(email: string): Promise<string> {
     const user = await this.userRepository.findOne({
-      where: [{ username: usernameOrEmail }, { email: usernameOrEmail }],
+      where: { email: email },
     });
-    if (!user) {
-      throw new NotFoundException('Username / e-mail not found');
+    if (user) {
+      const resetToken = await hash(user.password, user.salt);
+      await this.userRepository.update(user.id, { resetToken });
+      const url = `http://localhost:4200/auth/reset-password/${user.id}?${RouteParamTerm.token}=${resetToken}`; // TODO url
+      await this.mailerService.sendMail({
+        to: user.email,
+        from: environment.get('MAIL'),
+        subject: 'Biomercs - Reset your password',
+        template: 'confirmation',
+        context: { url, btnText: 'Click here to reset' },
+      });
     }
-    const resetToken = await hash(user.password, user.salt);
-    await this.userRepository.update(user.id, { resetToken });
-    const url = `http://localhost:4200/auth/reset-password/${user.id}/${resetToken}`; // TODO url
-    await this.mailerService.sendMail({
-      to: user.email,
-      from: environment.get('MAIL'),
-      subject: 'Biomercs - Reset your password',
-      template: 'confirmation',
-      context: { url, btnText: 'Click here to reset' },
-    });
-    return 'E-mail was sent';
+    return 'An e-mail was sent with instructions';
   }
 
   async confirmForgotPassword(idUser: number, token: string): Promise<boolean> {
-    const user = await this.userRepository.findOne(idUser);
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
-    if (user.resetToken !== token) {
-      throw new UnauthorizedException();
-    }
-    return true;
+    const user = await this.userRepository.findOne(idUser, {
+      select: ['resetToken'],
+    });
+    return user?.resetToken === token;
   }
 
   async changePassword(idUser: number, newPassword: string): Promise<boolean> {
@@ -131,6 +126,9 @@ export class AuthService {
       throw new NotFoundException('User not found');
     }
     const newPasswordHash = await hash(newPassword, user.salt);
+    if (newPasswordHash === user.password) {
+      throw new ConflictException(`Password can't be the same as previous`);
+    }
     await this.userRepository.update(idUser, {
       password: newPasswordHash,
       resetToken: null,

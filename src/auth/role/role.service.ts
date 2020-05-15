@@ -19,10 +19,7 @@ export class RoleService extends SuperService<Role, RoleAddDto, RoleUpdateDto> {
 
   async get(user: User): Promise<Role[]> {
     const where: FindConditions<Role> = {};
-    if (
-      environment.get('USE_ROLE') &&
-      !user.userRoles.some(userRole => userRole.role.name === RoleEnum.admin)
-    ) {
+    if (environment.get('USE_ROLE') && !this.isAdmin(user)) {
       where.name = Not(RoleEnum.admin);
     }
     return await this.roleRepository.find({ where });
@@ -30,5 +27,11 @@ export class RoleService extends SuperService<Role, RoleAddDto, RoleUpdateDto> {
 
   async findByName(name: RoleEnum): Promise<Role> {
     return await this.roleRepository.findOneOrFail({ where: { name } });
+  }
+
+  isAdmin(user: User): boolean {
+    return user?.userRoles?.some(
+      userRole => userRole.role.name === RoleEnum.admin
+    );
   }
 }

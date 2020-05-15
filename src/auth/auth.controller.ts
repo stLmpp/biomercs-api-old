@@ -7,6 +7,7 @@ import {
   Post,
   Query,
   Redirect,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { User } from './user/user.entity';
@@ -27,13 +28,20 @@ import {
   UserRegisterDto,
   UserRegisterViewModel,
 } from './user/user.dto';
+import { Roles } from './role/role.guard';
+import { RoleEnum } from './role/role.enum';
+import { UpdatedByPipe } from '../shared/pipes/updated-by.pipe';
+import { RoleService } from './role/role.service';
 
 export const AuthControllerPath = 'auth';
 
 @Controller(AuthControllerPath)
 @ApiTags('Auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private roleService: RoleService
+  ) {}
 
   @Post('register')
   async register(
@@ -68,7 +76,7 @@ export class AuthController {
 
   @Post('forgot-password')
   async forgotPassword(@Body() dto: UserForgotPasswordDto): Promise<string> {
-    return this.authService.forgotPassword(dto.usernameOrEmail);
+    return this.authService.forgotPassword(dto.email);
   }
 
   @Post('confirm-forgot-password')
@@ -79,19 +87,24 @@ export class AuthController {
     return this.authService.confirmForgotPassword(dto.idUser, dto.token);
   }
 
-  @Post(`change-password/:${RouteParamId.idUser}`)
+  @Roles(RoleEnum.user)
   @Auth()
+  @Post(`change-password/:${RouteParamId.idUser}`)
   async changePassword(
     @Param(RouteParamId.idUser) idUser: number,
-    @Body() dto: UserChangePasswordDto
+    @Body(UpdatedByPipe) dto: UserChangePasswordDto,
+    @GetUser() user: User
   ): Promise<boolean> {
+    if (!this.roleService.isAdmin(user) && user.id !== idUser) {
+      throw new UnauthorizedException();
+    }
     return this.authService.changePassword(idUser, dto.password);
   }
 
-  @Post(`change-password/:${RouteParamId.idUser}/:${RouteParamTerm.token}`)
+  @Post(`change-password/:${RouteParamId.idUser}/token`)
   async changePasswordToken(
     @Param(RouteParamId.idUser) idUser: number,
-    @Param(RouteParamTerm.token) token: string,
+    @Query(RouteParamTerm.token) token: string,
     @Body() dto: UserChangePasswordDto
   ): Promise<boolean> {
     await this.authService.confirmForgotPassword(idUser, token);

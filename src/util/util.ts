@@ -48,3 +48,27 @@ export function flattenObject(
     return obj;
   }, {});
 }
+
+export async function atLeast<T>(
+  callback: () => Promise<T>,
+  seconds: number
+): Promise<T> {
+  let secondsPassed = 0;
+  const interval = setInterval(() => secondsPassed++, seconds * 1000);
+  try {
+    const result = await callback();
+    return new Promise(resolve => {
+      clearInterval(interval);
+      if (secondsPassed >= seconds) {
+        resolve(result);
+      } else {
+        setTimeout(() => {
+          resolve(result);
+        }, (seconds - secondsPassed) * 1000);
+      }
+    });
+  } catch (err) {
+    clearInterval(interval);
+    throw err;
+  }
+}

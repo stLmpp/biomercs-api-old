@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { hash } from 'bcryptjs';
-import { CommonColumns } from '../../shared/super/common-columns';
+import { allColumns, CommonColumns } from '../../shared/super/common-columns';
 import { UserLink } from './user-link/user-link.entity';
 import { ApiHideProperty } from '@nestjs/swagger';
 import { UserRole } from './user-role/user-role.entity';
@@ -8,14 +8,18 @@ import { FileUpload } from '../../file-upload/file-upload.entity';
 
 @Entity()
 export class User extends CommonColumns {
+  static get all(): (keyof User)[] {
+    return allColumns<User>(User, ['resetToken', 'emailToken']);
+  }
+
   @Column({ unique: true })
   username: string;
 
-  @Column()
+  @Column({ select: false })
   @ApiHideProperty()
   password: string;
 
-  @Column()
+  @Column({ select: false })
   @ApiHideProperty()
   salt: string;
 
@@ -62,8 +66,12 @@ export class User extends CommonColumns {
   }
 
   removePasswordAndSalt(): this {
-    this.password = null;
-    this.salt = null;
+    if (this.hasOwnProperty('password')) {
+      delete this.password;
+    }
+    if (this.hasOwnProperty('salt')) {
+      delete this.salt;
+    }
     return this;
   }
 }

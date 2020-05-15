@@ -8,7 +8,7 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { Auth } from '../auth.decorator';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { UpdateResult } from '../../util/types';
 import { UserService } from './user.service';
 import { UpdatedByPipe } from '../../shared/pipes/updated-by.pipe';
@@ -62,8 +62,18 @@ export class UserController {
     return this.userService.existsByUsername(username);
   }
 
-  @Roles(RoleEnum.user)
+  @Roles(RoleEnum.admin)
   @Auth()
+  @ApiQuery({ name: 'username', required: false })
+  @ApiQuery({ name: 'email', required: false })
+  @Get('search')
+  search(
+    @Query(RouteParamTerm.username) username?: string,
+    @Query(RouteParamTerm.email) email?: string
+  ): Promise<User[]> {
+    return this.userService.search(username, email);
+  }
+
   @Get(`:${RouteParamId.idUser}`)
   findById(@Param(RouteParamId.idUser) idUser: number): Promise<User> {
     return this.userService.findById(idUser);

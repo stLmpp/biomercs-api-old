@@ -25,6 +25,7 @@ export class UserRepository extends Repository<User> {
         { email: username, emailToken: IsNull() },
       ],
       relations: ['userRoles', 'userRoles.role'],
+      select: User.all,
     });
     const errorMessage = 'Login or password invalid';
     if (!user) {
@@ -37,7 +38,7 @@ export class UserRepository extends Repository<User> {
       }
     }
     const lastOnline = new Date();
-    await this.update(user.id, { lastOnline, rememberMe });
+    await this.update(user.id, { lastOnline, rememberMe, resetToken: null });
     user.lastOnline = lastOnline;
     user.rememberMe = rememberMe;
     return user;
