@@ -12,6 +12,7 @@ import { User } from '../auth/user/user.entity';
 import { updateLastUpdatedBy } from '../shared/pipes/updated-by.pipe';
 import { updateCreatedBy } from '../shared/pipes/created-by.pipe';
 import { isArray } from 'is-what';
+import { LikeUppercase } from '../util/query-operators';
 
 @Injectable()
 export class FileUploadService {
@@ -99,5 +100,11 @@ export class FileUploadService {
       await this.deleteFile(property);
     }
     return newFile;
+  }
+
+  async findByOriginalFilename(filename: string): Promise<FileUpload> {
+    return await this.fileUploadRepository.findOne({
+      where: { originalFilename: LikeUppercase(`${filename}.%`) },
+    });
   }
 }

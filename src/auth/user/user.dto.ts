@@ -9,6 +9,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
+import { RegionExists } from '../../validation/region/region-exists.validator';
 
 export class UserCredentialsDto {
   @IsDefined()
@@ -51,6 +52,21 @@ export class UserUpdateDto {
   @IsEmail()
   @IsOptional()
   email?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
+  aboutMe?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  title?: string;
+
+  @IsOptional()
+  @IsNumber()
+  @RegionExists()
+  idRegion?: number;
 }
 
 export class UserForgotPasswordDto {

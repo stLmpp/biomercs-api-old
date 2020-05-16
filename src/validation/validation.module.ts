@@ -14,10 +14,18 @@ import { ScorePlayerExistsValidator } from './score/score-player-exists.validato
 import { PlatformExistsValidator } from './game/platform-exists.validator';
 import { ScoreExistsValidator } from './score/score-exists.validator';
 import { TypeExistsValidator } from './game/type-exists.validator';
+import { RegionExistsValidator } from './region/region-exists.validator';
+import { RegionModule } from '../region/region.module';
 
 @Global()
 @Module({
-  imports: [SiteModule, GameModule, FileUploadModule, ScoreModule],
+  imports: [
+    SiteModule,
+    GameModule,
+    FileUploadModule,
+    ScoreModule,
+    RegionModule,
+  ],
   providers: [
     UserExistsValidator,
     IdReferenceExistsValidator,
@@ -30,6 +38,7 @@ import { TypeExistsValidator } from './game/type-exists.validator';
     PlatformExistsValidator,
     ScoreExistsValidator,
     TypeExistsValidator,
+    RegionExistsValidator,
   ],
 })
 export class ValidationModule {}

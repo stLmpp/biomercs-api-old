@@ -1,6 +1,6 @@
 import { Controller } from '@nestjs/common';
 import { UserLinkService } from './user-link.service';
-import { RouteParamId } from '../../../shared/types/route-enums';
+import { RouteParamEnum } from '../../../shared/types/route-enums';
 import { ApiTags } from '@nestjs/swagger';
 import { Auth } from '../../auth.decorator';
 import { Roles } from '../../role/role.guard';
@@ -24,7 +24,7 @@ export class UserLinkController extends SuperController<UserLink>({
     update: UserLinkUpdateDto,
     params: UserLinkParamsDto,
   },
-  idKey: RouteParamId.idUserLink,
+  idKey: RouteParamEnum.idUserLink,
   excludeMethods: ['findAll'],
 }) {
   constructor(private userLinkService: UserLinkService) {

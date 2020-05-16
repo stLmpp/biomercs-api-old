@@ -14,11 +14,7 @@ import { User } from './user/user.entity';
 import { GetUser } from './get-user.decorator';
 import { ApiTags } from '@nestjs/swagger';
 import { CreatedByPipe } from '../shared/pipes/created-by.pipe';
-import {
-  RouteParamId,
-  RouteParamTerm,
-  RoutePath,
-} from '../shared/types/route-enums';
+import { RouteParamEnum } from '../shared/types/route-enums';
 import { Auth } from './auth.decorator';
 import {
   UserChangePasswordDto,
@@ -65,11 +61,11 @@ export class AuthController {
     return user.removePasswordAndSalt();
   }
 
-  @Get(`${RoutePath.confirmEmail}/:${RouteParamId.idUser}`)
+  @Get(`confirm-email/:${RouteParamEnum.idUser}`)
   @Redirect('http://localhost:4200/') // TODO real url
   async confirmEmail(
-    @Param(RouteParamId.idUser) idUser: number,
-    @Query(RouteParamTerm.emailToken) emailToken: string
+    @Param(RouteParamEnum.idUser) idUser: number,
+    @Query(RouteParamEnum.emailToken) emailToken: string
   ): Promise<User> {
     return this.authService.confirmEmail(idUser, emailToken);
   }
@@ -89,9 +85,9 @@ export class AuthController {
 
   @Roles(RoleEnum.user)
   @Auth()
-  @Post(`change-password/:${RouteParamId.idUser}`)
+  @Post(`change-password/:${RouteParamEnum.idUser}`)
   async changePassword(
-    @Param(RouteParamId.idUser) idUser: number,
+    @Param(RouteParamEnum.idUser) idUser: number,
     @Body(UpdatedByPipe) dto: UserChangePasswordDto,
     @GetUser() user: User
   ): Promise<User> {
@@ -101,10 +97,10 @@ export class AuthController {
     return this.authService.changePassword(idUser, dto.password);
   }
 
-  @Post(`change-password/:${RouteParamId.idUser}/token`)
+  @Post(`change-password/:${RouteParamEnum.idUser}/token`)
   async changePasswordToken(
-    @Param(RouteParamId.idUser) idUser: number,
-    @Query(RouteParamTerm.token) token: string,
+    @Param(RouteParamEnum.idUser) idUser: number,
+    @Query(RouteParamEnum.token) token: string,
     @Body() dto: UserChangePasswordDto
   ): Promise<User> {
     await this.authService.confirmForgotPassword(idUser, token);
@@ -113,9 +109,9 @@ export class AuthController {
 
   @Roles(RoleEnum.admin)
   @Auth()
-  @Post(`reset-password/:${RouteParamId.idUser}`)
+  @Post(`reset-password/:${RouteParamEnum.idUser}`)
   async resetPassword(
-    @Param(RouteParamId.idUser) idUser: number
+    @Param(RouteParamEnum.idUser) idUser: number
   ): Promise<void> {
     return this.authService.resetPassword(idUser);
   }

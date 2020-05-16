@@ -18,6 +18,8 @@ import { ScoreModule } from './score/score.module';
 import { ReportModule } from './report/report.module';
 import { CHECK_PARAMS_DEFAULT } from './shared/pipes/check-params.pipe';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { AppService } from './app.service';
+import { RegionModule } from './region/region.module';
 
 @Module({
   imports: [
@@ -50,9 +52,11 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     FileUploadModule,
     ScoreModule,
     ReportModule,
+    RegionModule,
   ],
   controllers: [AppController],
   providers: [
+    AppService,
     {
       provide: APP_FILTER,
       useClass: HandleErrorFilter,

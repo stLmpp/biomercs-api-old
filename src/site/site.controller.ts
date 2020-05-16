@@ -3,14 +3,15 @@ import { SiteService } from './site.service';
 import { Site } from './site.entity';
 import { ApiTags } from '@nestjs/swagger';
 import { Auth } from '../auth/auth.decorator';
-import { Roles } from '../auth/role/role.guard';
 import { RoleEnum } from '../auth/role/role.enum';
-import { SuperController } from '../shared/super/super-controller';
+import {
+  SuperController,
+  SuperControllerRole,
+} from '../shared/super/super-controller';
 import { SiteAddDto, SiteUpdateDto } from './site.dto';
-import { RouteParamId } from '../shared/types/route-enums';
+import { RouteParamEnum } from '../shared/types/route-enums';
 
 @ApiTags('Site')
-@Roles(RoleEnum.admin)
 @Auth()
 @Controller('site')
 export class SiteController extends SuperController<Site>({
@@ -22,7 +23,11 @@ export class SiteController extends SuperController<Site>({
     params: SiteUpdateDto,
   },
   searchBy: ['name', 'url'],
-  idKey: RouteParamId.idSite,
+  idKey: RouteParamEnum.idSite,
+  roles: new SuperControllerRole({
+    persist: [RoleEnum.admin],
+    find: [RoleEnum.user],
+  }),
 }) {
   constructor(private siteService: SiteService) {
     super(siteService);

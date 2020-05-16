@@ -1,4 +1,4 @@
-export enum RouteParamId {
+export enum RouteParamEnum {
   idCharacter = 'idCharacter',
   idFileUpload = 'idFileUpload',
   idGame = 'idGame',
@@ -17,12 +17,11 @@ export enum RouteParamId {
   idSite = 'idSite',
   idStage = 'idStage',
   idUser = 'idUser',
+  idUserFriend = 'idUserFriend',
   idUserLink = 'idUserLink',
   idUserRole = 'idUserRole',
   idType = 'idType',
-}
 
-export enum RouteParamTerm {
   term = 'term',
   emailToken = 'emailToken',
   imageName = 'imageName',
@@ -30,11 +29,4 @@ export enum RouteParamTerm {
   email = 'email',
   username = 'username',
   token = 'token',
-}
-
-export enum RoutePath {
-  search = 'search',
-  batch = 'batch',
-  confirmEmail = 'confirm-email',
-  resetPassword = 'reset-password',
 }

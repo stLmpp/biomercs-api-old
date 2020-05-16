@@ -2,17 +2,18 @@ import { Controller, Get } from '@nestjs/common';
 import { RoleService } from './role.service';
 import { ApiTags } from '@nestjs/swagger';
 import { Auth } from '../auth.decorator';
-import { Roles } from './role.guard';
 import { RoleEnum } from './role.enum';
 import { Role } from './role.entity';
-import { RouteParamId } from '../../shared/types/route-enums';
+import { RouteParamEnum } from '../../shared/types/route-enums';
 import { GetUser } from '../get-user.decorator';
 import { User } from '../user/user.entity';
-import { SuperController } from '../../shared/super/super-controller';
+import {
+  SuperController,
+  SuperControllerRole,
+} from '../../shared/super/super-controller';
 import { RoleAddDto, RoleExistsDto, RoleUpdateDto } from './role.dto';
 
 @ApiTags('Role')
-@Roles(RoleEnum.admin)
 @Auth()
 @Controller('role')
 export class RoleController extends SuperController<Role>({
@@ -22,9 +23,13 @@ export class RoleController extends SuperController<Role>({
     update: RoleUpdateDto,
     exists: RoleExistsDto,
   },
-  idKey: RouteParamId.idRole,
+  idKey: RouteParamEnum.idRole,
   excludeMethods: ['findAll'],
   searchBy: ['name', 'description'],
+  roles: new SuperControllerRole({
+    persist: [RoleEnum.admin],
+    find: [RoleEnum.user],
+  }),
 }) {
   constructor(private roleService: RoleService) {
     super(roleService);

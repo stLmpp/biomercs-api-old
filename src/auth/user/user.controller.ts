@@ -12,7 +12,7 @@ import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { UpdateResult } from '../../util/types';
 import { UserService } from './user.service';
 import { UpdatedByPipe } from '../../shared/pipes/updated-by.pipe';
-import { RouteParamId, RouteParamTerm } from '../../shared/types/route-enums';
+import { RouteParamEnum } from '../../shared/types/route-enums';
 import { Roles } from '../role/role.guard';
 import { RoleEnum } from '../role/role.enum';
 import { UseFileUpload } from '../../file-upload/file-upload.decorator';
@@ -28,11 +28,11 @@ import { UserUpdateDto } from './user.dto';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Patch(`:${RouteParamId.idUser}`)
+  @Patch(`:${RouteParamEnum.idUser}`)
   @Auth()
   @Roles(RoleEnum.user)
   update(
-    @Param(RouteParamId.idUser) idUser: number,
+    @Param(RouteParamEnum.idUser) idUser: number,
     @Body(UpdatedByPipe) dto: UserUpdateDto
   ): Promise<UpdateResult> {
     return this.userService.update(idUser, dto);
@@ -41,9 +41,9 @@ export class UserController {
   @Roles(RoleEnum.user)
   @Auth()
   @UseFileUpload({ filesAllowed: environment.imageExtensionsAllowed })
-  @Patch(`:${RouteParamId.idUser}/avatar`)
+  @Patch(`:${RouteParamEnum.idUser}/avatar`)
   uploadAvatar(
-    @Param(RouteParamId.idUser) idUser: number,
+    @Param(RouteParamEnum.idUser) idUser: number,
     @UploadedFile('file') file: FileType,
     @GetUser() user: User
   ): Promise<FileUpload> {
@@ -52,19 +52,19 @@ export class UserController {
 
   @Roles(RoleEnum.admin)
   @Auth()
-  @Patch(`:${RouteParamId.idUser}/ban`)
-  ban(@Param(RouteParamId.idUser) idUser: number): Promise<void> {
+  @Patch(`:${RouteParamEnum.idUser}/ban`)
+  ban(@Param(RouteParamEnum.idUser) idUser: number): Promise<void> {
     return this.userService.ban(idUser);
   }
 
   @Get('exists/email')
-  existsByEmail(@Query(RouteParamTerm.email) email: string): Promise<boolean> {
+  existsByEmail(@Query(RouteParamEnum.email) email: string): Promise<boolean> {
     return this.userService.existsByEmail(email);
   }
 
   @Get('exists/username')
   existsByUsername(
-    @Query(RouteParamTerm.username) username: string
+    @Query(RouteParamEnum.username) username: string
   ): Promise<boolean> {
     return this.userService.existsByUsername(username);
   }
@@ -75,14 +75,14 @@ export class UserController {
   @ApiQuery({ name: 'email', required: false })
   @Get('search')
   search(
-    @Query(RouteParamTerm.username) username?: string,
-    @Query(RouteParamTerm.email) email?: string
+    @Query(RouteParamEnum.username) username?: string,
+    @Query(RouteParamEnum.email) email?: string
   ): Promise<User[]> {
     return this.userService.search(username, email);
   }
 
-  @Get(`:${RouteParamId.idUser}`)
-  findById(@Param(RouteParamId.idUser) idUser: number): Promise<User> {
+  @Get(`:${RouteParamEnum.idUser}`)
+  findById(@Param(RouteParamEnum.idUser) idUser: number): Promise<User> {
     return this.userService.findById(idUser);
   }
 }

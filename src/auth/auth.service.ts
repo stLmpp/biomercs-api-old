@@ -8,7 +8,6 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { RouteParamTerm, RoutePath } from '../shared/types/route-enums';
 import { environment } from '../shared/env/env';
 import { Entity } from '../util/types';
 import { UserRoleService } from './user/user-role/user-role.service';
@@ -21,6 +20,7 @@ import {
   UserRegisterDto,
   UserRegisterViewModel,
 } from './user/user.dto';
+import { RouteParamEnum } from '../shared/types/route-enums';
 
 export class AuthService {
   constructor(
@@ -51,15 +51,20 @@ export class AuthService {
 
   async login(
     dto: UserCredentialsDto,
-    ignorePasswordValidation?: boolean
+    ignorePasswordValidation?: boolean,
+    ignoreEmailToken?: boolean
   ): Promise<User> {
-    const user = await this.userRepository.login(dto, ignorePasswordValidation);
+    const user = await this.userRepository.login(
+      dto,
+      ignorePasswordValidation,
+      ignoreEmailToken
+    );
     user.token = await this.getToken(user);
     return user.removePasswordAndSalt();
   }
 
   async sendConfirmation(user: User): Promise<void> {
-    const url = `http://${environment.host}:${environment.port}/api/auth/${RoutePath.confirmEmail}/${user.id}?${RouteParamTerm.emailToken}=${user.emailToken}`; // TODO url
+    const url = `http://${environment.host}:${environment.port}/api/auth/confirm-email/${user.id}?${RouteParamEnum.emailToken}=${user.emailToken}`; // TODO url
     await this.mailerService.sendMail({
       to: user.email,
       from: environment.get('MAIL'),
@@ -97,11 +102,12 @@ export class AuthService {
   async forgotPassword(email: string): Promise<string> {
     const user = await this.userRepository.findOne({
       where: { email: email },
+      select: ['id', 'password', 'salt', 'email'],
     });
     if (user) {
       const resetToken = await hash(user.password, user.salt);
       await this.userRepository.update(user.id, { resetToken });
-      const url = `http://localhost:4200/auth/reset-password/${user.id}?${RouteParamTerm.token}=${resetToken}`; // TODO url
+      const url = `http://localhost:4200/auth/reset-password/${user.id}?${RouteParamEnum.token}=${resetToken}`; // TODO url
       await this.mailerService.sendMail({
         to: user.email,
         from: environment.get('MAIL'),
@@ -165,6 +171,7 @@ export class AuthService {
         password: newPassword,
         rememberMe: user.rememberMe,
       },
+      true,
       true
     );
   }

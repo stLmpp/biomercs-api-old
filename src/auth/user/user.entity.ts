@@ -3,6 +3,7 @@ import {
   DeleteDateColumn,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   OneToOne,
 } from 'typeorm';
@@ -12,6 +13,7 @@ import { UserLink } from './user-link/user-link.entity';
 import { ApiHideProperty } from '@nestjs/swagger';
 import { UserRole } from './user-role/user-role.entity';
 import { FileUpload } from '../../file-upload/file-upload.entity';
+import { Region } from '../../region/region.entity';
 
 @Entity()
 export class User extends CommonColumns {
@@ -71,6 +73,19 @@ export class User extends CommonColumns {
 
   @DeleteDateColumn({ nullable: true })
   banDate?: Date;
+
+  @Column({ length: 1000, nullable: true })
+  aboutMe?: string;
+
+  @Column({ nullable: true, length: 50 })
+  title?: string;
+
+  @Column({ nullable: true })
+  idRegion?: number;
+
+  @ManyToOne(() => Region)
+  @JoinColumn()
+  region?: Region;
 
   token?: string;
 

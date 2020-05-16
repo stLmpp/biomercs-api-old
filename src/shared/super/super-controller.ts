@@ -14,7 +14,7 @@ import {
 import { CreatedByPipe } from '../pipes/created-by.pipe';
 import { ApiBody, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
 import { UpdatedByPipe } from '../pipes/updated-by.pipe';
-import { DeleteResult } from '../../util/types';
+import { DecoratorFn, DeleteResult } from '../../util/types';
 import { FindConditions } from 'typeorm';
 import { FileUpload } from '../../file-upload/file-upload.entity';
 import { FileType } from '../../file-upload/file-type.interface';
@@ -23,6 +23,45 @@ import { User } from '../../auth/user/user.entity';
 import { UseFileUpload } from '../../file-upload/file-upload.decorator';
 import { ApplyIf } from '../decorator/apply-if.decorator';
 import { CheckParamsPipe } from '../pipes/check-params.pipe';
+import { RoleEnum } from '../../auth/role/role.enum';
+import { isArray } from 'is-what';
+import { Roles } from '../../auth/role/role.guard';
+
+export interface ISuperController<
+  Entity extends CommonColumns = any,
+  AddDto = any,
+  UpdateDto = any
+> {
+  add: (dto: AddDto) => Promise<Entity>;
+  addMany: (dto: AddDto[]) => Promise<Entity[]>;
+  exists: (dto: FindConditions<Entity>) => Promise<boolean>;
+  findByParams: (dto: FindConditions<Entity>) => Promise<Entity[]>;
+  update: (id: number, dto: UpdateDto) => Promise<Entity>;
+  fileUpload: (id: number, file: FileType, user: User) => Promise<FileUpload>;
+  delete: (id: number) => Promise<DeleteResult>;
+  findAll: () => Promise<Entity[]>;
+  search: (term: string) => Promise<Entity[]>;
+  findById: (id: number) => Promise<Entity>;
+}
+
+export class SuperControllerRole {
+  constructor(partial?: Partial<SuperControllerRole>) {
+    Object.assign(this, partial);
+  }
+
+  persist?: RoleEnum[] = [];
+  find?: RoleEnum[] = [];
+  add?: RoleEnum[] = [];
+  addMany?: RoleEnum[] = [];
+  exists?: RoleEnum[] = [];
+  findByParams?: RoleEnum[] = [];
+  update?: RoleEnum[] = [];
+  fileUpload?: RoleEnum[] = [];
+  delete?: RoleEnum[] = [];
+  findAll?: RoleEnum[] = [];
+  search?: RoleEnum[] = [];
+  findById?: RoleEnum[] = [];
+}
 
 export interface SuperControllerOptions<
   Entity extends CommonColumns = any,
@@ -36,6 +75,7 @@ export interface SuperControllerOptions<
   relations?: (keyof Entity)[] | string[];
   fileUpload?: SuperControllerOptionsFileUpload;
   excludeMethods?: ('add' | 'addMany' | 'delete' | 'findAll' | 'findById')[];
+  roles?: RoleEnum[] | SuperControllerRole;
 }
 
 export interface SuperControllerOptionsDto<
@@ -52,6 +92,22 @@ export interface SuperControllerOptionsDto<
 export interface SuperControllerOptionsFileUpload {
   filesAllowed?: string[];
 }
+
+export const ROLE_METADATA: Partial<Record<
+  keyof ISuperController,
+  'persist' | 'find'
+>> = {
+  update: 'persist',
+  add: 'persist',
+  addMany: 'persist',
+  delete: 'persist',
+  exists: 'find',
+  fileUpload: 'persist',
+  findAll: 'find',
+  findById: 'find',
+  findByParams: 'find',
+  search: 'find',
+};
 
 export function SuperController<
   Entity extends CommonColumns,
@@ -72,9 +128,28 @@ export function SuperController<
     dto,
     searchBy,
     excludeMethods,
+    roles,
   } = options;
 
-  class SuperController {
+  function ApplyRoles(): DecoratorFn {
+    return (target, propertyName, propertyDescriptor) => {
+      if (roles) {
+        if (isArray(roles)) {
+          Roles(...roles)(target, propertyName, propertyDescriptor);
+        } else if (roles instanceof SuperControllerRole) {
+          const applyRoles = roles[ROLE_METADATA[propertyName]];
+          const specificMethod = roles[propertyName];
+          if (specificMethod?.length) {
+            Roles(...specificMethod)(target, propertyName, propertyDescriptor);
+          } else if (applyRoles?.length) {
+            Roles(...applyRoles)(target, propertyName, propertyDescriptor);
+          }
+        }
+      }
+    };
+  }
+
+  class SuperController implements ISuperController<Entity, AddDto, UpdateDto> {
     constructor(private __service: SuperService<Entity, AddDto, UpdateDto>) {}
 
     @ApplyIf(!excludeMethods.includes('add') && !!dto?.add, [
@@ -82,6 +157,7 @@ export function SuperController<
       ApiBody({ type: dto?.add }),
       ApiCreatedResponse({ type: entity }),
     ])
+    @ApplyRoles()
     add(@Body(CreatedByPipe) dto: AddDto): Promise<Entity> {
       return this.__service.add(dto, relations);
     }
@@ -91,6 +167,7 @@ export function SuperController<
       ApiBody({ type: dto?.add, isArray: true }),
       ApiCreatedResponse({ type: entity, isArray: true }),
     ])
+    @ApplyRoles()
     addMany(@Body(CreatedByPipe) dto: AddDto[]): Promise<Entity[]> {
       return this.__service.addMany(dto, relations);
     }
@@ -101,6 +178,7 @@ export function SuperController<
       ApiBody({ type: dto?.exists }),
       ApiOkResponse({ type: Boolean }),
     ])
+    @ApplyRoles()
     exists(
       @Body(CheckParamsPipe) dto: FindConditions<Entity>
     ): Promise<boolean> {
@@ -113,6 +191,7 @@ export function SuperController<
       ApiOkResponse({ type: entity, isArray: true }),
       ApiBody({ type: dto?.params }),
     ])
+    @ApplyRoles()
     findByParams(
       @Body(CheckParamsPipe) dto: FindConditions<Entity>
     ): Promise<Entity[]> {
@@ -124,6 +203,7 @@ export function SuperController<
       ApiBody({ type: dto?.update }),
       ApiOkResponse({ type: entity }),
     ])
+    @ApplyRoles()
     update(
       @Param(idKey) id: number,
       @Body(UpdatedByPipe) dto: UpdateDto
@@ -136,6 +216,7 @@ export function SuperController<
       UseFileUpload({ filesAllowed: fileUpload?.filesAllowed }),
       ApiOkResponse(),
     ])
+    @ApplyRoles()
     fileUpload(
       @Param(idKey) id: number,
       @UploadedFile('file') file: FileType,
@@ -148,6 +229,7 @@ export function SuperController<
       Delete(`:${idKey}`),
       ApiOkResponse({ type: DeleteResult }),
     ])
+    @ApplyRoles()
     delete(@Param(idKey) id: number): Promise<DeleteResult> {
       return this.__service.delete(id);
     }
@@ -156,6 +238,7 @@ export function SuperController<
       Get(),
       ApiOkResponse({ type: entity, isArray: true }),
     ])
+    @ApplyRoles()
     findAll(): Promise<Entity[]> {
       return this.__service.findAll(relations ?? []);
     }
@@ -164,6 +247,7 @@ export function SuperController<
       Get('search'),
       ApiOkResponse({ type: entity }),
     ])
+    @ApplyRoles()
     search(@Query('term') term: string): Promise<Entity[]> {
       return this.__service.search(term, searchBy, relations ?? []);
     }
@@ -172,6 +256,7 @@ export function SuperController<
       Get(`:${idKey}`),
       ApiOkResponse({ type: entity }),
     ])
+    @ApplyRoles()
     findById(@Param(idKey) id: number): Promise<Entity> {
       return this.__service.findById(id, relations ?? []);
     }

@@ -4,7 +4,7 @@ import { Auth } from '../../auth.decorator';
 import { ApiTags } from '@nestjs/swagger';
 import { UserRoleAddDto, UserRoleParamsDto } from './user-role.dto';
 import { UserRole } from './user-role.entity';
-import { RouteParamId } from '../../../shared/types/route-enums';
+import { RouteParamEnum } from '../../../shared/types/route-enums';
 import { Roles } from '../../role/role.guard';
 import { RoleEnum } from '../../role/role.enum';
 import { SuperController } from '../../../shared/super/super-controller';
@@ -19,7 +19,7 @@ export class UserRoleController extends SuperController<UserRole>({
     add: UserRoleAddDto,
     params: UserRoleParamsDto,
   },
-  idKey: RouteParamId.idUserRole,
+  idKey: RouteParamEnum.idUserRole,
   excludeMethods: ['findAll'],
 }) {
   constructor(private userRoleService: UserRoleService) {

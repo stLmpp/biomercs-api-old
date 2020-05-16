@@ -18,7 +18,7 @@ import { FileUpload as FileUploadEntity } from './file-upload.entity';
 import { FileType } from './file-type.interface';
 import { Response } from 'express';
 import { environment } from '../shared/env/env';
-import { RouteParamId, RouteParamTerm } from '../shared/types/route-enums';
+import { RouteParamEnum } from '../shared/types/route-enums';
 import { DeleteResult } from '../util/types';
 import { GetUser } from '../auth/get-user.decorator';
 import { User } from '../auth/user/user.entity';
@@ -41,10 +41,10 @@ export class FileUploadController {
     return this.fileUploadService.addByFile(file, user);
   }
 
-  @Get(`name/:${RouteParamTerm.imageName}`)
+  @Get(`name/:${RouteParamEnum.imageName}`)
   @Roles(RoleEnum.user)
   async findByName(
-    @Param(RouteParamTerm.imageName) imageName: string,
+    @Param(RouteParamEnum.imageName) imageName: string,
     @Res() response: Response
   ): Promise<void> {
     if (
@@ -60,10 +60,10 @@ export class FileUploadController {
     }
   }
 
-  @Get(`id/:${RouteParamId.idFileUpload}`)
+  @Get(`id/:${RouteParamEnum.idFileUpload}`)
   @Roles(RoleEnum.user)
   async findById(
-    @Param(RouteParamId.idFileUpload) idFileUpload: number,
+    @Param(RouteParamEnum.idFileUpload) idFileUpload: number,
     @Res() response: Response
   ): Promise<void> {
     const file = await this.fileUploadService.findById(idFileUpload);
@@ -74,10 +74,10 @@ export class FileUploadController {
     }
   }
 
-  @Delete(`:${RouteParamId.idFileUpload}`)
+  @Delete(`:${RouteParamEnum.idFileUpload}`)
   @Roles(RoleEnum.admin)
   async delete(
-    @Param(RouteParamId.idFileUpload) idFileUpload: number
+    @Param(RouteParamEnum.idFileUpload) idFileUpload: number
   ): Promise<DeleteResult> {
     return this.fileUploadService.deleteFile(idFileUpload);
   }

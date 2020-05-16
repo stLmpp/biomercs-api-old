@@ -10,7 +10,7 @@ import { environment } from '../../shared/env/env';
 import { FileType } from '../../file-upload/file-type.interface';
 import { GetUser } from '../../auth/get-user.decorator';
 import { User } from '../../auth/user/user.entity';
-import { RouteParamId } from '../../shared/types/route-enums';
+import { RouteParamEnum } from '../../shared/types/route-enums';
 import { SuperController } from '../../shared/super/super-controller';
 
 @ApiTags('Score player proof')
@@ -24,19 +24,19 @@ export class ScorePlayerProofController extends SuperController<
   dto: {
     add: ScorePlayerProof,
   },
-  idKey: RouteParamId.idScorePlayerProof,
+  idKey: RouteParamEnum.idScorePlayerProof,
   excludeMethods: ['findAll'],
 }) {
   constructor(private scorePlayerProofService: ScorePlayerProofService) {
     super(scorePlayerProofService);
   }
 
-  @Post(`image/:${RouteParamId.idScorePlayer}`)
+  @Post(`image/:${RouteParamEnum.idScorePlayer}`)
   @UseFileUpload({
     filesAllowed: environment.imageExtensionsAllowed,
   })
   uploadFile(
-    @Param(RouteParamId.idScorePlayer) idScorePlayer: number,
+    @Param(RouteParamEnum.idScorePlayer) idScorePlayer: number,
     @UploadedFile('file') file: FileType,
     @GetUser() user: User
   ): Promise<ScorePlayerProof> {

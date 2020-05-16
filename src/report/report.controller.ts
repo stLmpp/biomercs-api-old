@@ -6,7 +6,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Report } from './report.entity';
 import { ReportService } from './report.service';
 import { SuperController } from '../shared/super/super-controller';
-import { RouteParamId } from '../shared/types/route-enums';
+import { RouteParamEnum } from '../shared/types/route-enums';
 import { ReportAddDto, ReportParamsDto } from './report.dto';
 
 @ApiTags('Report')
@@ -20,7 +20,7 @@ export class ReportController extends SuperController<Report>({
     params: ReportParamsDto,
     exists: ReportParamsDto,
   },
-  idKey: RouteParamId.idReport,
+  idKey: RouteParamEnum.idReport,
   excludeMethods: ['delete', 'findAll'],
 }) {
   constructor(private reportService: ReportService) {

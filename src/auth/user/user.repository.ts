@@ -1,4 +1,4 @@
-import { EntityRepository, IsNull, Repository } from 'typeorm';
+import { EntityRepository, FindConditions, IsNull, Repository } from 'typeorm';
 import { genSalt, hash } from 'bcryptjs';
 import { UnauthorizedException } from '@nestjs/common';
 import { User } from './user.entity';
@@ -16,14 +16,16 @@ export class UserRepository extends Repository<User> {
 
   async login(
     dto: UserCredentialsDto,
-    ignorePasswordValidation?: boolean
+    ignorePasswordValidation?: boolean,
+    ignoreEmailToken?: boolean
   ): Promise<User> {
     const { username, password, rememberMe } = dto;
+    let where: FindConditions<User>[] = [{ username }, { email: username }];
+    if (!ignoreEmailToken) {
+      where = where.map(w => ({ ...w, emailToken: IsNull() }));
+    }
     const user = await this.findOne({
-      where: [
-        { username, emailToken: IsNull() },
-        { email: username, emailToken: IsNull() },
-      ],
+      where,
       relations: ['userRoles', 'userRoles.role'],
       select: [...User.all, 'resetToken'],
     });

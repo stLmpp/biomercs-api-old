@@ -1,10 +1,9 @@
 import { Controller } from '@nestjs/common';
 import { Auth } from '../../auth/auth.decorator';
-import { Roles } from '../../auth/role/role.guard';
 import { RoleEnum } from '../../auth/role/role.enum';
 import { ApiTags } from '@nestjs/swagger';
 import { TypeService } from './type.service';
-import { RouteParamId } from '../../shared/types/route-enums';
+import { RouteParamEnum } from '../../shared/types/route-enums';
 import { Type } from './type.entity';
 import {
   TypeAddDto,
@@ -12,10 +11,12 @@ import {
   TypeParamsDto,
   TypeUpdateDto,
 } from './type.dto';
-import { SuperController } from '../../shared/super/super-controller';
+import {
+  SuperController,
+  SuperControllerRole,
+} from '../../shared/super/super-controller';
 
 @ApiTags('Type')
-@Roles(RoleEnum.admin)
 @Auth()
 @Controller('type')
 export class TypeController extends SuperController<Type>({
@@ -26,8 +27,12 @@ export class TypeController extends SuperController<Type>({
     exists: TypeExistsDto,
     params: TypeParamsDto,
   },
-  idKey: RouteParamId.idType,
+  idKey: RouteParamEnum.idType,
   searchBy: ['name'],
+  roles: new SuperControllerRole({
+    persist: [RoleEnum.admin],
+    find: [RoleEnum.user],
+  }),
 }) {
   constructor(private typeService: TypeService) {
     super(typeService);

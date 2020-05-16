@@ -20,6 +20,9 @@ import { UserRoleService } from './user/user-role/user-role.service';
 import { UserRoleController } from './user/user-role/user-role.controller';
 import { RequestService } from './user/request.service';
 import { FileUploadModule } from '../file-upload/file-upload.module';
+import { UserFriendService } from './user/user-friend/user-friend.service';
+import { UserFriendController } from './user/user-friend/user-friend.controller';
+import { UserFriendRepository } from './user/user-friend/user-friend.repository';
 
 @Global()
 @Module({
@@ -36,6 +39,7 @@ import { FileUploadModule } from '../file-upload/file-upload.module';
       UserLinkRepository,
       RoleRepository,
       UserRoleRepository,
+      UserFriendRepository,
     ]),
     FileUploadModule,
   ],
@@ -47,6 +51,7 @@ import { FileUploadModule } from '../file-upload/file-upload.module';
     UserLinkService,
     RoleService,
     UserRoleService,
+    UserFriendService,
   ],
   exports: [
     AuthService,
@@ -55,6 +60,8 @@ import { FileUploadModule } from '../file-upload/file-upload.module';
     UserService,
     RoleService,
     RequestService,
+    UserRoleService,
+    UserFriendService,
   ],
   controllers: [
     AuthController,
@@ -62,6 +69,7 @@ import { FileUploadModule } from '../file-upload/file-upload.module';
     UserLinkController,
     RoleController,
     UserRoleController,
+    UserFriendController,
   ],
 })
 export class AuthModule {}

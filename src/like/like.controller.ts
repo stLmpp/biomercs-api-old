@@ -7,7 +7,7 @@ import { LikeService } from './like.service';
 import { Like } from './like.entity';
 import { SuperController } from '../shared/super/super-controller';
 import { LikeAddDto, LikeParamsDto, LikeUpdateDto } from './like.dto';
-import { RouteParamId } from '../shared/types/route-enums';
+import { RouteParamEnum } from '../shared/types/route-enums';
 
 @ApiTags('Like')
 @Roles(RoleEnum.user)
@@ -20,7 +20,7 @@ export class LikeController extends SuperController<Like>({
     update: LikeUpdateDto,
     params: LikeParamsDto,
   },
-  idKey: RouteParamId.idLike,
+  idKey: RouteParamEnum.idLike,
 }) {
   constructor(private likeService: LikeService) {
     super(likeService);

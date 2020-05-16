@@ -47,11 +47,9 @@ export class UserService {
   }
 
   async findById(idUser: number): Promise<User> {
-    return (
-      await this.userRepository.findOneOrFail(idUser, {
-        relations: ['userLinks', 'userLinks.site'],
-      })
-    )?.removePasswordAndSalt();
+    return await this.userRepository.findOneOrFail(idUser, {
+      relations: ['userLinks', 'userLinks.site', 'region'],
+    });
   }
 
   async search(username: string, email: string): Promise<User[]> {

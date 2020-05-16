@@ -7,7 +7,7 @@ import { ScorePlayerService } from './score-player.service';
 import { SuperController } from '../../shared/super/super-controller';
 import { ScorePlayer } from './score-player.entity';
 import { ScorePlayerAddDto, ScorePlayerUpdateDto } from './score-player.dto';
-import { RouteParamId } from '../../shared/types/route-enums';
+import { RouteParamEnum } from '../../shared/types/route-enums';
 
 @ApiTags('Score player')
 @Roles(RoleEnum.user)
@@ -19,7 +19,7 @@ export class ScorePlayerController extends SuperController<ScorePlayer>({
     add: ScorePlayerAddDto,
     update: ScorePlayerUpdateDto,
   },
-  idKey: RouteParamId.idScorePlayer,
+  idKey: RouteParamEnum.idScorePlayer,
   excludeMethods: ['findAll'],
 }) {
   constructor(private scorePlayerService: ScorePlayerService) {
