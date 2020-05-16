@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  JoinColumn,
+  OneToMany,
+  OneToOne,
+} from 'typeorm';
 import { hash } from 'bcryptjs';
 import { allColumns, CommonColumns } from '../../shared/super/common-columns';
 import { UserLink } from './user-link/user-link.entity';
@@ -58,6 +65,12 @@ export class User extends CommonColumns {
 
   @Column({ select: false, nullable: true })
   resetToken?: string;
+
+  @Column({ nullable: true })
+  expired?: boolean;
+
+  @DeleteDateColumn({ nullable: true })
+  banDate?: Date;
 
   token?: string;
 

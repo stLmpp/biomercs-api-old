@@ -94,7 +94,7 @@ export class AuthController {
     @Param(RouteParamId.idUser) idUser: number,
     @Body(UpdatedByPipe) dto: UserChangePasswordDto,
     @GetUser() user: User
-  ): Promise<boolean> {
+  ): Promise<User> {
     if (!this.roleService.isAdmin(user) && user.id !== idUser) {
       throw new UnauthorizedException();
     }
@@ -106,8 +106,17 @@ export class AuthController {
     @Param(RouteParamId.idUser) idUser: number,
     @Query(RouteParamTerm.token) token: string,
     @Body() dto: UserChangePasswordDto
-  ): Promise<boolean> {
+  ): Promise<User> {
     await this.authService.confirmForgotPassword(idUser, token);
     return this.authService.changePassword(idUser, dto.password);
+  }
+
+  @Roles(RoleEnum.admin)
+  @Auth()
+  @Post(`reset-password/:${RouteParamId.idUser}`)
+  async resetPassword(
+    @Param(RouteParamId.idUser) idUser: number
+  ): Promise<void> {
+    return this.authService.resetPassword(idUser);
   }
 }

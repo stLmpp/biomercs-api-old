@@ -8,6 +8,7 @@ import { FileUpload } from '../../file-upload/file-upload.entity';
 import { FileUploadService } from '../../file-upload/file-upload.service';
 import { UserUpdateDto } from './user.dto';
 import { LikeUppercase } from '../../util/query-operators';
+import { FindConditions } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -54,12 +55,20 @@ export class UserService {
   }
 
   async search(username: string, email: string): Promise<User[]> {
+    const where: FindConditions<User>[] = [];
+    if (username) {
+      where.push({ username: LikeUppercase(`%${username}%`) });
+    }
+    if (email) {
+      where.push({ email: LikeUppercase(`%${email}%`) });
+    }
     return await this.userRepository.find({
-      where: [
-        { username: LikeUppercase(`%${username}%`) },
-        { email: LikeUppercase(`%${email}%`) },
-      ],
+      where,
       take: 30,
     });
+  }
+
+  async ban(idUser: number): Promise<void> {
+    await this.userRepository.softDelete(idUser);
   }
 }

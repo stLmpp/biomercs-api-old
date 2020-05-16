@@ -120,8 +120,33 @@ export class AuthService {
     return user?.resetToken === token;
   }
 
-  async changePassword(idUser: number, newPassword: string): Promise<boolean> {
-    const user = await this.userRepository.findOne(idUser);
+  async resetPassword(idUser: number): Promise<void> {
+    const user = await this.userRepository.findOne(idUser, {
+      select: ['id', 'email', 'salt', 'password'],
+    });
+    const newPassword = Math.random()
+      .toString(36)
+      .slice(-8);
+    const newHash = await hash(newPassword, user.salt);
+    const resetToken = await hash(user.password, user.salt);
+    await this.userRepository.update(idUser, {
+      password: newHash,
+      expired: true,
+      resetToken,
+    });
+    await this.mailerService.sendMail({
+      to: user.email,
+      from: environment.get('MAIL'),
+      subject: 'Biomercs - New password',
+      template: 'password',
+      context: { password: newPassword },
+    });
+  }
+
+  async changePassword(idUser: number, newPassword: string): Promise<User> {
+    const user = await this.userRepository.findOne(idUser, {
+      select: ['salt', 'password', 'username'],
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -132,7 +157,15 @@ export class AuthService {
     await this.userRepository.update(idUser, {
       password: newPasswordHash,
       resetToken: null,
+      expired: false,
     });
-    return true;
+    return await this.login(
+      {
+        username: user.username,
+        password: newPassword,
+        rememberMe: user.rememberMe,
+      },
+      true
+    );
   }
 }

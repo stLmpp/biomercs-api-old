@@ -50,6 +50,13 @@ export class UserController {
     return this.userService.uploadAvatar(idUser, file, user);
   }
 
+  @Roles(RoleEnum.admin)
+  @Auth()
+  @Patch(`:${RouteParamId.idUser}/ban`)
+  ban(@Param(RouteParamId.idUser) idUser: number): Promise<void> {
+    return this.userService.ban(idUser);
+  }
+
   @Get('exists/email')
   existsByEmail(@Query(RouteParamTerm.email) email: string): Promise<boolean> {
     return this.userService.existsByEmail(email);
