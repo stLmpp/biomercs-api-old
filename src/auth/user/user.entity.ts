@@ -90,10 +90,17 @@ export class User extends CommonColumns {
 
   @OneToMany(
     () => UserFollower,
-    userFollower => userFollower.user
+    userFollower => userFollower.follower
   )
   @JoinColumn()
   userFollowers?: UserFollower[];
+
+  @OneToMany(
+    () => UserFollower,
+    userFollower => userFollower.followed
+  )
+  @JoinColumn()
+  userFollowed?: UserFollower[];
 
   token?: string;
 

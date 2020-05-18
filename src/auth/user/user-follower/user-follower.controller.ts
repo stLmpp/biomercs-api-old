@@ -19,7 +19,7 @@ export class UserFollowerController extends SuperController<UserFollower>({
     add: UserFollowerAddDto,
   },
   idKey: RouteParamEnum.idUserFollower,
-  relations: ['user', 'follower'],
+  relations: ['followed', 'follower'],
 }) {
   constructor(private userFollowerService: UserFollowerService) {
     super(userFollowerService);
