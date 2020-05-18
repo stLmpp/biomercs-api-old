@@ -1,4 +1,4 @@
-import { FindConditions, In, Repository, SelectQueryBuilder } from 'typeorm';
+import { FindConditions, In, Repository } from 'typeorm';
 import { DeleteResult } from '../../util/types';
 import { removeNullObject } from '../../util/util';
 import { CommonColumns } from './common-columns';
@@ -9,15 +9,8 @@ import { User } from '../../auth/user/user.entity';
 import { FileUpload } from '../../file-upload/file-upload.entity';
 import { LikeUppercase } from '../../util/query-operators';
 
-export type WithExistsFn = (
-  subQuery: SelectQueryBuilder<any>,
-  dto: any
-) => SelectQueryBuilder<any>;
-
 export interface SuperServiceOptions<Entity extends CommonColumns> {
   idFileKey?: keyof Entity;
-  returnAddWithRelations?: boolean;
-  withExistsLogic?: WithExistsFn;
 }
 
 export class SuperService<

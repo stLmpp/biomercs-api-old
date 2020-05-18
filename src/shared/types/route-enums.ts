@@ -17,7 +17,7 @@ export enum RouteParamEnum {
   idSite = 'idSite',
   idStage = 'idStage',
   idUser = 'idUser',
-  idUserFriend = 'idUserFriend',
+  idUserFollower = 'idUserFollower',
   idUserLink = 'idUserLink',
   idUserRole = 'idUserRole',
   idType = 'idType',

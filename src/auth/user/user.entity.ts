@@ -14,6 +14,7 @@ import { ApiHideProperty } from '@nestjs/swagger';
 import { UserRole } from './user-role/user-role.entity';
 import { FileUpload } from '../../file-upload/file-upload.entity';
 import { Region } from '../../region/region.entity';
+import { UserFollower } from './user-follower/user-follower.entity';
 
 @Entity()
 export class User extends CommonColumns {
@@ -86,6 +87,13 @@ export class User extends CommonColumns {
   @ManyToOne(() => Region)
   @JoinColumn()
   region?: Region;
+
+  @OneToMany(
+    () => UserFollower,
+    userFollower => userFollower.user
+  )
+  @JoinColumn()
+  userFollowers?: UserFollower[];
 
   token?: string;
 

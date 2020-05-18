@@ -5,5 +5,6 @@ import { CommonColumns } from '../shared/super/common-columns';
 export class Site extends CommonColumns {
   @Column() name: string;
   @Column() url: string;
+  @Column() replace: string;
   @Column({ nullable: true }) icon: string;
 }

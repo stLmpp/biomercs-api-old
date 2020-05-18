@@ -18,16 +18,6 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api');
-  app.use(helmet());
-  app.use(
-    expressRateLimit({
-      windowMs: 15 * 60 * 1000,
-      max: 100,
-    })
-  );
-  app.use(compression());
-  app.use(morgan('combined'));
-
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
   useContainer(app.select(ValidationModule), { fallbackOnErrors: true });
@@ -40,6 +30,16 @@ async function bootstrap(): Promise<void> {
       .build();
     const document = SwaggerModule.createDocument(app, options, {});
     SwaggerModule.setup('help', app, document);
+  } else {
+    app.use(helmet());
+    app.use(
+      expressRateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: 100,
+      })
+    );
+    app.use(compression());
+    app.use(morgan('combined'));
   }
 
   await app.listen(environment.port, environment.host);

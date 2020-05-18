@@ -18,6 +18,11 @@ export class SiteAddDto {
   name: string;
 
   @IsString()
+  @IsDefined()
+  @IsNotEmpty()
+  replace: string;
+
+  @IsString()
   @IsOptional()
   icon?: string;
 }
@@ -31,6 +36,11 @@ export class SiteUpdateDto {
   @IsString()
   @IsNotEmpty()
   name?: string;
+
+  @IsString()
+  @IsDefined()
+  @IsNotEmpty()
+  replace?: string;
 
   @IsString()
   @IsOptional()

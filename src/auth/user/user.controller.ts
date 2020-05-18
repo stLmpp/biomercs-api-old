@@ -28,9 +28,9 @@ import { UserUpdateDto } from './user.dto';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Patch(`:${RouteParamEnum.idUser}`)
-  @Auth()
   @Roles(RoleEnum.user)
+  @Auth()
+  @Patch(`:${RouteParamEnum.idUser}`)
   update(
     @Param(RouteParamEnum.idUser) idUser: number,
     @Body(UpdatedByPipe) dto: UserUpdateDto

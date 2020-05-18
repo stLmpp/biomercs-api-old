@@ -3,21 +3,21 @@ import { CommonColumns } from '../../../shared/super/common-columns';
 import { User } from '../user.entity';
 
 @Entity()
-export class UserFriend extends CommonColumns {
+export class UserFollower extends CommonColumns {
   @Column()
   idUser: number;
 
-  @ManyToOne(() => User)
+  @ManyToOne(
+    () => User,
+    user => user.userFollowers
+  )
   @JoinColumn()
   user: User;
 
   @Column()
-  idFriend: number;
+  idFollower: number;
 
   @ManyToOne(() => User)
   @JoinColumn()
-  friend: User;
-
-  @Column({ nullable: true })
-  superFriend?: boolean;
+  follower: User;
 }

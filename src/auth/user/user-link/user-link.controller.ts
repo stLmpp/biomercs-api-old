@@ -26,6 +26,7 @@ export class UserLinkController extends SuperController<UserLink>({
   },
   idKey: RouteParamEnum.idUserLink,
   excludeMethods: ['findAll'],
+  relations: ['site'],
 }) {
   constructor(private userLinkService: UserLinkService) {
     super(userLinkService);

@@ -4,13 +4,13 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-  IsUrl,
 } from 'class-validator';
 import { SiteExists } from '../../../validation/site/site.validator';
 import { UserExists } from '../../../validation/user/user-exists.validator';
 
 export class UserLinkAddDto {
-  @IsUrl()
+  @IsString()
+  @IsNotEmpty()
   @IsDefined()
   url: string;
 
@@ -31,7 +31,7 @@ export class UserLinkAddDto {
 }
 
 export class UserLinkUpdateDto {
-  @IsUrl()
+  @IsString()
   @IsOptional()
   url?: string;
 
@@ -42,7 +42,7 @@ export class UserLinkUpdateDto {
 }
 
 export class UserLinkParamsDto {
-  @IsUrl()
+  @IsString()
   @IsOptional()
   url?: string;
 
