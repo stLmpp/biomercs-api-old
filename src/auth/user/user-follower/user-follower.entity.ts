@@ -1,8 +1,9 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, Unique } from 'typeorm';
 import { CommonColumns } from '../../../shared/super/common-columns';
 import { User } from '../user.entity';
 
 @Entity()
+@Unique(['idFollower', 'idFollowed'])
 export class UserFollower extends CommonColumns {
   @Column()
   idFollowed: number;

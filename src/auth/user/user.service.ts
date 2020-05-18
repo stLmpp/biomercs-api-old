@@ -48,13 +48,7 @@ export class UserService {
 
   async findById(idUser: number): Promise<User> {
     return await this.userRepository.findOneOrFail(idUser, {
-      relations: [
-        'userLinks',
-        'userLinks.site',
-        'region',
-        'userFriends',
-        'userFriends.friend',
-      ],
+      relations: ['userLinks', 'userLinks.site', 'region'],
     });
   }
 

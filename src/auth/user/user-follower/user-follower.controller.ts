@@ -6,7 +6,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { SuperController } from '../../../shared/super/super-controller';
 import { UserFollower } from './user-follower.entity';
 import { UserFollowerService } from './user-follower.service';
-import { UserFollowerAddDto } from './user-follower.dto';
+import { UserFollowerAddDto, UserFollowerExistsDto } from './user-follower.dto';
 import { RouteParamEnum } from '../../../shared/types/route-enums';
 
 @ApiTags('User follower')
@@ -17,6 +17,8 @@ export class UserFollowerController extends SuperController<UserFollower>({
   entity: UserFollower,
   dto: {
     add: UserFollowerAddDto,
+    exists: UserFollowerExistsDto,
+    params: UserFollowerExistsDto,
   },
   idKey: RouteParamEnum.idUserFollower,
   relations: ['followed', 'follower'],

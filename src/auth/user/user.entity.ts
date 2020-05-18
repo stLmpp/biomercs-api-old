@@ -1,6 +1,5 @@
 import {
   Column,
-  DeleteDateColumn,
   Entity,
   JoinColumn,
   ManyToOne,
@@ -72,7 +71,7 @@ export class User extends CommonColumns {
   @Column({ nullable: true })
   expired?: boolean;
 
-  @DeleteDateColumn({ nullable: true })
+  @Column({ nullable: true })
   banDate?: Date;
 
   @Column({ length: 1000, nullable: true })
