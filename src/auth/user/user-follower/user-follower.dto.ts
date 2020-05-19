@@ -23,3 +23,15 @@ export class UserFollowerExistsDto extends SuperParamsDto {
   @IsNumber()
   idFollowed?: number;
 }
+
+export class UserFollowerDeleteDto {
+  @IsDefined()
+  @IsNumber()
+  @UserExists()
+  idFollower: number;
+
+  @IsDefined()
+  @IsNumber()
+  @UserExists()
+  idFollowed: number;
+}

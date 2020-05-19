@@ -1,8 +1,7 @@
 import { FindConditions, In, Repository } from 'typeorm';
-import { DeleteResult } from '../../util/types';
 import { removeNullObject } from '../../util/util';
 import { CommonColumns } from './common-columns';
-import { isArray, isNumber } from 'is-what';
+import { isAnyObject, isArray, isNumber } from 'is-what';
 import { FileUploadService } from '../../file-upload/file-upload.service';
 import { FileType } from '../../file-upload/file-type.interface';
 import { User } from '../../auth/user/user.entity';
@@ -65,19 +64,27 @@ export class SuperService<
     return await this.findById(id, relations);
   }
 
-  async delete(id: number): Promise<DeleteResult>;
-  async delete(ids: number[]): Promise<DeleteResult>;
-  async delete(idOrIds: number | number[]): Promise<DeleteResult> {
-    const entities = isArray(idOrIds)
-      ? await this.__repository.findByIds(idOrIds)
-      : [await this.findById(idOrIds)];
-    const deleteResult = await this.__repository.delete(idOrIds);
+  async delete(id: number): Promise<Entity[]>;
+  async delete(ids: number[]): Promise<Entity[]>;
+  async delete(dto: FindConditions<Entity>): Promise<Entity[]>;
+  async delete(
+    idOrIdsOrDto: number | number[] | FindConditions<Entity>
+  ): Promise<Entity[]> {
+    let entities: Entity[];
+    if (isArray(idOrIdsOrDto)) {
+      entities = await this.__repository.findByIds(idOrIdsOrDto);
+    } else if (isAnyObject(idOrIdsOrDto)) {
+      entities = await this.__repository.find({ where: idOrIdsOrDto });
+    } else {
+      entities = await this.__repository.find({ where: { id: idOrIdsOrDto } });
+    }
+    await this.__repository.delete(entities.map(entity => entity.id));
     if (this.options.idFileKey && this.__fileUploadService) {
       await this.__fileUploadService.deleteFile(
         entities.map(entity => entity[this.options.idFileKey as string])
       );
     }
-    return deleteResult;
+    return entities;
   }
 
   async exists(id: number): Promise<boolean>;

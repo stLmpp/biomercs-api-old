@@ -38,7 +38,7 @@ export interface ISuperController<
   findByParams: (dto: FindConditions<Entity>) => Promise<Entity[]>;
   update: (id: number, dto: UpdateDto) => Promise<Entity>;
   fileUpload: (id: number, file: FileType, user: User) => Promise<FileUpload>;
-  delete: (id: number) => Promise<DeleteResult>;
+  delete: (id: number) => Promise<Entity[]>;
   findAll: () => Promise<Entity[]>;
   search: (term: string) => Promise<Entity[]>;
   findById: (id: number) => Promise<Entity>;
@@ -87,6 +87,7 @@ export interface SuperControllerOptionsDto<
   update?: { new (): UpdateDto };
   params?: { new (): FindConditions<Entity> };
   exists?: { new (): FindConditions<Entity> };
+  delete?: { new (): FindConditions<Entity> };
 }
 
 export interface SuperControllerOptionsFileUpload {
@@ -225,12 +226,21 @@ export function SuperController<
       return this.__service.uploadFile(id, file, user);
     }
 
+    @ApplyIf(!!dto?.delete, [
+      Delete(),
+      ApiBody({ type: dto.delete }),
+      ApiOkResponse({ type: DeleteResult }),
+    ])
+    deleteParams(@Body() dto: FindConditions<Entity>): Promise<Entity[]> {
+      return this.__service.delete(dto);
+    }
+
     @ApplyIf(!excludeMethods.includes('delete'), [
       Delete(`:${idKey}`),
       ApiOkResponse({ type: DeleteResult }),
     ])
     @ApplyRoles()
-    delete(@Param(idKey) id: number): Promise<DeleteResult> {
+    delete(@Param(idKey) id: number): Promise<Entity[]> {
       return this.__service.delete(id);
     }
 
