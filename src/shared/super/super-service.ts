@@ -1,4 +1,4 @@
-import { FindConditions, In, Repository } from 'typeorm';
+import { FindConditions, FindManyOptions, In, Repository } from 'typeorm';
 import { removeNullObject } from '../../util/util';
 import { CommonColumns } from './common-columns';
 import { isAnyObject, isArray, isNumber } from 'is-what';
@@ -127,12 +127,17 @@ export class SuperService<
 
   async findByParams(
     where: FindConditions<Entity>,
-    relations: (keyof Entity)[] | string[] = []
+    relations: (keyof Entity)[] | string[] = [],
+    limit?: number
   ): Promise<Entity[]> {
-    return await this.__repository.find({
+    const options: FindManyOptions<Entity> = {
       where,
       relations: relations as string[],
-    });
+    };
+    if (limit) {
+      options.take = limit;
+    }
+    return await this.__repository.find(options);
   }
 
   async search(

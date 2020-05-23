@@ -27,6 +27,7 @@ export class UserFollowerController extends SuperController<UserFollower>({
   },
   idKey: RouteParamEnum.idUserFollower,
   relations: ['followed', 'follower'],
+  excludeMethods: ['findAll'],
 }) {
   constructor(private userFollowerService: UserFollowerService) {
     super(userFollowerService);

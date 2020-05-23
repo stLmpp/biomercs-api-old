@@ -12,7 +12,12 @@ import {
   UploadedFile,
 } from '@nestjs/common';
 import { CreatedByPipe } from '../pipes/created-by.pipe';
-import { ApiBody, ApiCreatedResponse, ApiOkResponse } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { UpdatedByPipe } from '../pipes/updated-by.pipe';
 import { DecoratorFn, DeleteResult } from '../../util/types';
 import { FindConditions } from 'typeorm';
@@ -191,12 +196,14 @@ export function SuperController<
       HttpCode(200),
       ApiOkResponse({ type: entity, isArray: true }),
       ApiBody({ type: dto?.params }),
+      ApiQuery({ name: 'limit', type: Number, required: false }),
     ])
     @ApplyRoles()
     findByParams(
-      @Body(CheckParamsPipe) dto: FindConditions<Entity>
+      @Body(CheckParamsPipe) dto: FindConditions<Entity>,
+      @Query('limit') limit?: number
     ): Promise<Entity[]> {
-      return this.__service.findByParams(dto, relations ?? []);
+      return this.__service.findByParams(dto, relations ?? [], limit);
     }
 
     @ApplyIf(!!dto?.update, [

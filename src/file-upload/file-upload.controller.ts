@@ -26,14 +26,14 @@ import { join } from 'path';
 import { fileExists } from '../util/fs';
 
 @ApiTags('File upload')
-@Auth()
 @Controller('upload')
 export class FileUploadController {
   constructor(private fileUploadService: FileUploadService) {}
 
-  @Post()
-  @UseFileUpload()
   @Roles(RoleEnum.admin)
+  @Auth()
+  @UseFileUpload()
+  @Post()
   add(
     @UploadedFile('file') file: FileType,
     @GetUser() user: User
@@ -42,7 +42,6 @@ export class FileUploadController {
   }
 
   @Get(`name/:${RouteParamEnum.imageName}`)
-  @Roles(RoleEnum.user)
   async findByName(
     @Param(RouteParamEnum.imageName) imageName: string,
     @Res() response: Response
@@ -61,7 +60,6 @@ export class FileUploadController {
   }
 
   @Get(`id/:${RouteParamEnum.idFileUpload}`)
-  @Roles(RoleEnum.user)
   async findById(
     @Param(RouteParamEnum.idFileUpload) idFileUpload: number,
     @Res() response: Response
@@ -74,8 +72,9 @@ export class FileUploadController {
     }
   }
 
-  @Delete(`:${RouteParamEnum.idFileUpload}`)
   @Roles(RoleEnum.admin)
+  @Auth()
+  @Delete(`:${RouteParamEnum.idFileUpload}`)
   async delete(
     @Param(RouteParamEnum.idFileUpload) idFileUpload: number
   ): Promise<DeleteResult> {
