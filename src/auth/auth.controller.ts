@@ -28,6 +28,7 @@ import { Roles } from './role/role.guard';
 import { RoleEnum } from './role/role.enum';
 import { UpdatedByPipe } from '../shared/pipes/updated-by.pipe';
 import { RoleService } from './role/role.service';
+import { UserService } from './user/user.service';
 
 export const AuthControllerPath = 'auth';
 
@@ -36,7 +37,8 @@ export const AuthControllerPath = 'auth';
 export class AuthController {
   constructor(
     private authService: AuthService,
-    private roleService: RoleService
+    private roleService: RoleService,
+    private userService: UserService
   ) {}
 
   @Post('register')
@@ -57,8 +59,10 @@ export class AuthController {
     if (user.id === -1) {
       return null;
     }
-    user.token = await this.authService.getToken(user);
-    return user.removePasswordAndSalt();
+    const newUser = await this.userService.completeUser(user.id);
+    newUser.token = await this.authService.getToken(user);
+    newUser.userRoles = user.userRoles;
+    return newUser.removePasswordAndSalt();
   }
 
   @Get(`confirm-email/:${RouteParamEnum.idUser}`)

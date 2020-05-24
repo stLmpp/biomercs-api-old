@@ -26,7 +26,16 @@ export class UserRepository extends Repository<User> {
     }
     const user = await this.findOne({
       where,
-      relations: ['userRoles', 'userRoles.role'],
+      relations: [
+        'userRoles',
+        'userRoles.role',
+        'userFollowed',
+        'userFollowed.followed',
+        'userFollowed.follower',
+        'userFollowers',
+        'userFollowers.follower',
+        'userFollowers.followed',
+      ],
       select: [...User.all, 'resetToken'],
     });
     const errorMessage = 'Login or password invalid';

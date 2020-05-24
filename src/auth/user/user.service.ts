@@ -69,4 +69,20 @@ export class UserService {
   async ban(idUser: number): Promise<void> {
     await this.userRepository.softDelete(idUser);
   }
+
+  async completeUser(idUser: number): Promise<User> {
+    return await this.userRepository.findOne(idUser, {
+      relations: [
+        'userLinks',
+        'userLinks.site',
+        'region',
+        'userFollowed',
+        'userFollowed.followed',
+        'userFollowed.follower',
+        'userFollowers',
+        'userFollowers.follower',
+        'userFollowers.followed',
+      ],
+    });
+  }
 }
