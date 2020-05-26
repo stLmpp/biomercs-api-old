@@ -21,6 +21,7 @@ import {
   UserRegisterViewModel,
 } from './user/user.dto';
 import { RouteParamEnum } from '../shared/types/route-enums';
+import { UserShowcaseService } from './user/user-showcase/user-showcase.service';
 
 export class AuthService {
   constructor(
@@ -29,7 +30,8 @@ export class AuthService {
     private jwtService: JwtService,
     private mailerService: MailerService,
     private userRoleService: UserRoleService,
-    private roleService: RoleService
+    private roleService: RoleService,
+    private userShowcaseService: UserShowcaseService
   ) {}
 
   async register(dto: UserRegisterDto): Promise<UserRegisterViewModel> {
@@ -85,6 +87,7 @@ export class AuthService {
       await this.userRoleService.add(
         updateCreatedBy({ idUser: user.id, idRole: userRole.id }, user)
       );
+      await this.userShowcaseService.add(user.id);
       return await this.login({ username: user.username, password: '' }, true);
     } else {
       throw new UnauthorizedException();

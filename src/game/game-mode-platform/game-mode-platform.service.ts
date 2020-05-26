@@ -16,4 +16,16 @@ export class GameModePlatformService extends SuperService<
   ) {
     super(GameModePlatform, gameModePlatformRepository);
   }
+
+  async findIdByIds(
+    idGame: number,
+    idMode: number,
+    idPlatform: number
+  ): Promise<number> {
+    return await this.gameModePlatformRepository.findIdByIds(
+      idGame,
+      idMode,
+      idPlatform
+    );
+  }
 }

@@ -31,7 +31,8 @@ export class Score extends CommonColumns {
 
   @OneToMany(
     () => ScorePlayer,
-    scorePlayer => scorePlayer.score
+    scorePlayer => scorePlayer.score,
+    { cascade: true }
   )
   @JoinColumn()
   scorePlayers: ScorePlayer[];

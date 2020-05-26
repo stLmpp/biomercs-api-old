@@ -14,6 +14,7 @@ import { UserRole } from './user-role/user-role.entity';
 import { FileUpload } from '../../file-upload/file-upload.entity';
 import { Region } from '../../region/region.entity';
 import { UserFollower } from './user-follower/user-follower.entity';
+import { UserShowcase } from './user-showcase/user-showcase.entity';
 
 @Entity()
 export class User extends CommonColumns {
@@ -100,6 +101,14 @@ export class User extends CommonColumns {
   )
   @JoinColumn()
   userFollowed?: UserFollower[];
+
+  @OneToOne(
+    () => UserShowcase,
+    userShowcase => userShowcase.user,
+    { eager: true }
+  )
+  @JoinColumn()
+  userShowcase: UserShowcase;
 
   token?: string;
 

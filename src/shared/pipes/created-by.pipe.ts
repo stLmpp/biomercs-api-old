@@ -1,17 +1,18 @@
 import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
-import { isAnyObject, isArray } from 'is-what';
+import { isAnyObject, isArray, isNumber } from 'is-what';
 import { RequestService } from '../../auth/user/request.service';
 import { User } from '../../auth/user/user.entity';
 
-export function updateCreatedBy<T>(value: T, user: User): T {
+export function updateCreatedBy<T>(value: T, user: User | number): T {
   if (!value) return value;
+  const idUser = isNumber(user) ? user : user.id;
   if (isArray(value)) {
     return value.map(val => {
-      (val as any).createdBy = user.id;
+      (val as any).createdBy = idUser;
       return val;
     }) as any;
   } else if (isAnyObject(value)) {
-    (value as any).createdBy = user.id;
+    (value as any).createdBy = idUser;
   }
   return value;
 }

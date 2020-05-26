@@ -17,7 +17,7 @@ export class TimeValidator implements ValidatorConstraintInterface {
   }
 }
 
-export function Time(options?: ValidationOptions): PropertyDecorator {
+export function ValidTime(options?: ValidationOptions): PropertyDecorator {
   return (target, propertyName: string) => {
     registerDecorator({
       target: target.constructor,

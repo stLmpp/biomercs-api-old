@@ -23,6 +23,9 @@ import { FileUploadModule } from '../file-upload/file-upload.module';
 import { UserFollowerService } from './user/user-follower/user-follower.service';
 import { UserFollowerController } from './user/user-follower/user-follower.controller';
 import { UserFollowerRepository } from './user/user-follower/user-follower.repository';
+import { UserShowcaseService } from './user/user-showcase/user-showcase.service';
+import { UserShowcaseController } from './user/user-showcase/user-showcase.controller';
+import { UserShowcaseRepository } from './user/user-showcase/user-showcase.repository';
 
 @Global()
 @Module({
@@ -40,6 +43,7 @@ import { UserFollowerRepository } from './user/user-follower/user-follower.repos
       RoleRepository,
       UserRoleRepository,
       UserFollowerRepository,
+      UserShowcaseRepository,
     ]),
     FileUploadModule,
   ],
@@ -52,6 +56,7 @@ import { UserFollowerRepository } from './user/user-follower/user-follower.repos
     RoleService,
     UserRoleService,
     UserFollowerService,
+    UserShowcaseService,
   ],
   exports: [
     AuthService,
@@ -62,6 +67,7 @@ import { UserFollowerRepository } from './user/user-follower/user-follower.repos
     RequestService,
     UserRoleService,
     UserFollowerService,
+    UserShowcaseService,
   ],
   controllers: [
     AuthController,
@@ -70,6 +76,7 @@ import { UserFollowerRepository } from './user/user-follower/user-follower.repos
     RoleController,
     UserRoleController,
     UserFollowerController,
+    UserShowcaseController,
   ],
 })
 export class AuthModule {}

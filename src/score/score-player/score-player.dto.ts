@@ -4,10 +4,10 @@ import { UserExists } from '../../validation/user/user-exists.validator';
 import { CharacterExists } from '../../validation/game/character-exists.validator';
 
 export class ScorePlayerAddDto {
-  @IsDefined()
+  @IsOptional()
   @IsNumber()
   @ScoreExists()
-  idScore: number;
+  idScore?: number;
 
   @IsDefined()
   @IsNumber()
