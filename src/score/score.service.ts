@@ -28,32 +28,27 @@ export class ScoreService {
     idType: number,
     idPlayer: number
   ): Promise<ScoreTable[][]> {
-    const stages = await this.stageService.findByParams({ idGame });
     const characters = await this.characterService.findByParams({
       idGame,
       idMode,
     });
-    const scores: ScoreTable[][] = [];
-    for (let i = 0, len = characters.length; i < len; i++) {
-      const character = characters[i];
-      scores.push([]);
-      for (const stage of stages) {
-        scores[i].push({
-          character,
-          stage,
-          score: await this.getTopScore({
+    return Promise.all(
+      characters.map(async character => {
+        return (
+          await this.scoreRepository.getTopScoresStages(
+            idPlatform,
             idGame,
             idMode,
             idType,
-            idPlatform,
-            idCharacter: character.id,
-            idStage: stage.id,
             idPlayer,
-          }),
+            character.id
+          )
+        ).map(table => {
+          table.character = character;
+          return table;
         });
-      }
-    }
-    return scores;
+      })
+    );
   }
 
   async getManyTopScore(
@@ -72,27 +67,18 @@ export class ScoreService {
       limit,
       idCharacter
     );
-    const stages = await this.stageService.findByParams({ idGame });
-    const scores: ScoreTable[][] = [];
-    for (let i = 0, len = idsPlayer.length; i < len; i++) {
-      const idPlayer = idsPlayer[i];
-      scores.push([]);
-      for (const stage of stages) {
-        scores[i].push({
-          score: await this.getTopScore({
-            idStage: stage.id,
-            idGame,
-            idMode,
-            idPlatform,
-            idCharacter,
-            idPlayer,
-            idType,
-          }),
-          stage,
-        });
-      }
-    }
-    return scores;
+    return Promise.all(
+      idsPlayer.map(async idPlayer => {
+        return await this.scoreRepository.getTopScoresStages(
+          idPlatform,
+          idGame,
+          idMode,
+          idType,
+          idPlayer,
+          idCharacter
+        );
+      })
+    );
   }
 
   async add({
