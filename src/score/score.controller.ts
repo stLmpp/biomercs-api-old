@@ -71,14 +71,14 @@ export class ScoreController {
     @Query('idMode') idMode: number,
     @Query('idType') idType: number,
     @Query('idCharacter') idCharacter?: number,
-    @Query('limit') limit = 0
+    @Query('limit') limit?: number
   ): Promise<ScoreTable[][]> {
     return this.scoreService.getManyTopScore(
       idPlatform,
       idGame,
       idMode,
       idType,
-      limit,
+      limit || 10,
       idCharacter
     );
   }

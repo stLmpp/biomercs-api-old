@@ -104,8 +104,7 @@ export class User extends CommonColumns {
 
   @OneToOne(
     () => UserShowcase,
-    userShowcase => userShowcase.user,
-    { eager: true }
+    userShowcase => userShowcase.user
   )
   @JoinColumn({ name: 'id', referencedColumnName: 'idUser' })
   userShowcase: UserShowcase;

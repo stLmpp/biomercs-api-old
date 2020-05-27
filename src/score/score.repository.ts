@@ -92,7 +92,8 @@ export class ScoreRepository extends Repository<Score> {
         'score',
         'stg.id = score.idStage and score.score = t.maxScore'
       )
-      .addSelect('score.id', 'idScore');
+      .addSelect('score.id', 'idScore')
+      .orderBy('stg.id');
     const rawStages = await qb.getRawMany();
     const scoreIds = rawStages
       .filter(stage => stage?.idScore)
