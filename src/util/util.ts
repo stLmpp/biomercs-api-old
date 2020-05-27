@@ -1,6 +1,6 @@
 import { isNullOrUndefined, isNumber } from 'is-what';
 
-export function isNil(value: any): value is null | undefined {
+export function isNil<T = any>(value: T): value is null | undefined {
   return value == null;
 }
 
@@ -31,7 +31,7 @@ export function removeNullObject<T = any>(
   }, {}) as T;
 }
 
-export function isObjectEmpty(obj: object): boolean {
+export function isObjectEmpty<T = any>(obj: T): boolean {
   return isNullOrUndefined(obj) || !Object.keys(obj).length;
 }
 
@@ -49,26 +49,6 @@ export function flattenObject(
   }, {});
 }
 
-export async function atLeast<T>(
-  callback: () => Promise<T>,
-  seconds: number
-): Promise<T> {
-  let secondsPassed = 0;
-  const interval = setInterval(() => secondsPassed++, seconds * 1000);
-  try {
-    const result = await callback();
-    return new Promise(resolve => {
-      clearInterval(interval);
-      if (secondsPassed >= seconds) {
-        resolve(result);
-      } else {
-        setTimeout(() => {
-          resolve(result);
-        }, (seconds - secondsPassed) * 1000);
-      }
-    });
-  } catch (err) {
-    clearInterval(interval);
-    throw err;
-  }
+export function randomInt(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }

@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { Auth } from '../auth.decorator';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
-import { UpdateResult } from '../../util/types';
 import { UserService } from './user.service';
 import { UpdatedByPipe } from '../../shared/pipes/updated-by.pipe';
 import { RouteParamEnum } from '../../shared/types/route-enums';
@@ -34,7 +33,7 @@ export class UserController {
   update(
     @Param(RouteParamEnum.idUser) idUser: number,
     @Body(UpdatedByPipe) dto: UserUpdateDto
-  ): Promise<UpdateResult> {
+  ): Promise<User> {
     return this.userService.update(idUser, dto);
   }
 

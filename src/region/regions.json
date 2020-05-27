@@ -241,5 +241,6 @@
   { "name": "Western Sahara", "shortName": "EH" },
   { "name": "Yemen", "shortName": "YE" },
   { "name": "Zambia", "shortName": "ZM" },
-  { "name": "Zimbabwe", "shortName": "ZW" }
+  { "name": "Zimbabwe", "shortName": "ZW" },
+  { "name": "Unknown", "shortName": "UNKNOWN" }
 ]

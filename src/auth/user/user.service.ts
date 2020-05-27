@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
-import { UpdateResult } from '../../util/types';
 import { FileType } from '../../file-upload/file-type.interface';
 import { User } from './user.entity';
 import { FileUpload } from '../../file-upload/file-upload.entity';
@@ -17,8 +16,9 @@ export class UserService {
     private fileUploadService: FileUploadService
   ) {}
 
-  async update(idUser: number, dto: UserUpdateDto): Promise<UpdateResult> {
-    return await this.userRepository.update(idUser, { ...dto });
+  async update(idUser: number, dto: UserUpdateDto): Promise<User> {
+    await this.userRepository.update(idUser, { ...dto });
+    return await this.findById(idUser);
   }
 
   async exists(idUser: number): Promise<boolean> {
