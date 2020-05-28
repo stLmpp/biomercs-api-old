@@ -56,9 +56,13 @@ export class UserController {
     return this.userService.ban(idUser);
   }
 
+  @ApiQuery({ name: RouteParamEnum.idUser, required: false })
   @Get('exists/email')
-  existsByEmail(@Query(RouteParamEnum.email) email: string): Promise<boolean> {
-    return this.userService.existsByEmail(email);
+  existsByEmail(
+    @Query(RouteParamEnum.email) email: string,
+    @Query(RouteParamEnum.idUser) idUser?: number
+  ): Promise<boolean> {
+    return this.userService.existsByEmail(email, idUser);
   }
 
   @Get('exists/username')

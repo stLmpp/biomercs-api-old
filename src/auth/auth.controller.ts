@@ -95,7 +95,7 @@ export class AuthController {
     @Body(UpdatedByPipe) dto: UserChangePasswordDto,
     @GetUser() user: User
   ): Promise<User> {
-    if (!this.roleService.isAdmin(user) && user.id !== idUser) {
+    if (!this.roleService.isAdmin(user) || user.id !== idUser) {
       throw new UnauthorizedException();
     }
     return this.authService.changePassword(idUser, dto.password);

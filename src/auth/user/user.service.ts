@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from './user.repository';
 import { FileType } from '../../file-upload/file-type.interface';
@@ -7,7 +7,7 @@ import { FileUpload } from '../../file-upload/file-upload.entity';
 import { FileUploadService } from '../../file-upload/file-upload.service';
 import { UserUpdateDto } from './user.dto';
 import { LikeUppercase } from '../../util/query-operators';
-import { FindConditions } from 'typeorm';
+import { FindConditions, Not } from 'typeorm';
 
 @Injectable()
 export class UserService {
@@ -17,6 +17,9 @@ export class UserService {
   ) {}
 
   async update(idUser: number, dto: UserUpdateDto): Promise<User> {
+    if (dto.email && (await this.existsByEmail(dto.email))) {
+      throw new ConflictException('E-mail already registered');
+    }
     await this.userRepository.update(idUser, { ...dto });
     return await this.findById(idUser);
   }
@@ -38,8 +41,12 @@ export class UserService {
     );
   }
 
-  async existsByEmail(email: string): Promise<boolean> {
-    return await this.userRepository.exists({ email });
+  async existsByEmail(email: string, idUser?: number): Promise<boolean> {
+    const options: FindConditions<User> = { email };
+    if (idUser) {
+      options.id = Not(idUser);
+    }
+    return await this.userRepository.exists(options);
   }
 
   async existsByUsername(username: string): Promise<boolean> {

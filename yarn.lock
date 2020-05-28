@@ -549,7 +549,7 @@
     handlebars "^4.7.6"
     pug "^2.0.4"
 
-"@nestjs/cli@^7.1.5":
+"@nestjs/cli@^7.2.0":
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/@nestjs/cli/-/cli-7.2.0.tgz#9ac907b02fffe86becf04690c4085628508fe31f"
   integrity sha512-LMoi7CzOzteNsho6pz4g4KaqjBfIuugO27Om2hiZBNkxIXL2OiGgDX4DBaouwc+HhGs6v86rDg588p4Y0PJ/PQ==
@@ -646,7 +646,7 @@
   dependencies:
     path-to-regexp "0.1.7"
 
-"@nestjs/swagger@^4.5.7":
+"@nestjs/swagger@^4.5.8":
   version "4.5.8"
   resolved "https://registry.yarnpkg.com/@nestjs/swagger/-/swagger-4.5.8.tgz#3e39e96d3ead470b984f62d7a562372d7543d29b"
   integrity sha512-LUDzLoIQ+MgwNFzeJiysr2MA3g76RzoxpQifVLhx6vug/Oh8kNd185G2jhLU66T2H4Y9N2qocWxkEdbavnrMfw==
@@ -663,7 +663,7 @@
     optional "0.1.4"
     tslib "2.0.0"
 
-"@nestjs/typeorm@^7.0.0":
+"@nestjs/typeorm@^7.1.0":
   version "7.1.0"
   resolved "https://registry.yarnpkg.com/@nestjs/typeorm/-/typeorm-7.1.0.tgz#ea964ff1724524e585f75bf7469784ca787e7983"
   integrity sha512-xKqvhMF68TDFjptBerLD6HDe7qrb9RpZ2X1zBTdGKipFQrlVBTJtgs6Hmy+deuPJ3OnFzw0oe78U57Ur87xq8g==
@@ -906,7 +906,7 @@
   dependencies:
     "@types/express" "*"
 
-"@types/mysql@^2.15.12":
+"@types/mysql@^2.15.13":
   version "2.15.13"
   resolved "https://registry.yarnpkg.com/@types/mysql/-/mysql-2.15.13.tgz#153dc2e2f8dffd39f7bba556c2679f14bdbecde1"
   integrity sha512-9hlUjghm0EeLndks56bH6NDcA52ozGcLXr8etlJVuoYXHa2M+neR2XpGekrulln5LsZg8ZRp8/Z0qKGb9Mpjbw==
@@ -1060,7 +1060,7 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@typescript-eslint/eslint-plugin@^3.0.0":
+"@typescript-eslint/eslint-plugin@^3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-3.0.2.tgz#4a114a066e2f9659b25682ee59d4866e15a17ec3"
   integrity sha512-ER3bSS/A/pKQT/hjMGCK8UQzlL0yLjuCZ/G8CDFJFVTfl3X65fvq2lNYqOG8JPTfrPa2RULCdwfOyFjZEMNExQ==
@@ -1081,7 +1081,7 @@
     eslint-scope "^5.0.0"
     eslint-utils "^2.0.0"
 
-"@typescript-eslint/parser@^3.0.0":
+"@typescript-eslint/parser@^3.0.2":
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-3.0.2.tgz#a92ef339added9bf7fb92605ac99c93ef243e834"
   integrity sha512-80Z7s83e8QXHNUspqVlWwb4t5gdz/1bBBmafElbK1wwAwiD/yvJsFyHRxlEpNrt4rdK6eB3p+2WEFkEDHAKk9w==
