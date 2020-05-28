@@ -4,7 +4,6 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { UserShowcase } from './user-showcase.entity';
 import { updateCreatedBy } from '../../../shared/pipes/created-by.pipe';
 import { UserShowcaseUpdateDto } from './user-showcase.dto';
-import { UpdateResult } from '../../../util/types';
 
 @Injectable()
 export class UserShowcaseService {
@@ -20,9 +19,17 @@ export class UserShowcaseService {
   }
 
   async update(
-    idUserShowcase: number,
-    dto: UserShowcaseUpdateDto
-  ): Promise<UpdateResult> {
-    return await this.userShowcaseRepository.update(idUserShowcase, dto);
+    id: number,
+    dto: UserShowcaseUpdateDto,
+    property: keyof UserShowcase = 'id'
+  ): Promise<UserShowcase> {
+    await this.userShowcaseRepository.update({ [property]: id }, dto);
+    return await this.userShowcaseRepository.findOne({
+      where: { [property]: id },
+    });
+  }
+
+  async findByIdUser(idUser: number): Promise<UserShowcase> {
+    return await this.userShowcaseRepository.findOne({ where: { idUser } });
   }
 }

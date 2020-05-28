@@ -21,11 +21,27 @@ import { GetUser } from '../get-user.decorator';
 import { User } from './user.entity';
 import { FileType } from '../../file-upload/file-type.interface';
 import { UserUpdateDto } from './user.dto';
+import { UserShowcase } from './user-showcase/user-showcase.entity';
+import { UserShowcaseUpdateDto } from './user-showcase/user-showcase.dto';
+import { UserShowcaseService } from './user-showcase/user-showcase.service';
 
 @ApiTags('User')
 @Controller('user')
 export class UserController {
-  constructor(private userService: UserService) {}
+  constructor(
+    private userService: UserService,
+    private userShowcaseService: UserShowcaseService
+  ) {}
+
+  @Roles(RoleEnum.user)
+  @Auth()
+  @Patch(`${RouteParamEnum.idUser}/user-showcase`)
+  updateUsershowcase(
+    @Param(RouteParamEnum.idUser) idUser: number,
+    @Body(UpdatedByPipe) dto: UserShowcaseUpdateDto
+  ): Promise<UserShowcase> {
+    return this.userShowcaseService.update(idUser, dto, 'idUser');
+  }
 
   @Roles(RoleEnum.user)
   @Auth()
@@ -82,6 +98,13 @@ export class UserController {
     @Query(RouteParamEnum.email) email?: string
   ): Promise<User[]> {
     return this.userService.search(username, email);
+  }
+
+  @Get(`:${RouteParamEnum.idUser}/user-showcase`)
+  findUserShowcase(
+    @Param(RouteParamEnum.idUser) idUser: number
+  ): Promise<UserShowcase> {
+    return this.userShowcaseService.findByIdUser(idUser);
   }
 
   @Get(`:${RouteParamEnum.idUser}`)

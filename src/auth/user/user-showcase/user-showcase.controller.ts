@@ -4,9 +4,9 @@ import { Roles } from '../../role/role.guard';
 import { RoleEnum } from '../../role/role.enum';
 import { ApiTags } from '@nestjs/swagger';
 import { UserShowcaseService } from './user-showcase.service';
-import { UpdateResult } from '../../../util/types';
 import { UpdatedByPipe } from '../../../shared/pipes/updated-by.pipe';
 import { UserShowcaseUpdateDto } from './user-showcase.dto';
+import { UserShowcase } from './user-showcase.entity';
 
 @ApiTags('User Showcase')
 @Roles(RoleEnum.user)
@@ -19,7 +19,7 @@ export class UserShowcaseController {
   async update(
     @Param('idUserShowcase') idUserShowcase: number,
     @Body(UpdatedByPipe) dto: UserShowcaseUpdateDto
-  ): Promise<UpdateResult> {
+  ): Promise<UserShowcase> {
     return this.userShowcaseService.update(idUserShowcase, dto);
   }
 }
