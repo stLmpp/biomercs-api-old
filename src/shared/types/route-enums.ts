@@ -12,6 +12,7 @@ export enum RouteParamEnum {
   idReference = 'idReference',
   idReport = 'idReport',
   idRole = 'idRole',
+  idScore = 'idScore',
   idScorePlayer = 'idScorePlayer',
   idScorePlayerProof = 'idScorePlayerProof',
   idSite = 'idSite',

@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { Auth } from '../auth/auth.decorator';
 import { Roles } from '../auth/role/role.guard';
 import { RoleEnum } from '../auth/role/role.enum';
@@ -8,6 +8,7 @@ import { ScoreService } from './score.service';
 import { ScoreTable } from './score.view-model';
 import { CreatedByPipe } from '../shared/pipes/created-by.pipe';
 import { ScoreAddDto } from './score.dto';
+import { RouteParamEnum } from '../shared/types/route-enums';
 
 @ApiTags('Score')
 @Roles(RoleEnum.user)
@@ -81,5 +82,17 @@ export class ScoreController {
       limit || 10,
       idCharacter
     );
+  }
+
+  @Get('random')
+  async getRandom(): Promise<number> {
+    return this.scoreService.random();
+  }
+
+  @Get(`:${RouteParamEnum.idScore}`)
+  async findById(
+    @Param(RouteParamEnum.idScore) idScore: number
+  ): Promise<Score> {
+    return this.scoreService.findById(idScore);
   }
 }

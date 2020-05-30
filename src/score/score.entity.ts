@@ -8,6 +8,23 @@ import { ScoreApproval } from './score-approval/score-approval.entity';
 
 @Entity()
 export class Score extends CommonColumns {
+  static get allRelations(): string[] {
+    return [
+      'gameModePlatform',
+      'gameModePlatform.gameMode',
+      'gameModePlatform.gameMode.game',
+      'gameModePlatform.gameMode.mode',
+      'type',
+      'stage',
+      'scorePlayers',
+      'scorePlayers.player',
+      'scorePlayers.player.region',
+      'scorePlayers.character',
+      'scorePlayers.scorePlayerProofs',
+      'scorePlayers.scorePlayerProofs.site',
+    ];
+  }
+
   @Column()
   idGameModePlatform: number;
 
@@ -45,9 +62,6 @@ export class Score extends CommonColumns {
 
   @Column({ length: 8, nullable: true })
   time: string;
-
-  @Column({ length: 1000, nullable: true })
-  description?: string;
 
   @OneToMany(
     () => ScoreApproval,

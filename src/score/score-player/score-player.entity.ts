@@ -1,8 +1,9 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { CommonColumns } from '../../shared/super/common-columns';
 import { Score } from '../score.entity';
 import { User } from '../../auth/user/user.entity';
 import { Character } from '../../game/character/character.entity';
+import { ScorePlayerProof } from '../score-player-proof/score-player-proof.entity';
 
 @Entity()
 export class ScorePlayer extends CommonColumns {
@@ -33,6 +34,16 @@ export class ScorePlayer extends CommonColumns {
   @Column({ default: false })
   host: boolean;
 
-  @Column({ default: 0 })
+  @Column({ nullable: true })
   bulletKills: number;
+
+  @OneToMany(
+    () => ScorePlayerProof,
+    scorePlayerProof => scorePlayerProof.scorePlayer
+  )
+  @JoinColumn()
+  scorePlayerProofs: ScorePlayerProof[];
+
+  @Column({ length: 1000, nullable: true })
+  description?: string;
 }

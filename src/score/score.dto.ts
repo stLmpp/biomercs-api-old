@@ -61,11 +61,6 @@ export class ScoreAddDto {
   @MaxLength(8)
   @ValidTime()
   time?: string;
-
-  @IsOptional()
-  @IsString()
-  @MaxLength(1000)
-  description?: string;
 }
 
 export class ScoreTopScoreDto {

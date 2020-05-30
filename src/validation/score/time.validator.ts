@@ -9,7 +9,7 @@ import {
 @ValidatorConstraint({ name: 'TimeValid', async: true })
 export class TimeValidator implements ValidatorConstraintInterface {
   validate(time: string, validationArgs: ValidationArguments): boolean {
-    return /^\d{2,}:\d{2}:\d{2}$/.test(time);
+    return /^\d{2,}'\d{2}"\d{2}$/.test(time);
   }
 
   defaultMessage(validationArgumentos: ValidationArguments): string {

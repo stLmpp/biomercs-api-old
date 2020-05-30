@@ -17,60 +17,9 @@ export class ScoreService {
     private stageService: StageService,
     private gameModePlatformService: GameModePlatformService,
     private userService: UserService
-  ) {
-    /*this.fake().then();*/
-  }
+  ) {}
 
-  async fake(): Promise<void> {
-    /*const sample = <T>(array: T[]): T =>
-      array[Math.floor(Math.random() * array.length)];
-
-    function randomInteger(min: number, max: number): number {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-    const users = await this.userService.search('', '');
-    const stages = await this.stageService.findAll();
-    const characters = await this.characterService.findAll([
-      'gameModeCharacters',
-    ]);
-    const gameModePlatforms = await this.gameModePlatformService.findAll([
-      'gameMode',
-    ]);
-    const types = await this.typeService.findAll();
-    const getTime = (): string => ('' + randomInteger(0, 99)).padStart(2, '0');
-    const scores = Array.from({ length: 5000 }).map(() => {
-      const gameModePlatform = sample(gameModePlatforms);
-      const type = sample(types);
-      const scorePlayers = Array.from({ length: type.playerQuantity }).map(() =>
-        new ScorePlayer().extendDto({
-          idCharacter: sample(
-            characters.filter(char =>
-              char.gameModeCharacters.some(
-                o => o.idGameMode === gameModePlatform.idGameMode
-              )
-            )
-          ).id,
-          bulletKills: randomInteger(0, 30),
-          host: true,
-          idPlayer: sample(users).id,
-        })
-      );
-      return new Score().extendDto({
-        scorePlayers,
-        score: randomInteger(750_000, 1_800_000),
-        idGameModePlatform: gameModePlatform.id,
-        idStage: sample(
-          stages.filter(
-            stage => stage.idGame === gameModePlatform.gameMode.idGame
-          )
-        ).id,
-        idType: type.id,
-        maxCombo: randomInteger(50, 150),
-        time: `${getTime()}:${getTime()}:${getTime()}`,
-      });
-    });
-    await this.scoreRepository.save(scores);*/
-  }
+  async fake(): Promise<void> {}
 
   async getTopScore(dto: ScoreTopScoreDto): Promise<Score> {
     return await this.scoreRepository.getTopScore(dto);
@@ -158,7 +107,27 @@ export class ScoreService {
     );
   }
 
+  async findById(idScore: number): Promise<Score> {
+    return await this.scoreRepository.findOneOrFail(idScore, {
+      relations: Score.allRelations,
+    });
+  }
+
   async exists(idScore: number): Promise<boolean> {
     return await this.scoreRepository.exists({ id: idScore });
+  }
+
+  async random(): Promise<number> {
+    return (
+      await this.scoreRepository
+        .createQueryBuilder('score')
+        .select('score.id')
+        .innerJoin('score.gameModePlatform', 'gmp')
+        .innerJoin('gmp.gameMode', 'gm')
+        .andWhere('gm.idGame = 1')
+        .orderBy('rand()')
+        .limit(1)
+        .getOne()
+    ).id;
   }
 }
