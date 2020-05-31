@@ -15,6 +15,15 @@ export class RoleService extends SuperService<Role, RoleAddDto, RoleUpdateDto> {
     @InjectRepository(RoleRepository) private roleRepository: RoleRepository
   ) {
     super(Role, roleRepository);
+    this.setRoles().then();
+  }
+
+  async setRoles(): Promise<void> {
+    const exists = await this.roleRepository.exists();
+    if (!exists) {
+      const roles = (await import('./roles.json')) as RoleAddDto[];
+      await this.addMany(roles);
+    }
   }
 
   async get(user: User): Promise<Role[]> {

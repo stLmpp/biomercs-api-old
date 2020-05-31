@@ -16,9 +16,9 @@ export class RegionService extends SuperService<
   }
 
   async setRegions(): Promise<void> {
-    const regions = await this.regionRepository.find();
-    if (!regions?.length) {
-      const regionsJson = (await import('./regions.json')) as RegionAddDto[];
+    const exists = await this.regionRepository.exists();
+    if (!exists) {
+      const regionsJson = await import('./regions.json');
       await this.addMany(regionsJson);
     }
   }

@@ -7,6 +7,7 @@ import { UserShowcaseService } from './user-showcase.service';
 import { UpdatedByPipe } from '../../../shared/pipes/updated-by.pipe';
 import { UserShowcaseUpdateDto } from './user-showcase.dto';
 import { UserShowcase } from './user-showcase.entity';
+import { RouteParamEnum } from '../../../shared/types/route-enums';
 
 @ApiTags('User Showcase')
 @Roles(RoleEnum.user)
@@ -15,9 +16,9 @@ import { UserShowcase } from './user-showcase.entity';
 export class UserShowcaseController {
   constructor(private userShowcaseService: UserShowcaseService) {}
 
-  @Patch(':idUserShowcase')
+  @Patch(`:${RouteParamEnum.idUserShowcase}`)
   async update(
-    @Param('idUserShowcase') idUserShowcase: number,
+    @Param(RouteParamEnum.idUserShowcase) idUserShowcase: number,
     @Body(UpdatedByPipe) dto: UserShowcaseUpdateDto
   ): Promise<UserShowcase> {
     return this.userShowcaseService.update(idUserShowcase, dto);

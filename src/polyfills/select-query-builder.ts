@@ -17,6 +17,11 @@ declare module 'typeorm/query-builder/SelectQueryBuilder' {
         queryBuilder: SelectQueryBuilder<Entity>
       ) => SelectQueryBuilder<any>
     ): this;
+    orNotExists(
+      subQuery: (
+        queryBuilder: SelectQueryBuilder<Entity>
+      ) => SelectQueryBuilder<any>
+    ): this;
   }
 }
 
@@ -36,6 +41,13 @@ SelectQueryBuilder.prototype.orExists = function(subQuery) {
 
 SelectQueryBuilder.prototype.andNotExists = function(subQuery) {
   return this.andWhere(sbq => {
+    const sb = subQuery(sbq.subQuery().select('1'));
+    return `NOT EXISTS ${sb.getQuery()}`;
+  });
+};
+
+SelectQueryBuilder.prototype.orNotExists = function(subQuery) {
+  return this.orWhere(sbq => {
     const sb = subQuery(sbq.subQuery().select('1'));
     return `NOT EXISTS ${sb.getQuery()}`;
   });

@@ -31,6 +31,7 @@ import { CheckParamsPipe } from '../pipes/check-params.pipe';
 import { RoleEnum } from '../../auth/role/role.enum';
 import { isArray } from 'is-what';
 import { Roles } from '../../auth/role/role.guard';
+import { RouteParamEnum } from '../types/route-enums';
 
 export interface ISuperController<
   Entity extends CommonColumns = any,
@@ -196,12 +197,12 @@ export function SuperController<
       HttpCode(200),
       ApiOkResponse({ type: entity, isArray: true }),
       ApiBody({ type: dto?.params }),
-      ApiQuery({ name: 'limit', type: Number, required: false }),
+      ApiQuery({ name: RouteParamEnum.limit, type: Number, required: false }),
     ])
     @ApplyRoles()
     findByParams(
       @Body(CheckParamsPipe) dto: FindConditions<Entity>,
-      @Query('limit') limit?: number
+      @Query(RouteParamEnum.limit) limit?: number
     ): Promise<Entity[]> {
       return this.__service.findByParams(dto, relations ?? [], limit);
     }
@@ -265,7 +266,7 @@ export function SuperController<
       ApiOkResponse({ type: entity }),
     ])
     @ApplyRoles()
-    search(@Query('term') term: string): Promise<Entity[]> {
+    search(@Query(RouteParamEnum.term) term: string): Promise<Entity[]> {
       return this.__service.search(term, searchBy, relations ?? []);
     }
 

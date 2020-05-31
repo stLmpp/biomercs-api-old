@@ -90,8 +90,8 @@ export class UserController {
 
   @Roles(RoleEnum.admin)
   @Auth()
-  @ApiQuery({ name: 'username', required: false })
-  @ApiQuery({ name: 'email', required: false })
+  @ApiQuery({ name: RouteParamEnum.username, required: false })
+  @ApiQuery({ name: RouteParamEnum.email, required: false })
   @Get('search')
   search(
     @Query(RouteParamEnum.username) username?: string,

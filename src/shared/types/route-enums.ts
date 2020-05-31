@@ -9,6 +9,7 @@ export enum RouteParamEnum {
   idLike = 'idLike',
   idMode = 'idMode',
   idPlatform = 'idPlatform',
+  idPlayer = 'idPlayer',
   idReference = 'idReference',
   idReport = 'idReport',
   idRole = 'idRole',
@@ -21,6 +22,7 @@ export enum RouteParamEnum {
   idUserFollower = 'idUserFollower',
   idUserLink = 'idUserLink',
   idUserRole = 'idUserRole',
+  idUserShowcase = 'idUserShowcase',
   idType = 'idType',
 
   term = 'term',
@@ -30,4 +32,6 @@ export enum RouteParamEnum {
   email = 'email',
   username = 'username',
   token = 'token',
+  limit = 'limit',
+  select = 'select',
 }

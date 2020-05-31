@@ -22,16 +22,16 @@ export class ScoreController {
     return await this.scoreService.add(dto);
   }
 
-  @ApiQuery({ name: 'idPlayer', required: false })
+  @ApiQuery({ name: RouteParamEnum.idPlayer, required: false })
   @Get('top-score')
   async getTopScore(
-    @Query('idGame') idGame: number,
-    @Query('idMode') idMode: number,
-    @Query('idType') idType: number,
-    @Query('idPlatform') idPlatform: number,
-    @Query('idCharacter') idCharacter: number,
-    @Query('idStage') idStage: number,
-    @Query('idPlayer') idPlayer?: number
+    @Query(RouteParamEnum.idGame) idGame: number,
+    @Query(RouteParamEnum.idMode) idMode: number,
+    @Query(RouteParamEnum.idType) idType: number,
+    @Query(RouteParamEnum.idPlatform) idPlatform: number,
+    @Query(RouteParamEnum.idCharacter) idCharacter: number,
+    @Query(RouteParamEnum.idStage) idStage: number,
+    @Query(RouteParamEnum.idPlayer) idPlayer?: number
   ): Promise<Score> {
     return this.scoreService.getTopScore({
       idGame,
@@ -44,14 +44,14 @@ export class ScoreController {
     });
   }
 
-  @ApiQuery({ name: 'idPlayer', required: false })
+  @ApiQuery({ name: RouteParamEnum.idPlayer, required: false })
   @Get('table-player')
   async getScoreTablePlayer(
-    @Query('idGame') idGame: number,
-    @Query('idMode') idMode: number,
-    @Query('idType') idType: number,
-    @Query('idPlatform') idPlatform: number,
-    @Query('idPlayer') idPlayer?: number
+    @Query(RouteParamEnum.idGame) idGame: number,
+    @Query(RouteParamEnum.idMode) idMode: number,
+    @Query(RouteParamEnum.idType) idType: number,
+    @Query(RouteParamEnum.idPlatform) idPlatform: number,
+    @Query(RouteParamEnum.idPlayer) idPlayer?: number
   ): Promise<ScoreTable[][]> {
     return this.scoreService.getScoreTablePlayer(
       idPlatform,
@@ -62,17 +62,17 @@ export class ScoreController {
     );
   }
 
-  @ApiQuery({ name: 'idCharacter', required: false })
-  @ApiQuery({ name: 'idPlayer', required: false })
-  @ApiQuery({ name: 'limit', required: false })
+  @ApiQuery({ name: RouteParamEnum.idCharacter, required: false })
+  @ApiQuery({ name: RouteParamEnum.idPlayer, required: false })
+  @ApiQuery({ name: RouteParamEnum.limit, required: false })
   @Get('table-top')
   async getManyTopScore(
-    @Query('idPlatform') idPlatform: number,
-    @Query('idGame') idGame: number,
-    @Query('idMode') idMode: number,
-    @Query('idType') idType: number,
-    @Query('idCharacter') idCharacter?: number,
-    @Query('limit') limit?: number
+    @Query(RouteParamEnum.idPlatform) idPlatform: number,
+    @Query(RouteParamEnum.idGame) idGame: number,
+    @Query(RouteParamEnum.idMode) idMode: number,
+    @Query(RouteParamEnum.idType) idType: number,
+    @Query(RouteParamEnum.idCharacter) idCharacter?: number,
+    @Query(RouteParamEnum.limit) limit?: number
   ): Promise<ScoreTable[][]> {
     return this.scoreService.getManyTopScore(
       idPlatform,

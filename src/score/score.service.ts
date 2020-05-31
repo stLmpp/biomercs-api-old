@@ -19,7 +19,9 @@ export class ScoreService {
     private userService: UserService
   ) {}
 
-  async fake(): Promise<void> {}
+  async fake(): Promise<void> {
+    return;
+  }
 
   async getTopScore(dto: ScoreTopScoreDto): Promise<Score> {
     return await this.scoreRepository.getTopScore(dto);

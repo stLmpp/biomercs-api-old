@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FileUploadRepository } from './file-upload.repository';
-import { FileUploadAddDto } from './dto/add.dto';
 import { FileUpload } from './file-upload.entity';
 import { extname } from 'path';
 import { FileType } from './file-type.interface';
@@ -13,6 +12,7 @@ import { updateLastUpdatedBy } from '../shared/pipes/updated-by.pipe';
 import { updateCreatedBy } from '../shared/pipes/created-by.pipe';
 import { isArray } from 'is-what';
 import { LikeUppercase } from '../util/query-operators';
+import { FileUploadAddDto } from './file-upload.dto';
 
 @Injectable()
 export class FileUploadService {
