@@ -32,13 +32,13 @@ export class ScoreService {
     idGame: number,
     idMode: number,
     idType: number,
-    idPlayer: number
+    idPlayer?: number
   ): Promise<ScoreTable[][]> {
     const characters = await this.characterService.findByParams({
       idGame,
       idMode,
     });
-    return Promise.all(
+    const scores = await Promise.all(
       characters.map(async character => {
         return (
           await this.scoreRepository.getTopScoresStages(
@@ -46,8 +46,8 @@ export class ScoreService {
             idGame,
             idMode,
             idType,
-            idPlayer,
-            character.id
+            character.id,
+            idPlayer
           )
         ).map(table => {
           table.character = character;
@@ -55,6 +55,30 @@ export class ScoreService {
         });
       })
     );
+    const wrs = await Promise.all(
+      characters.map(async character => {
+        return await this.scoreRepository.getTopScoresStages(
+          idPlatform,
+          idGame,
+          idMode,
+          idType,
+          character.id
+        );
+      })
+    );
+    return scores.map((table, index) => {
+      return table.map((table1, index1) => {
+        const wr = wrs[index][index1];
+        table1.isWr =
+          table1?.score?.score > 0 &&
+          wr?.score?.score > 0 &&
+          table1.score.score === wr.score.score;
+        if (!table1.isWr) {
+          table1.wr = wr.score;
+        }
+        return table1;
+      });
+    });
   }
 
   async getManyTopScore(

@@ -8,4 +8,6 @@ export class ScoreTable {
   character?: Character;
   player?: User;
   score: Score;
+  isWr?: boolean;
+  wr?: Score;
 }

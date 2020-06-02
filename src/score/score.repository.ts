@@ -54,8 +54,8 @@ export class ScoreRepository extends Repository<Score> {
     idGame: number,
     idMode: number,
     idType: number,
-    idPlayer: number,
-    idCharacter?: number
+    idCharacter?: number,
+    idPlayer?: number
   ): Promise<ScoreTable[]> {
     const qb = this.connection
       .createQueryBuilder()
@@ -67,7 +67,6 @@ export class ScoreRepository extends Repository<Score> {
           subQuery
             .from(Score, 'score')
             .innerJoin('score.scorePlayers', 'score_player')
-            .andWhere('score_player.idPlayer = :idPlayer', { idPlayer })
             .innerJoin('score.gameModePlatform', 'gmp')
             .andWhere('gmp.idPlatform = :idPlatform', { idPlatform })
             .innerJoin('gmp.gameMode', 'gm')
@@ -80,6 +79,11 @@ export class ScoreRepository extends Repository<Score> {
           if (idCharacter) {
             subQuery.andWhere('score_player.idCharacter = :idCharacter', {
               idCharacter,
+            });
+          }
+          if (idPlayer) {
+            subQuery.andWhere('score_player.idPlayer = :idPlayer', {
+              idPlayer,
             });
           }
           return subQuery;
