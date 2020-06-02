@@ -25,6 +25,7 @@ export class ScoreRepository extends Repository<Score> {
     idMode,
     idGame,
     idCharacter,
+    idCharacters,
   }: ScoreTopScoreDto): SelectQueryBuilder<Score> {
     const qb = this.createQueryBuilder('score')
       .innerJoinAndSelect('score.stage', 'stage')
@@ -45,6 +46,9 @@ export class ScoreRepository extends Repository<Score> {
     }
     if (idPlayer) {
       qb.andWhere('player.id = :idPlayer', { idPlayer });
+    }
+    if (idCharacters?.length) {
+      qb.andWhere('p.idCharacter in (:...idCharacters)', { idCharacters });
     }
     return qb;
   }

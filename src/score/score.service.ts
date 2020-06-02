@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Score } from './score.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ScoreRepository } from './score.repository';
-import { ScoreTable } from './score.view-model';
+import { ScoreTable, ScoreViewModel } from './score.view-model';
 import { CharacterService } from '../game/character/character.service';
 import { StageService } from '../game/stage/stage.service';
 import { ScoreAddDto, ScoreTopScoreDto } from './score.dto';
@@ -133,10 +133,23 @@ export class ScoreService {
     );
   }
 
-  async findById(idScore: number): Promise<Score> {
-    return await this.scoreRepository.findOneOrFail(idScore, {
-      relations: Score.allRelations,
+  async findById(idScore: number): Promise<ScoreViewModel> {
+    const score = new ScoreViewModel().extendDto(
+      await this.scoreRepository.findOneOrFail(idScore, {
+        relations: Score.allRelations,
+      })
+    );
+    const wr = await this.getTopScore({
+      idPlatform: score.gameModePlatform.idPlatform,
+      idType: score.idType,
+      idCharacters: score.scorePlayers.map(sp => sp.idCharacter),
+      idMode: score.gameModePlatform.gameMode.idMode,
+      idGame: score.gameModePlatform.gameMode.idGame,
+      idStage: score.idStage,
     });
+    score.isWr = wr?.score > 0 && score?.score > 0 && wr.score === score.score;
+    score.wr = wr;
+    return score;
   }
 
   async exists(idScore: number): Promise<boolean> {

@@ -11,3 +11,8 @@ export class ScoreTable {
   isWr?: boolean;
   wr?: Score;
 }
+
+export class ScoreViewModel extends Score {
+  isWr?: boolean;
+  wr?: Score;
+}

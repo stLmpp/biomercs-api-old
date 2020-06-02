@@ -5,7 +5,7 @@ import { RoleEnum } from '../auth/role/role.enum';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Score } from './score.entity';
 import { ScoreService } from './score.service';
-import { ScoreTable } from './score.view-model';
+import { ScoreTable, ScoreViewModel } from './score.view-model';
 import { CreatedByPipe } from '../shared/pipes/created-by.pipe';
 import { ScoreAddDto } from './score.dto';
 import { RouteParamEnum } from '../shared/types/route-enums';
@@ -92,7 +92,7 @@ export class ScoreController {
   @Get(`:${RouteParamEnum.idScore}`)
   async findById(
     @Param(RouteParamEnum.idScore) idScore: number
-  ): Promise<Score> {
+  ): Promise<ScoreViewModel> {
     return this.scoreService.findById(idScore);
   }
 }

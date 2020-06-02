@@ -84,6 +84,10 @@ export class ScoreTopScoreDto {
   @IsNumber()
   idCharacter?: number;
 
+  @IsOptional()
+  @IsArray()
+  idCharacters?: number[];
+
   @IsDefined()
   @IsNumber()
   idStage: number;
