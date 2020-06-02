@@ -6,7 +6,12 @@ import { Auth } from '../auth/auth.decorator';
 import { LikeService } from './like.service';
 import { Like } from './like.entity';
 import { SuperController } from '../shared/super/super-controller';
-import { LikeAddDto, LikeParamsDto, LikeUpdateDto } from './like.dto';
+import {
+  LikeAddDto,
+  LikeDeteteDto,
+  LikeParamsDto,
+  LikeUpdateDto,
+} from './like.dto';
 import { RouteParamEnum } from '../shared/types/route-enums';
 
 @ApiTags('Like')
@@ -19,8 +24,12 @@ export class LikeController extends SuperController<Like>({
     add: LikeAddDto,
     update: LikeUpdateDto,
     params: LikeParamsDto,
+    exists: LikeParamsDto,
+    count: LikeParamsDto,
+    delete: LikeDeteteDto,
   },
   idKey: RouteParamEnum.idLike,
+  excludeMethods: ['findAll'],
 }) {
   constructor(private likeService: LikeService) {
     super(likeService);

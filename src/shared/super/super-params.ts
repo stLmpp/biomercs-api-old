@@ -6,4 +6,9 @@ export class SuperParamsDto {
   @IsNumber()
   @ApiPropertyOptional()
   id?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @ApiPropertyOptional()
+  createdBy?: number;
 }

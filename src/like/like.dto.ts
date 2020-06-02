@@ -3,6 +3,7 @@ import { IdReferenceExists } from '../validation/like/id-reference-exists.valida
 import { LikeStyleEnum } from './like-style.enum';
 import { ReferenceTypeEnum } from '../shared/types/reference-type.enum';
 import { ReferenceTypeInterface } from '../shared/types/reference-type.interface';
+import { SuperParamsDto } from '../shared/super/super-params';
 
 export class LikeAddDto implements ReferenceTypeInterface {
   @IsEnum(ReferenceTypeEnum)
@@ -25,7 +26,7 @@ export class LikeUpdateDto {
   style?: LikeStyleEnum;
 }
 
-export class LikeParamsDto {
+export class LikeParamsDto extends SuperParamsDto {
   @IsEnum(ReferenceTypeEnum)
   @IsOptional()
   type?: ReferenceTypeEnum;
@@ -36,5 +37,19 @@ export class LikeParamsDto {
 
   @IsOptional()
   @IsNumber()
-  idReference: number;
+  idReference?: number;
+}
+
+export class LikeDeteteDto {
+  @IsEnum(ReferenceTypeEnum)
+  @IsDefined()
+  type?: ReferenceTypeEnum;
+
+  @IsOptional()
+  @IsEnum(LikeStyleEnum)
+  style?: LikeStyleEnum;
+
+  @IsDefined()
+  @IsNumber()
+  idReference?: number;
 }

@@ -41,13 +41,18 @@ export interface ISuperController<
   add: (dto: AddDto) => Promise<Entity>;
   addMany: (dto: AddDto[]) => Promise<Entity[]>;
   exists: (dto: FindConditions<Entity>) => Promise<boolean>;
-  findByParams: (dto: FindConditions<Entity>) => Promise<Entity[]>;
+  findByParams: (
+    dto: FindConditions<Entity>,
+    limit?: number
+  ) => Promise<Entity[]>;
+  findOneByParams: (dto: FindConditions<Entity>) => Promise<Entity>;
   update: (id: number, dto: UpdateDto) => Promise<Entity>;
   fileUpload: (id: number, file: FileType, user: User) => Promise<FileUpload>;
   delete: (id: number) => Promise<Entity[]>;
   findAll: () => Promise<Entity[]>;
   search: (term: string) => Promise<Entity[]>;
   findById: (id: number) => Promise<Entity>;
+  countByParams: (dto: FindConditions<Entity>) => Promise<number>;
 }
 
 export class SuperControllerRole {
@@ -61,12 +66,14 @@ export class SuperControllerRole {
   addMany?: RoleEnum[] = [];
   exists?: RoleEnum[] = [];
   findByParams?: RoleEnum[] = [];
+  findOneByParams?: RoleEnum[] = [];
   update?: RoleEnum[] = [];
   fileUpload?: RoleEnum[] = [];
   delete?: RoleEnum[] = [];
   findAll?: RoleEnum[] = [];
   search?: RoleEnum[] = [];
   findById?: RoleEnum[] = [];
+  countByParams?: RoleEnum[] = [];
 }
 
 export interface SuperControllerOptions<
@@ -94,6 +101,7 @@ export interface SuperControllerOptionsDto<
   params?: { new (): FindConditions<Entity> };
   exists?: { new (): FindConditions<Entity> };
   delete?: { new (): FindConditions<Entity> };
+  count?: { new (): FindConditions<Entity> };
 }
 
 export interface SuperControllerOptionsFileUpload {
@@ -113,7 +121,9 @@ export const ROLE_METADATA: Partial<Record<
   findAll: 'find',
   findById: 'find',
   findByParams: 'find',
+  findOneByParams: 'find',
   search: 'find',
+  countByParams: 'find',
 };
 
 export function SuperController<
@@ -205,6 +215,32 @@ export function SuperController<
       @Query(RouteParamEnum.limit) limit?: number
     ): Promise<Entity[]> {
       return this.__service.findByParams(dto, relations ?? [], limit);
+    }
+
+    @ApplyIf(!!dto?.params, [
+      Post('one-params'),
+      HttpCode(200),
+      ApiOkResponse({ type: entity }),
+      ApiBody({ type: dto?.params }),
+    ])
+    @ApplyRoles()
+    findOneByParams(
+      @Body(CheckParamsPipe) dto: FindConditions<Entity>
+    ): Promise<Entity> {
+      return this.__service.findOneByParams(dto);
+    }
+
+    @ApplyIf(!!dto?.count, [
+      Post('count'),
+      HttpCode(200),
+      ApiOkResponse({ type: Number }),
+      ApiBody({ type: dto?.count }),
+    ])
+    @ApplyRoles()
+    countByParams(
+      @Body(CheckParamsPipe) dto: FindConditions<Entity>
+    ): Promise<number> {
+      return this.__service.countByParams(dto);
     }
 
     @ApplyIf(!!dto?.update, [
