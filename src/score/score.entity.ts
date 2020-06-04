@@ -11,6 +11,7 @@ export class Score extends CommonColumns {
   static get allRelations(): string[] {
     return [
       'gameModePlatform',
+      'gameModePlatform.platform',
       'gameModePlatform.gameMode',
       'gameModePlatform.gameMode.game',
       'gameModePlatform.gameMode.mode',

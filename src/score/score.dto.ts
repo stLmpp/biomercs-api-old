@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsDefined,
   IsNotEmpty,
   IsNumber,
@@ -88,9 +89,43 @@ export class ScoreTopScoreDto {
   @IsArray()
   idCharacters?: number[];
 
+  @IsOptional()
+  @IsBoolean()
+  idCharactersAnd?: boolean;
+
   @IsDefined()
   @IsNumber()
   idStage: number;
+
+  @IsOptional()
+  @IsNumber()
+  idPlayer?: number;
+}
+
+export class ScoreRandomDto {
+  @IsOptional()
+  @IsNumber()
+  idGame?: number;
+
+  @IsOptional()
+  @IsNumber()
+  idMode?: number;
+
+  @IsOptional()
+  @IsNumber()
+  idType?: number;
+
+  @IsOptional()
+  @IsNumber()
+  idPlatform?: number;
+
+  @IsOptional()
+  @IsNumber()
+  idCharacter?: number;
+
+  @IsOptional()
+  @IsNumber()
+  idStage?: number;
 
   @IsOptional()
   @IsNumber()

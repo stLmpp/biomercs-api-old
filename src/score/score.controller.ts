@@ -84,9 +84,32 @@ export class ScoreController {
     );
   }
 
+  @ApiQuery({ name: RouteParamEnum.idPlatform, required: false })
+  @ApiQuery({ name: RouteParamEnum.idGame, required: false })
+  @ApiQuery({ name: RouteParamEnum.idMode, required: false })
+  @ApiQuery({ name: RouteParamEnum.idType, required: false })
+  @ApiQuery({ name: RouteParamEnum.idCharacter, required: false })
+  @ApiQuery({ name: RouteParamEnum.idStage, required: false })
+  @ApiQuery({ name: RouteParamEnum.idPlayer, required: false })
   @Get('random')
-  async getRandom(): Promise<number> {
-    return this.scoreService.random();
+  async getRandom(
+    @Query(RouteParamEnum.idPlatform) idPlatform?: number,
+    @Query(RouteParamEnum.idGame) idGame?: number,
+    @Query(RouteParamEnum.idMode) idMode?: number,
+    @Query(RouteParamEnum.idType) idType?: number,
+    @Query(RouteParamEnum.idCharacter) idCharacter?: number,
+    @Query(RouteParamEnum.idStage) idStage?: number,
+    @Query(RouteParamEnum.idPlayer) idPlayer?: number
+  ): Promise<number> {
+    return this.scoreService.random({
+      idPlayer,
+      idPlatform,
+      idGame,
+      idType,
+      idStage,
+      idMode,
+      idCharacter,
+    });
   }
 
   @Get(`:${RouteParamEnum.idScore}`)

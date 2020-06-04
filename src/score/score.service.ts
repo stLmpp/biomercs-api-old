@@ -5,7 +5,7 @@ import { ScoreRepository } from './score.repository';
 import { ScoreTable, ScoreViewModel } from './score.view-model';
 import { CharacterService } from '../game/character/character.service';
 import { StageService } from '../game/stage/stage.service';
-import { ScoreAddDto, ScoreTopScoreDto } from './score.dto';
+import { ScoreAddDto, ScoreRandomDto, ScoreTopScoreDto } from './score.dto';
 import { GameModePlatformService } from '../game/game-mode-platform/game-mode-platform.service';
 import { UserService } from '../auth/user/user.service';
 
@@ -38,9 +38,9 @@ export class ScoreService {
       idGame,
       idMode,
     });
-    const scores = await Promise.all(
-      characters.map(async character => {
-        return (
+    return await Promise.all(
+      characters.map(async character =>
+        (
           await this.scoreRepository.getTopScoresStages(
             idPlatform,
             idGame,
@@ -52,33 +52,9 @@ export class ScoreService {
         ).map(table => {
           table.character = character;
           return table;
-        });
-      })
+        })
+      )
     );
-    const wrs = await Promise.all(
-      characters.map(async character => {
-        return await this.scoreRepository.getTopScoresStages(
-          idPlatform,
-          idGame,
-          idMode,
-          idType,
-          character.id
-        );
-      })
-    );
-    return scores.map((table, index) => {
-      return table.map((table1, index1) => {
-        const wr = wrs[index][index1];
-        table1.isWr =
-          table1?.score?.score > 0 &&
-          wr?.score?.score > 0 &&
-          table1.score.score === wr.score.score;
-        if (!table1.isWr) {
-          table1.wr = wr.score;
-        }
-        return table1;
-      });
-    });
   }
 
   async getManyTopScore(
@@ -134,39 +110,72 @@ export class ScoreService {
   }
 
   async findById(idScore: number): Promise<ScoreViewModel> {
-    const score = new ScoreViewModel().extendDto(
+    return await this.fillWr(
       await this.scoreRepository.findOneOrFail(idScore, {
         relations: Score.allRelations,
       })
     );
+  }
+
+  async fillWr(score: Score): Promise<ScoreViewModel> {
+    const scoreVw = new ScoreViewModel().extendDto(score);
+    scoreVw.characterWorldRecords = await Promise.all(
+      scoreVw.scorePlayers.map(
+        async player =>
+          await this.getTopScore({
+            idPlatform: score.gameModePlatform.idPlatform,
+            idType: score.idType,
+            idMode: score.gameModePlatform.gameMode.idMode,
+            idGame: score.gameModePlatform.gameMode.idGame,
+            idStage: score.idStage,
+            idCharacter: player.idCharacter,
+          })
+      )
+    );
+    scoreVw.isCharacterWorldRecords = scoreVw.characterWorldRecords.some(
+      cwr => cwr.id === scoreVw.id
+    );
+    scoreVw.isCharacterWorldRecord = scoreVw.scorePlayers.reduce(
+      (acc, sp) => ({
+        ...acc,
+        [sp.idCharacter]: scoreVw.characterWorldRecords.some(
+          charWr =>
+            charWr.id === sp.idScore &&
+            charWr.scorePlayers[0].idCharacter === sp.idCharacter
+        ),
+      }),
+      {}
+    );
     const wr = await this.getTopScore({
       idPlatform: score.gameModePlatform.idPlatform,
       idType: score.idType,
-      idCharacters: score.scorePlayers.map(sp => sp.idCharacter),
       idMode: score.gameModePlatform.gameMode.idMode,
       idGame: score.gameModePlatform.gameMode.idGame,
       idStage: score.idStage,
     });
-    score.isWr = wr?.score > 0 && score?.score > 0 && wr.score === score.score;
-    score.wr = wr;
-    return score;
+    scoreVw.isWorldRecord = wr.id === score.id;
+    scoreVw.wordRecord = wr;
+    if (score.idType === 2) {
+      const combinationWr = await this.getTopScore({
+        idPlatform: score.gameModePlatform.idPlatform,
+        idType: score.idType,
+        idMode: score.gameModePlatform.gameMode.idMode,
+        idGame: score.gameModePlatform.gameMode.idGame,
+        idStage: score.idStage,
+        idCharacters: score.scorePlayers.map(sp => sp.idCharacter),
+        idCharactersAnd: true,
+      });
+      scoreVw.isCombinationWorldRecord = combinationWr.id === score.id;
+      scoreVw.combinationWorldRecord = combinationWr;
+    }
+    return scoreVw;
   }
 
   async exists(idScore: number): Promise<boolean> {
     return await this.scoreRepository.exists({ id: idScore });
   }
 
-  async random(): Promise<number> {
-    return (
-      await this.scoreRepository
-        .createQueryBuilder('score')
-        .select('score.id')
-        .innerJoin('score.gameModePlatform', 'gmp')
-        .innerJoin('gmp.gameMode', 'gm')
-        .andWhere('gm.idGame = 1')
-        .orderBy('rand()')
-        .limit(1)
-        .getOne()
-    ).id;
+  async random(dto: ScoreRandomDto): Promise<number> {
+    return (await this.scoreRepository.random(dto)).id;
   }
 }
