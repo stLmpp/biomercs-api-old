@@ -275,7 +275,9 @@ export function SuperController<
       ApiBody({ type: dto.delete }),
       ApiOkResponse({ type: DeleteResult }),
     ])
-    deleteParams(@Body() dto: FindConditions<Entity>): Promise<Entity[]> {
+    deleteParams(
+      @Body(CheckParamsPipe) dto: FindConditions<Entity>
+    ): Promise<Entity[]> {
       return this.__service.delete(dto);
     }
 
