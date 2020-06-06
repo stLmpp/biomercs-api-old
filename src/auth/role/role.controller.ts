@@ -24,10 +24,9 @@ export class RoleController extends SuperController<Role>({
     exists: RoleExistsDto,
   },
   idKey: RouteParamEnum.idRole,
-  excludeMethods: ['findAll'],
   searchBy: ['name', 'description'],
   roles: new SuperControllerRole({
-    persist: [RoleEnum.admin],
+    persist: [RoleEnum.owner],
     find: [RoleEnum.user],
   }),
 }) {

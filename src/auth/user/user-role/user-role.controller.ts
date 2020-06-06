@@ -5,12 +5,13 @@ import { ApiTags } from '@nestjs/swagger';
 import { UserRoleAddDto, UserRoleParamsDto } from './user-role.dto';
 import { UserRole } from './user-role.entity';
 import { RouteParamEnum } from '../../../shared/types/route-enums';
-import { Roles } from '../../role/role.guard';
 import { RoleEnum } from '../../role/role.enum';
-import { SuperController } from '../../../shared/super/super-controller';
+import {
+  SuperController,
+  SuperControllerRole,
+} from '../../../shared/super/super-controller';
 
 @ApiTags('User role')
-@Roles(RoleEnum.admin)
 @Auth()
 @Controller('user-role')
 export class UserRoleController extends SuperController<UserRole>({
@@ -20,7 +21,12 @@ export class UserRoleController extends SuperController<UserRole>({
     params: UserRoleParamsDto,
   },
   idKey: RouteParamEnum.idUserRole,
+  relations: ['role'],
   excludeMethods: ['findAll'],
+  roles: new SuperControllerRole({
+    persist: [RoleEnum.owner],
+    find: [RoleEnum.user],
+  }),
 }) {
   constructor(private userRoleService: UserRoleService) {
     super(userRoleService);
