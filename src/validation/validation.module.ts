@@ -17,6 +17,8 @@ import { TypeExistsValidator } from './game/type-exists.validator';
 import { RegionExistsValidator } from './region/region-exists.validator';
 import { RegionModule } from '../region/region.module';
 import { StageExistsValidator } from './score/stage-exists-validator';
+import { ReasonExistsValidator } from './report/reason-exists.validator';
+import { ReportModule } from '../report/report.module';
 
 @Global()
 @Module({
@@ -26,6 +28,7 @@ import { StageExistsValidator } from './score/stage-exists-validator';
     FileUploadModule,
     ScoreModule,
     RegionModule,
+    ReportModule,
   ],
   providers: [
     UserExistsValidator,
@@ -41,6 +44,7 @@ import { StageExistsValidator } from './score/stage-exists-validator';
     TypeExistsValidator,
     RegionExistsValidator,
     StageExistsValidator,
+    ReasonExistsValidator,
   ],
 })
 export class ValidationModule {}

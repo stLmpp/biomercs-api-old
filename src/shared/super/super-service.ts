@@ -35,7 +35,7 @@ export class SuperService<
     relations: (keyof Entity)[] | string[] = []
   ): Promise<Entity> {
     const entity = await this.__repository.save(
-      new this.entity().extendDto(dto) as any
+      new this.entity().extendDto(this.preAdd(dto)) as any
     );
     if (relations?.length) {
       return await this.findById(entity.id, relations);
@@ -49,7 +49,7 @@ export class SuperService<
     relations: (keyof Entity)[] | string[] = []
   ): Promise<Entity[]> {
     const entities = await this.__repository.save(
-      dto.map(d => new this.entity().extendDto(d)) as any[]
+      dto.map(d => new this.entity().extendDto(this.preAdd(d))) as any[]
     );
     if (relations?.length) {
       return await this.__repository.find({
@@ -66,7 +66,7 @@ export class SuperService<
     dto: UpdateDto,
     relations: (keyof Entity)[] | string[] = []
   ): Promise<Entity> {
-    await this.__repository.update(id, dto);
+    await this.__repository.update(id, this.preUpdate(dto));
     return await this.findById(id, relations);
   }
 
@@ -171,5 +171,13 @@ export class SuperService<
 
   async countByParams(where: FindConditions<Entity>): Promise<number> {
     return await this.__repository.count(where);
+  }
+
+  preAdd(dto: AddDto): AddDto {
+    return dto;
+  }
+
+  preUpdate(dto: UpdateDto): UpdateDto {
+    return dto;
   }
 }

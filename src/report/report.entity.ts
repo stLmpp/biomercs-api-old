@@ -1,8 +1,7 @@
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany } from 'typeorm';
 import { CommonColumns } from '../shared/super/common-columns';
-import { User } from '../auth/user/user.entity';
-import { Score } from '../score/score.entity';
 import { ReferenceTypeEnum } from '../shared/types/reference-type.enum';
+import { ReportReason } from './report-reason/report-reason.entity';
 
 @Entity()
 export class Report extends CommonColumns {
@@ -12,11 +11,14 @@ export class Report extends CommonColumns {
   @Column()
   idReference: number;
 
-  @ManyToOne(() => User, { nullable: true })
-  @JoinColumn({ name: 'idReference' })
-  userReported?: User;
+  @Column({ length: 1000, nullable: true })
+  description?: string;
 
-  @ManyToOne(() => Score, { nullable: true })
-  @JoinColumn({ name: 'idReference' })
-  scoreReported?: Score;
+  @OneToMany(
+    () => ReportReason,
+    reportReason => reportReason.report,
+    { cascade: true }
+  )
+  @JoinColumn()
+  reportReasons: ReportReason[];
 }
