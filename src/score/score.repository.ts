@@ -5,6 +5,7 @@ import { Stage } from '../game/stage/stage.entity';
 import { ScoreTable } from './score.view-model';
 import { plainToClass } from 'class-transformer';
 import { ScorePlayer } from './score-player/score-player.entity';
+import { GameModeStage } from '../game/game-mode-stage/game-mode-stage.entity';
 
 @EntityRepository(Score)
 export class ScoreRepository extends Repository<Score> {
@@ -25,6 +26,8 @@ export class ScoreRepository extends Repository<Score> {
       .select('score.id')
       .innerJoin('score.gameModePlatform', 'gmp')
       .innerJoin('gmp.gameMode', 'gm')
+      .innerJoin('score.gameModeStage', 'gms')
+      .andWhere('gms.idGameMode = gmp.idGameMode')
       .innerJoin('score.scorePlayers', 'sp')
       .orderBy('rand()');
     if (idPlatform) {
@@ -43,7 +46,7 @@ export class ScoreRepository extends Repository<Score> {
       qb.andWhere('sp.idCharacter = :idCharacter', { idCharacter });
     }
     if (idStage) {
-      qb.andWhere('score.idStage = :idStage', { idStage });
+      qb.andWhere('gms.idStage = :idStage', { idStage });
     }
     if (idType) {
       qb.andWhere('score.idType = :idType', { idType });
@@ -70,12 +73,14 @@ export class ScoreRepository extends Repository<Score> {
             .from(Score, 'score')
             .innerJoin('score.scorePlayers', 'score_player')
             .innerJoin('score.gameModePlatform', 'gmp')
+            .innerJoin('score.gameModeStage', 'gms')
+            .andWhere('gms.idGameMode = gmp.idGameMode')
             .andWhere('gmp.idPlatform = :idPlatform', { idPlatform })
             .innerJoin('gmp.gameMode', 'gm')
             .andWhere('gm.idGame = :idGame', { idGame })
             .andWhere('gm.idMode = :idMode', { idMode })
             .andWhere('score.idType = :idType', { idType })
-            .addSelect('score.idStage', 'idStage')
+            .addSelect('gms.idStage', 'idStage')
             .addSelect('max(score.score)', 'maxScore')
             .addGroupBy('idStage');
           if (idCharacter) {
@@ -93,10 +98,11 @@ export class ScoreRepository extends Repository<Score> {
         't',
         't.idStage = stg.id'
       )
+      .leftJoin(Score, 'score', 'score.score = t.maxScore')
       .leftJoin(
-        Score,
-        'score',
-        'stg.id = score.idStage and score.score = t.maxScore'
+        GameModeStage,
+        'gms',
+        'gms.id = score.idGameModeStage and stg.id = gms.idStage'
       )
       .addSelect('score.id', 'idScore')
       .orderBy('stg.id');
@@ -127,7 +133,9 @@ export class ScoreRepository extends Repository<Score> {
     idCharactersAnd,
   }: ScoreTopScoreDto): Promise<Score> {
     const qb = this.createQueryBuilder('score')
-      .innerJoinAndSelect('score.stage', 'stage')
+      .innerJoinAndSelect('score.gameModeStage', 'gms')
+      .andWhere('gms.idGameMode = gmp.idGameMode')
+      .innerJoinAndSelect('gms.stage', 'stage')
       .andWhere('stage.id = :idStage', { idStage })
       .innerJoinAndSelect('score.type', 'type')
       .andWhere('type.id = :idType', { idType })
@@ -195,7 +203,9 @@ export class ScoreRepository extends Repository<Score> {
       .from(subQuery => {
         subQuery
           .from(Score, 'score')
-          .addSelect('score.idStage', 'idStage')
+          .innerJoin('score.gameModeStage', 'gms')
+          .andWhere('gms.idGameMode = gmp.idGameMode')
+          .addSelect('gms.idStage', 'idStage')
           .addSelect('player.idPlayer', 'idPlayer')
           .addSelect('max(score.score)', 'maxScore')
           .andWhere('score.idType = :idType', { idType })

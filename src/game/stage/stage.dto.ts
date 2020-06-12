@@ -78,4 +78,8 @@ export class StageParamsDto {
   @IsOptional()
   @IsNumber()
   idGame?: number;
+
+  @IsOptional()
+  @IsNumber()
+  idMode?: number;
 }

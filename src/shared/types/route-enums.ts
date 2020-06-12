@@ -5,6 +5,7 @@ export enum RouteParamEnum {
   idGameMode = 'idGameMode',
   idGameModeCharacter = 'idGameModeCharacter',
   idGameModePlatform = 'idGameModePlatform',
+  idGameModeStage = 'idGameModeStage',
   idGameModeType = 'idGameModeType',
   idLike = 'idLike',
   idMode = 'idMode',

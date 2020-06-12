@@ -31,6 +31,9 @@ import { GameModePlatformRepository } from './game-mode-platform/game-mode-platf
 import { GameModeTypeController } from './game-mode-type/game-mode-type.controller';
 import { GameModeTypeService } from './game-mode-type/game-mode-type.service';
 import { GameModeTypeRepository } from './game-mode-type/game-mode-type.repository';
+import { GameModeStageController } from './game-mode-stage/game-mode-stage.controller';
+import { GameModeStageService } from './game-mode-stage/game-mode-stage.service';
+import { GameModeStageRepository } from './game-mode-stage/game-mode-stage.repository';
 
 @Module({
   imports: [
@@ -45,6 +48,7 @@ import { GameModeTypeRepository } from './game-mode-type/game-mode-type.reposito
       PlatformRepository,
       GameModePlatformRepository,
       GameModeTypeRepository,
+      GameModeStageRepository,
     ]),
     FileUploadModule,
   ],
@@ -59,6 +63,7 @@ import { GameModeTypeRepository } from './game-mode-type/game-mode-type.reposito
     PlatformService,
     GameModePlatformService,
     GameModeTypeService,
+    GameModeStageService,
   ],
   controllers: [
     GameController,
@@ -71,6 +76,7 @@ import { GameModeTypeRepository } from './game-mode-type/game-mode-type.reposito
     PlatformController,
     GameModePlatformController,
     GameModeTypeController,
+    GameModeStageController,
   ],
   exports: [
     GameService,
@@ -83,6 +89,7 @@ import { GameModeTypeRepository } from './game-mode-type/game-mode-type.reposito
     PlatformService,
     GameModePlatformService,
     GameModeTypeService,
+    GameModeStageService,
   ],
 })
 export class GameModule {}

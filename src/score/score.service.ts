@@ -17,6 +17,7 @@ import {
 } from './score.dto';
 import { GameModePlatformService } from '../game/game-mode-platform/game-mode-platform.service';
 import { UserService } from '../auth/user/user.service';
+import { GameModeStageService } from '../game/game-mode-stage/game-mode-stage.service';
 
 @Injectable()
 export class ScoreService {
@@ -25,7 +26,8 @@ export class ScoreService {
     private characterService: CharacterService,
     private stageService: StageService,
     private gameModePlatformService: GameModePlatformService,
-    private userService: UserService
+    private userService: UserService,
+    private gameModeStageService: GameModeStageService
   ) {}
 
   async fake(): Promise<void> {
@@ -106,6 +108,7 @@ export class ScoreService {
     idGame,
     idMode,
     idPlatform,
+    idStage,
     ...dto
   }: ScoreAddDto): Promise<Score> {
     const idGameModePlatform = await this.gameModePlatformService.findIdByIds(
@@ -113,8 +116,17 @@ export class ScoreService {
       idMode,
       idPlatform
     );
+    const idGameModeStage = await this.gameModeStageService.findIdByIds(
+      idGame,
+      idMode,
+      idStage
+    );
     return await this.scoreRepository.save(
-      new Score().extendDto({ ...dto, idGameModePlatform } as Score)
+      new Score().extendDto({
+        ...dto,
+        idGameModePlatform,
+        idGameModeStage,
+      } as Score)
     );
   }
 
@@ -136,7 +148,7 @@ export class ScoreService {
             idType: score.idType,
             idMode: score.gameModePlatform.gameMode.idMode,
             idGame: score.gameModePlatform.gameMode.idGame,
-            idStage: score.idStage,
+            idStage: score.gameModeStage.idStage,
             idCharacter: player.idCharacter,
           })
       )
@@ -160,7 +172,7 @@ export class ScoreService {
       idType: score.idType,
       idMode: score.gameModePlatform.gameMode.idMode,
       idGame: score.gameModePlatform.gameMode.idGame,
-      idStage: score.idStage,
+      idStage: score.gameModeStage.idStage,
     });
     scoreVw.isWorldRecord = wr.id === score.id;
     scoreVw.wordRecord = wr;
@@ -170,7 +182,7 @@ export class ScoreService {
         idType: score.idType,
         idMode: score.gameModePlatform.gameMode.idMode,
         idGame: score.gameModePlatform.gameMode.idGame,
-        idStage: score.idStage,
+        idStage: score.gameModeStage.idStage,
         idCharacters: score.scorePlayers.map(sp => sp.idCharacter),
         idCharactersAnd: true,
       });

@@ -2,9 +2,9 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { CommonColumns } from '../shared/super/common-columns';
 import { Type } from '../game/type/type.entity';
 import { ScorePlayer } from './score-player/score-player.entity';
-import { Stage } from '../game/stage/stage.entity';
 import { GameModePlatform } from '../game/game-mode-platform/game-mode-platform.entity';
 import { ScoreApproval } from './score-approval/score-approval.entity';
+import { GameModeStage } from '../game/game-mode-stage/game-mode-stage.entity';
 
 @Entity()
 export class Score extends CommonColumns {
@@ -15,8 +15,9 @@ export class Score extends CommonColumns {
       'gameModePlatform.gameMode',
       'gameModePlatform.gameMode.game',
       'gameModePlatform.gameMode.mode',
+      'gameModeStage',
+      'gameModeStage.stage',
       'type',
-      'stage',
       'scorePlayers',
       'scorePlayers.player',
       'scorePlayers.player.region',
@@ -34,11 +35,11 @@ export class Score extends CommonColumns {
   gameModePlatform: GameModePlatform;
 
   @Column()
-  idStage: number;
+  idGameModeStage: number;
 
-  @ManyToOne(() => Stage)
+  @ManyToOne(() => GameModeStage)
   @JoinColumn()
-  stage: Stage;
+  gameModeStage: GameModeStage;
 
   @Column()
   idType: number;

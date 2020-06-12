@@ -3,7 +3,7 @@ import { StageRepository } from './stage.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Stage } from './stage.entity';
 import { FileUploadService } from '../../file-upload/file-upload.service';
-import { StageAddDto, StageUpdateDto } from './stage.dto';
+import { StageAddDto, StageParamsDto, StageUpdateDto } from './stage.dto';
 import { SuperService } from '../../shared/super/super-service';
 
 @Injectable()
@@ -17,5 +17,9 @@ export class StageService extends SuperService<
     private fileUploadService: FileUploadService
   ) {
     super(Stage, stageRepository, fileUploadService, { idFileKey: 'idImage' });
+  }
+
+  async findByParams(where: StageParamsDto): Promise<Stage[]> {
+    return await this.stageRepository.findByParams(where);
   }
 }
