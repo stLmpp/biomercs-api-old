@@ -24,3 +24,17 @@ export class ScoreViewModel extends Score {
   isCombinationWorldRecord?: boolean;
   combinationWorldRecord?: Score;
 }
+
+export class ScoreIsWrViewModel {
+  isWorldRecord?: boolean;
+  wordRecord?: Score;
+  isCharacterWorldRecords?: boolean;
+  @ApiPropertyOptional({
+    name: 'isCharacterWorldRecord',
+    description: 'Dictionary = { [idCharacter]: boolean }',
+  })
+  isCharacterWorldRecord?: { [idCharacter: number]: boolean };
+  characterWorldRecords?: Score[];
+  isCombinationWorldRecord?: boolean;
+  combinationWorldRecord?: Score;
+}

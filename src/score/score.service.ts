@@ -2,10 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { Score } from './score.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ScoreRepository } from './score.repository';
-import { ScoreTable, ScoreViewModel } from './score.view-model';
+import {
+  ScoreIsWrViewModel,
+  ScoreTable,
+  ScoreViewModel,
+} from './score.view-model';
 import { CharacterService } from '../game/character/character.service';
 import { StageService } from '../game/stage/stage.service';
-import { ScoreAddDto, ScoreRandomDto, ScoreTopScoreDto } from './score.dto';
+import {
+  ScoreAddDto,
+  ScoreIsWrDto,
+  ScoreRandomDto,
+  ScoreTopScoreDto,
+} from './score.dto';
 import { GameModePlatformService } from '../game/game-mode-platform/game-mode-platform.service';
 import { UserService } from '../auth/user/user.service';
 
@@ -177,5 +186,48 @@ export class ScoreService {
 
   async random(dto: ScoreRandomDto): Promise<number> {
     return (await this.scoreRepository.random(dto)).id;
+  }
+  async isWr({
+    score,
+    idCharacters,
+    ...dto
+  }: ScoreIsWrDto): Promise<ScoreIsWrViewModel> {
+    const isWr = new ScoreIsWrViewModel();
+    isWr.wordRecord = await this.getTopScore(dto);
+    isWr.isWorldRecord = score >= (isWr.wordRecord?.score ?? 0);
+    isWr.characterWorldRecords = await Promise.all(
+      idCharacters.map(
+        async idCharacter =>
+          await this.getTopScore({
+            ...dto,
+            idCharacter,
+          })
+      )
+    );
+    // TODO fix no character world records found
+    isWr.isCharacterWorldRecords = isWr.characterWorldRecords.some(
+      cwr => score >= (cwr?.score ?? 0)
+    );
+    isWr.isCharacterWorldRecord = idCharacters.reduce(
+      (acc, idCharacter) => ({
+        ...acc,
+        [idCharacter]: isWr.characterWorldRecords.some(
+          charWr =>
+            score >= (charWr?.score ?? 0) &&
+            charWr.scorePlayers[0].idCharacter === idCharacter
+        ),
+      }),
+      {}
+    );
+    if (dto.idType === 2) {
+      isWr.combinationWorldRecord = await this.getTopScore({
+        ...dto,
+        idCharacters,
+        idCharactersAnd: true,
+      });
+      isWr.isCombinationWorldRecord =
+        score >= (isWr.combinationWorldRecord?.score ?? 0);
+    }
+    return isWr;
   }
 }

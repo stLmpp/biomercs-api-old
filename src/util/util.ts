@@ -71,3 +71,12 @@ export function multipleSample<T>(arr: T[], n: number): T[] {
   }
   return result;
 }
+
+export function deleteProperties<T = any>(object: T, keys: (keyof T)[]): T {
+  for (const key of keys) {
+    if (object.hasOwnProperty(key)) {
+      delete object[key];
+    }
+  }
+  return object;
+}

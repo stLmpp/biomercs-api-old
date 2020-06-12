@@ -5,10 +5,15 @@ import { RoleEnum } from '../auth/role/role.enum';
 import { ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Score } from './score.entity';
 import { ScoreService } from './score.service';
-import { ScoreTable, ScoreViewModel } from './score.view-model';
+import {
+  ScoreIsWrViewModel,
+  ScoreTable,
+  ScoreViewModel,
+} from './score.view-model';
 import { CreatedByPipe } from '../shared/pipes/created-by.pipe';
-import { ScoreAddDto } from './score.dto';
+import { ScoreAddDto, ScoreIsWrDto } from './score.dto';
 import { RouteParamEnum } from '../shared/types/route-enums';
+import { CheckParamsPipe } from '../shared/pipes/check-params.pipe';
 
 @ApiTags('Score')
 @Roles(RoleEnum.user)
@@ -20,6 +25,13 @@ export class ScoreController {
   @Post()
   async add(@Body(CreatedByPipe) dto: ScoreAddDto): Promise<Score> {
     return await this.scoreService.add(dto);
+  }
+
+  @Post('is-wr')
+  async isWr(
+    @Body(CheckParamsPipe) dto: ScoreIsWrDto
+  ): Promise<ScoreIsWrViewModel> {
+    return this.scoreService.isWr(dto);
   }
 
   @ApiQuery({ name: RouteParamEnum.idPlayer, required: false })

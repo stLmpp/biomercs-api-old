@@ -88,7 +88,7 @@ export class UserController {
     return this.userService.existsByUsername(username);
   }
 
-  @Roles(RoleEnum.admin)
+  @Roles(RoleEnum.user)
   @Auth()
   @ApiQuery({ name: RouteParamEnum.username, required: false })
   @ApiQuery({ name: RouteParamEnum.email, required: false })

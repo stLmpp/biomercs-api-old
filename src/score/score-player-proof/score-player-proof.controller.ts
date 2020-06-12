@@ -12,6 +12,7 @@ import { GetUser } from '../../auth/get-user.decorator';
 import { User } from '../../auth/user/user.entity';
 import { RouteParamEnum } from '../../shared/types/route-enums';
 import { SuperController } from '../../shared/super/super-controller';
+import { ScorePlayerProofAddDto } from './score-player-proof.dto';
 
 @ApiTags('Score player proof')
 @Roles(RoleEnum.user)
@@ -22,7 +23,7 @@ export class ScorePlayerProofController extends SuperController<
 >({
   entity: ScorePlayerProof,
   dto: {
-    add: ScorePlayerProof,
+    add: ScorePlayerProofAddDto,
   },
   idKey: RouteParamEnum.idScorePlayerProof,
   excludeMethods: ['findAll'],

@@ -16,6 +16,7 @@ import { StageExists } from '../validation/score/stage-exists-validator';
 import { TypeExists } from '../validation/game/type-exists.validator';
 import { ScorePlayerAddDto } from './score-player/score-player.dto';
 import { ValidTime } from '../validation/score/time.validator';
+import { OmitType } from '@nestjs/swagger';
 
 export class ScoreAddDto {
   @IsDefined()
@@ -100,6 +101,16 @@ export class ScoreTopScoreDto {
   @IsOptional()
   @IsNumber()
   idPlayer?: number;
+}
+
+export class ScoreIsWrDto extends OmitType(ScoreTopScoreDto, [
+  'idCharactersAnd',
+  'idCharacter',
+  'idPlayer',
+]) {
+  @IsDefined()
+  @IsNumber()
+  score: number;
 }
 
 export class ScoreRandomDto {
