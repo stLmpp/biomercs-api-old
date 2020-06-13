@@ -7,6 +7,7 @@ import { SuperController } from '../../shared/super/super-controller';
 import { GameModeStage } from './game-mode-stage.entity';
 import {
   GameModeStageAddDto,
+  GameModeStageParamsDto,
   GameModeStageUpdateDto,
 } from './game-mode-stage.dto';
 import { RouteParamEnum } from '../../shared/types/route-enums';
@@ -21,6 +22,7 @@ export class GameModeStageController extends SuperController<GameModeStage>({
   dto: {
     add: GameModeStageAddDto,
     update: GameModeStageUpdateDto,
+    params: GameModeStageParamsDto,
   },
   idKey: RouteParamEnum.idGameModeStage,
   relations: ['stage'],

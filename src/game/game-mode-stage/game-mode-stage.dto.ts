@@ -23,3 +23,17 @@ export class GameModeStageUpdateDto {
   @IsNumber()
   maxCombo?: number;
 }
+
+export class GameModeStageParamsDto {
+  @IsOptional()
+  @IsNumber()
+  idGame?: number;
+
+  @IsOptional()
+  @IsNumber()
+  idMode?: number;
+
+  @IsOptional()
+  @IsNumber()
+  idStage?: number;
+}

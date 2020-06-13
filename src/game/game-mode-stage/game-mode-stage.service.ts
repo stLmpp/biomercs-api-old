@@ -5,6 +5,7 @@ import { SuperService } from '../../shared/super/super-service';
 import { GameModeStage } from './game-mode-stage.entity';
 import {
   GameModeStageAddDto,
+  GameModeStageParamsDto,
   GameModeStageUpdateDto,
 } from './game-mode-stage.dto';
 
@@ -31,5 +32,13 @@ export class GameModeStageService extends SuperService<
       idMode,
       idStage
     );
+  }
+
+  async findByParams(where: GameModeStageParamsDto): Promise<GameModeStage[]> {
+    return this.gameModeStageRepository.findByParams(where);
+  }
+
+  async findOneByParams(where: GameModeStageParamsDto): Promise<GameModeStage> {
+    return this.gameModeStageRepository.findOneByParams(where);
   }
 }
