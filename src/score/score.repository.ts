@@ -63,10 +63,12 @@ export class ScoreRepository extends Repository<Score> {
     idPlayer?: number
   ): Promise<ScoreTable[]> {
     const qb = this.connection
-      .createQueryBuilder()
-      .from(Stage, 'stg')
-      .addSelect('stg.*')
-      .andWhere('stg.idGame = :idGame', { idGame })
+      .createQueryBuilder(GameModeStage, 'gms')
+      .innerJoin('gms.stage', 'stg')
+      .innerJoin('gms.gameMode', 'gm')
+      .select('stg.*')
+      .andWhere('gm.idGame = :idGame', { idGame })
+      .andWhere('gm.idMode = :idMode', { idMode })
       .leftJoin(
         subQuery => {
           subQuery
@@ -74,15 +76,15 @@ export class ScoreRepository extends Repository<Score> {
             .innerJoin('score.scorePlayers', 'score_player')
             .innerJoin('score.gameModePlatform', 'gmp')
             .innerJoin('score.gameModeStage', 'gms')
+            .innerJoin('gmp.gameMode', 'gm')
             .andWhere('gms.idGameMode = gmp.idGameMode')
             .andWhere('gmp.idPlatform = :idPlatform', { idPlatform })
-            .innerJoin('gmp.gameMode', 'gm')
             .andWhere('gm.idGame = :idGame', { idGame })
             .andWhere('gm.idMode = :idMode', { idMode })
             .andWhere('score.idType = :idType', { idType })
-            .addSelect('gms.idStage', 'idStage')
+            .addSelect('gms.id', 'idGameModeStage')
             .addSelect('max(score.score)', 'maxScore')
-            .addGroupBy('idStage');
+            .addGroupBy('idGameModeStage');
           if (idCharacter) {
             subQuery.andWhere('score_player.idCharacter = :idCharacter', {
               idCharacter,
@@ -96,13 +98,12 @@ export class ScoreRepository extends Repository<Score> {
           return subQuery;
         },
         't',
-        't.idStage = stg.id'
+        't.idGameModeStage = gms.id'
       )
-      .leftJoin(Score, 'score', 'score.score = t.maxScore')
       .leftJoin(
-        GameModeStage,
-        'gms',
-        'gms.id = score.idGameModeStage and stg.id = gms.idStage'
+        Score,
+        'score',
+        'score.score = t.maxScore and score.idGameModeStage = gms.id'
       )
       .addSelect('score.id', 'idScore')
       .orderBy('stg.id');

@@ -14,7 +14,12 @@ export class UserShowcaseService {
 
   async add(idUser: number): Promise<UserShowcase> {
     return await this.userShowcaseRepository.save(
-      new UserShowcase().extendDto(updateCreatedBy({ idUser }, idUser))
+      new UserShowcase().extendDto(
+        updateCreatedBy(
+          { idUser, idPlatform: 1, idGame: 1, idMode: 1, idType: 1 },
+          idUser
+        )
+      )
     );
   }
 
