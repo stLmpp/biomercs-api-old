@@ -1,6 +1,7 @@
 import {
   Column,
   CreateDateColumn,
+  DeepPartial,
   getMetadataArgsStorage,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -28,7 +29,7 @@ export abstract class CommonColumns {
   @Column({ nullable: true })
   lastUpdatedBy: number;
 
-  extendDto(dto: Partial<this>): this {
+  extendDto(dto: DeepPartial<this>): this {
     Object.assign(this, dto);
     return this;
   }

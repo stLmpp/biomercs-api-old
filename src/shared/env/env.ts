@@ -84,6 +84,14 @@ class Env {
   get imageExtensionsAllowed(): string[] {
     return this.config('FILE_IMAGE_EXTENSIONS_ALLOWED');
   }
+
+  get defaultPaginationSize(): number {
+    return this.get('DEFAULT_PAGINATION_SIZE');
+  }
+
+  get reCaptchaToken(): string {
+    return this.get('HEADER_RECAPTCHA_TOKEN');
+  }
 }
 
 export const environment = Env.create();

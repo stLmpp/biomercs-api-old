@@ -8,6 +8,7 @@ import {
 import { ScoreExists } from '../../validation/score/score-exists.validator';
 import { ScoreApprovalStatusEnum } from './score-approval-status.enum';
 import { ScoreApprovalRejectionMotiveEnum } from './score-approval-rejection-motive.enum';
+import { ScoreApprovalTypeEnum } from './score-approval-type.enum';
 
 export class ScoreApprovalAddDto {
   @IsNumber()
@@ -26,4 +27,8 @@ export class ScoreApprovalAddDto {
   @IsOptional()
   @IsEnum(ScoreApprovalRejectionMotiveEnum)
   rejectionMotive?: ScoreApprovalRejectionMotiveEnum;
+
+  @IsOptional()
+  @IsEnum(ScoreApprovalTypeEnum)
+  type?: ScoreApprovalTypeEnum;
 }

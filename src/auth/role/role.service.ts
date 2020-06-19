@@ -39,8 +39,12 @@ export class RoleService extends SuperService<Role, RoleAddDto, RoleUpdateDto> {
   }
 
   isAdmin(user: User): boolean {
-    return user?.userRoles?.some(
-      userRole => userRole.role.name === RoleEnum.admin
-    );
+    return isAdmin(user);
   }
+}
+
+export function isAdmin(user: User): boolean {
+  return user?.userRoles?.some(
+    userRole => userRole.role.name === RoleEnum.admin
+  );
 }

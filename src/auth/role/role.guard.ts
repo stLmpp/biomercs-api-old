@@ -10,7 +10,7 @@ import { Observable } from 'rxjs';
 import { RoleEnum } from './role.enum';
 import { getUserFromContext } from '../get-user.decorator';
 import { environment } from '../../shared/env/env';
-import { ApiForbiddenResponse } from '@nestjs/swagger';
+import { ApiForbiddenResponse, ApiSecurity } from '@nestjs/swagger';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
@@ -34,6 +34,7 @@ export const Roles = (...roles: RoleEnum[]): any => {
     ? [
         UseGuards(new RoleGuard(roles)),
         ApiForbiddenResponse({ description: 'Access denied' }),
+        ApiSecurity('roles', roles),
       ]
     : [];
   return applyDecorators(...decorators);

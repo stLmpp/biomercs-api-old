@@ -5,6 +5,7 @@ import { ScorePlayer } from './score-player/score-player.entity';
 import { GameModePlatform } from '../game/game-mode-platform/game-mode-platform.entity';
 import { ScoreApproval } from './score-approval/score-approval.entity';
 import { GameModeStage } from '../game/game-mode-stage/game-mode-stage.entity';
+import { ScoreStatus } from './score-status/score-status.entity';
 
 @Entity()
 export class Score extends CommonColumns {
@@ -24,6 +25,7 @@ export class Score extends CommonColumns {
       'scorePlayers.character',
       'scorePlayers.scorePlayerProofs',
       'scorePlayers.scorePlayerProofs.site',
+      'scoreStatus',
     ];
   }
 
@@ -62,7 +64,7 @@ export class Score extends CommonColumns {
   @Column()
   maxCombo: number;
 
-  @Column({ length: 8, nullable: true })
+  @Column({ length: 8 })
   time: string;
 
   @OneToMany(
@@ -71,4 +73,14 @@ export class Score extends CommonColumns {
   )
   @JoinColumn()
   scoreApprovals: ScoreApproval[];
+
+  @Column()
+  idScoreStatus: number;
+
+  @ManyToOne(() => ScoreStatus)
+  @JoinColumn()
+  scoreStatus: ScoreStatus;
+
+  @Column({ nullable: true })
+  dateAchieved: Date;
 }

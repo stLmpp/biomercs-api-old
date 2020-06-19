@@ -6,5 +6,7 @@
   "CONFIG_USE_AUTH": true,
   "CONFIG_USE_HANDLE_ERROR": true,
   "CONFIG_FILE_UPLOAD_PATH": "./uploads",
-  "CONFIG_FILE_IMAGE_EXTENSIONS_ALLOWED": ["jpg", "png", "gif"]
+  "CONFIG_FILE_IMAGE_EXTENSIONS_ALLOWED": ["jpg", "png", "gif"],
+  "DEFAULT_PAGINATION_SIZE": 15,
+  "HEADER_RECAPTCHA_TOKEN": "Biomercs-reCAPTCHA-Token"
 }

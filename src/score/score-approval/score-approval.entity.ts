@@ -3,6 +3,7 @@ import { CommonColumns } from '../../shared/super/common-columns';
 import { ScoreApprovalStatusEnum } from './score-approval-status.enum';
 import { ScoreApprovalRejectionMotiveEnum } from './score-approval-rejection-motive.enum';
 import { Score } from '../score.entity';
+import { ScoreApprovalTypeEnum } from './score-approval-type.enum';
 
 @Entity()
 export class ScoreApproval extends CommonColumns {
@@ -28,4 +29,10 @@ export class ScoreApproval extends CommonColumns {
   )
   @JoinColumn()
   score: Score;
+
+  @Column()
+  active: boolean;
+
+  @Column({ type: 'enum', enum: ScoreApprovalTypeEnum })
+  type: ScoreApprovalTypeEnum;
 }

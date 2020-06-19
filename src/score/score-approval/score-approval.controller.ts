@@ -7,16 +7,27 @@ import { ScoreApprovalService } from './score-approval.service';
 import { ScoreApproval } from './score-approval.entity';
 import { CreatedByPipe } from '../../shared/pipes/created-by.pipe';
 import { ScoreApprovalAddDto } from './score-approval.dto';
+import { ScoreApprovalTypeEnum } from './score-approval-type.enum';
 
 @ApiTags('Score approval')
-@Roles(RoleEnum.admin)
 @Auth()
 @Controller('score-approval')
 export class ScoreApprovalController {
   constructor(private scoreApprovalService: ScoreApprovalService) {}
 
-  @Post()
+  @Roles(RoleEnum.admin)
+  @Post('admin')
   add(@Body(CreatedByPipe) dto: ScoreApprovalAddDto): Promise<ScoreApproval> {
+    dto.type = ScoreApprovalTypeEnum.admin;
+    return this.scoreApprovalService.add(dto);
+  }
+
+  @Roles(RoleEnum.user)
+  @Post('user')
+  addUser(
+    @Body(CreatedByPipe) dto: ScoreApprovalAddDto
+  ): Promise<ScoreApproval> {
+    dto.type = ScoreApprovalTypeEnum.user;
     return this.scoreApprovalService.add(dto);
   }
 }

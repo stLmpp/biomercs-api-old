@@ -3,7 +3,7 @@ import { isAnyObject, isArray, isNumber } from 'is-what';
 import { RequestService } from '../../auth/user/request.service';
 import { User } from '../../auth/user/user.entity';
 
-export function updateCreatedBy<T>(value: T, user: User | number): T {
+export function updateCreatedBy<T>(value: T, user: User | number = -1): T {
   if (!value) return value;
   const idUser = isNumber(user) ? user : user.id;
   if (isArray(value)) {

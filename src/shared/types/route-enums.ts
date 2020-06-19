@@ -1,5 +1,7 @@
 export enum RouteParamEnum {
   idCharacter = 'idCharacter',
+  idCharacters = 'idCharacters',
+  idCharactersAnd = 'idCharactersAnd',
   idFileUpload = 'idFileUpload',
   idGame = 'idGame',
   idGameMode = 'idGameMode',
@@ -17,6 +19,7 @@ export enum RouteParamEnum {
   idScore = 'idScore',
   idScorePlayer = 'idScorePlayer',
   idScorePlayerProof = 'idScorePlayerProof',
+  idScoreStatus = 'idScoreStatus',
   idSite = 'idSite',
   idStage = 'idStage',
   idUser = 'idUser',
@@ -35,4 +38,10 @@ export enum RouteParamEnum {
   token = 'token',
   limit = 'limit',
   select = 'select',
+  page = 'page',
+  startDate = 'startDate',
+  endDate = 'endDate',
+  score = 'score',
+  maxCombo = 'maxCombo',
+  time = 'time',
 }

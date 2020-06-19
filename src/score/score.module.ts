@@ -14,6 +14,9 @@ import { FileUploadModule } from '../file-upload/file-upload.module';
 import { ScoreApprovalController } from './score-approval/score-approval.controller';
 import { ScoreApprovalService } from './score-approval/score-approval.service';
 import { ScoreApprovalRepository } from './score-approval/score-approval.repository';
+import { ScoreStatusRepository } from './score-status/score-status.repository';
+import { ScoreStatusController } from './score-status/score-status.controller';
+import { ScoreStatusService } from './score-status/score-status.service';
 
 @Module({
   imports: [
@@ -22,6 +25,7 @@ import { ScoreApprovalRepository } from './score-approval/score-approval.reposit
       ScorePlayerRepository,
       ScorePlayerProofRepository,
       ScoreApprovalRepository,
+      ScoreStatusRepository,
     ]),
     GameModule,
     FileUploadModule,
@@ -31,18 +35,21 @@ import { ScoreApprovalRepository } from './score-approval/score-approval.reposit
     ScorePlayerController,
     ScorePlayerProofController,
     ScoreApprovalController,
+    ScoreStatusController,
   ],
   providers: [
     ScoreService,
     ScorePlayerService,
     ScorePlayerProofService,
     ScoreApprovalService,
+    ScoreStatusService,
   ],
   exports: [
     ScoreService,
     ScorePlayerService,
     ScorePlayerProofService,
     ScoreApprovalService,
+    ScoreStatusService,
   ],
 })
 export class ScoreModule {}

@@ -4,11 +4,15 @@ import { User } from '../user.entity';
 
 @Entity()
 export class UserShowcase extends CommonColumns {
-  @Column()
+  @Column({ nullable: true })
   idUser: number;
 
-  @OneToOne(() => User)
-  @JoinColumn()
+  @OneToOne(
+    () => User,
+    user => user.userShowcase,
+    { nullable: true }
+  )
+  @JoinColumn({ name: 'idUser', referencedColumnName: 'id' })
   user: User;
 
   @Column({ nullable: true })

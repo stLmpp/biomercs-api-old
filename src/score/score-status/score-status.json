@@ -1,0 +1,7 @@
+[
+  { "id": 1, "description": "Approved" },
+  { "id": 2, "description": "Awaiting approval of partner" },
+  { "id": 3, "description": "Awaiting approval of admin" },
+  { "id": 4, "description": "Rejected by partner" },
+  { "id": 5, "description": "Rejected by admin" }
+]

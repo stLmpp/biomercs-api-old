@@ -1,8 +1,16 @@
-import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { Auth } from '../auth/auth.decorator';
 import { Roles } from '../auth/role/role.guard';
 import { RoleEnum } from '../auth/role/role.enum';
-import { ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiOkResponse, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Score } from './score.entity';
 import { ScoreService } from './score.service';
 import {
@@ -14,6 +22,14 @@ import { CreatedByPipe } from '../shared/pipes/created-by.pipe';
 import { ScoreAddDto, ScoreIsWrDto } from './score.dto';
 import { RouteParamEnum } from '../shared/types/route-enums';
 import { CheckParamsPipe } from '../shared/pipes/check-params.pipe';
+import { Pagination } from 'nestjs-typeorm-paginate/index';
+import { ParseDatePipe } from '../shared/pipes/parse-date.pipe';
+import { ApiPagination } from '../shared/decorator/api-pagination';
+import { matrixSchema } from '../shared/decorator/api-matrix';
+import { GetUser } from '../auth/get-user.decorator';
+import { User } from '../auth/user/user.entity';
+import { ScoreStatusEnum } from './score-status/score-status.enum';
+import { ApiQueryEnum } from '../shared/decorator/api-query-enum';
 
 @ApiTags('Score')
 @Roles(RoleEnum.user)
@@ -57,6 +73,7 @@ export class ScoreController {
   }
 
   @ApiQuery({ name: RouteParamEnum.idPlayer, required: false })
+  @ApiOkResponse({ schema: matrixSchema(ScoreViewModel) })
   @Get('table-player')
   async getScoreTablePlayer(
     @Query(RouteParamEnum.idGame) idGame: number,
@@ -77,6 +94,7 @@ export class ScoreController {
   @ApiQuery({ name: RouteParamEnum.idCharacter, required: false })
   @ApiQuery({ name: RouteParamEnum.idPlayer, required: false })
   @ApiQuery({ name: RouteParamEnum.limit, required: false })
+  @ApiOkResponse({ schema: matrixSchema(ScoreViewModel) })
   @Get('table-top')
   async getManyTopScore(
     @Query(RouteParamEnum.idPlatform) idPlatform: number,
@@ -121,6 +139,121 @@ export class ScoreController {
       idStage,
       idMode,
       idCharacter,
+    });
+  }
+
+  @ApiQueryEnum({ name: RouteParamEnum.idScoreStatus, enum: ScoreStatusEnum })
+  @ApiQuery({ name: RouteParamEnum.idPlatform, required: false })
+  @ApiQuery({ name: RouteParamEnum.idGame, required: false })
+  @ApiQuery({ name: RouteParamEnum.idMode, required: false })
+  @ApiQuery({ name: RouteParamEnum.idType, required: false })
+  @ApiQuery({ name: RouteParamEnum.idPlayer, required: false })
+  @ApiQuery({ name: RouteParamEnum.startDate, required: false })
+  @ApiQuery({ name: RouteParamEnum.endDate, required: false })
+  @ApiPagination(ScoreViewModel)
+  @Roles(RoleEnum.admin)
+  @Get('approval-list')
+  async findScoresApproval(
+    @Query(RouteParamEnum.idScoreStatus) idScoreStatus: number,
+    @Query(RouteParamEnum.page) page: number,
+    @Query(RouteParamEnum.idPlatform) idPlatform?: number,
+    @Query(RouteParamEnum.idGame) idGame?: number,
+    @Query(RouteParamEnum.idMode) idMode?: number,
+    @Query(RouteParamEnum.idType) idType?: number,
+    @Query(RouteParamEnum.idPlayer) idPlayer?: number,
+    @Query(RouteParamEnum.startDate, ParseDatePipe) startDate?: Date,
+    @Query(RouteParamEnum.endDate, ParseDatePipe) endDate?: Date
+  ): Promise<Pagination<ScoreViewModel>> {
+    return this.scoreService.findScoresApproval(
+      {
+        idPlayer,
+        idType,
+        idPlatform,
+        idMode,
+        idGame,
+        startDate,
+        endDate,
+        idScoreStatus,
+      },
+      page
+    );
+  }
+
+  @ApiQueryEnum({ name: RouteParamEnum.idScoreStatus, enum: ScoreStatusEnum })
+  @ApiQuery({ name: RouteParamEnum.idPlatform, required: false })
+  @ApiQuery({ name: RouteParamEnum.idGame, required: false })
+  @ApiQuery({ name: RouteParamEnum.idMode, required: false })
+  @ApiQuery({ name: RouteParamEnum.idType, required: false })
+  @ApiQuery({ name: RouteParamEnum.startDate, required: false })
+  @ApiQuery({ name: RouteParamEnum.endDate, required: false })
+  @ApiPagination(ScoreViewModel)
+  @Roles(RoleEnum.admin)
+  @Get('approval-list/user')
+  async findScoresApprovalUser(
+    @GetUser() user: User,
+    @Query(RouteParamEnum.idScoreStatus) idScoreStatus: number,
+    @Query(RouteParamEnum.page) page: number,
+    @Query(RouteParamEnum.idPlatform) idPlatform?: number,
+    @Query(RouteParamEnum.idGame) idGame?: number,
+    @Query(RouteParamEnum.idMode) idMode?: number,
+    @Query(RouteParamEnum.idType) idType?: number,
+    @Query(RouteParamEnum.startDate, ParseDatePipe) startDate?: Date,
+    @Query(RouteParamEnum.endDate, ParseDatePipe) endDate?: Date
+  ): Promise<Pagination<ScoreViewModel>> {
+    return this.scoreService.findScoresApproval(
+      {
+        idPlayer: user.id,
+        idType,
+        idPlatform,
+        idMode,
+        idGame,
+        startDate,
+        endDate,
+        idScoreStatus,
+      },
+      page
+    );
+  }
+
+  @ApiQuery({ name: RouteParamEnum.idCharacter, required: false })
+  @ApiQuery({
+    name: RouteParamEnum.idCharacters,
+    required: false,
+    isArray: true,
+    type: Number,
+  })
+  @ApiQuery({ name: RouteParamEnum.idCharactersAnd, required: false })
+  @Get('require-approval')
+  async requireApproval(
+    @Query(RouteParamEnum.score) score: number,
+    @Query(RouteParamEnum.maxCombo) maxCombo: number,
+    @Query(RouteParamEnum.time) time: string,
+    @Query(RouteParamEnum.idPlatform) idPlatform: number,
+    @Query(RouteParamEnum.idGame) idGame: number,
+    @Query(RouteParamEnum.idMode) idMode: number,
+    @Query(RouteParamEnum.idType) idType: number,
+    @Query(RouteParamEnum.idStage) idStage: number,
+    @Query(RouteParamEnum.idCharacter) idCharacter?: number,
+    @Query(RouteParamEnum.idCharacters) idCharacters?: number[],
+    @Query(RouteParamEnum.idCharactersAnd) idCharactersAnd?: boolean
+  ): Promise<boolean> {
+    if (!idCharacter && !idCharacters?.length) {
+      throw new BadRequestException(
+        '[idCharacter] or [idCharacters] must have a value'
+      );
+    }
+    return this.scoreService.requireApproval({
+      idPlatform,
+      idGame,
+      idMode,
+      idType,
+      idStage,
+      idCharacter,
+      idCharacters,
+      maxCombo,
+      time,
+      score,
+      idCharactersAnd,
     });
   }
 

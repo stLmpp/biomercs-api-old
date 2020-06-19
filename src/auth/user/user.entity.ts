@@ -106,7 +106,6 @@ export class User extends CommonColumns {
     () => UserShowcase,
     userShowcase => userShowcase.user
   )
-  @JoinColumn({ name: 'id', referencedColumnName: 'idUser' })
   userShowcase: UserShowcase;
 
   token?: string;
