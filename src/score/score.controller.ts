@@ -4,6 +4,7 @@ import {
   Controller,
   Get,
   Param,
+  ParseArrayPipe,
   Post,
   Query,
 } from '@nestjs/common';
@@ -234,7 +235,8 @@ export class ScoreController {
     @Query(RouteParamEnum.idType) idType: number,
     @Query(RouteParamEnum.idStage) idStage: number,
     @Query(RouteParamEnum.idCharacter) idCharacter?: number,
-    @Query(RouteParamEnum.idCharacters) idCharacters?: number[],
+    @Query(RouteParamEnum.idCharacters, new ParseArrayPipe({ optional: true }))
+    idCharacters?: number[],
     @Query(RouteParamEnum.idCharactersAnd) idCharactersAnd?: boolean
   ): Promise<boolean> {
     if (!idCharacter && !idCharacters?.length) {

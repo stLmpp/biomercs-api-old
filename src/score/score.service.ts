@@ -131,7 +131,7 @@ export class ScoreService {
       idMode,
       idStage
     );
-    const scoreStatus: ScoreStatusEnum =
+    const idScoreStatus =
       dto.idType === TypeEnum.duo
         ? ScoreStatusEnum.pendingUser
         : ScoreStatusEnum.pendingAdmin;
@@ -140,7 +140,7 @@ export class ScoreService {
         ...dto,
         idGameModePlatform,
         idGameModeStage,
-        scoreStatus: scoreStatus as any,
+        idScoreStatus,
       })
     );
     const requiredApprovalDto: ScoreAverageDto = {
@@ -170,9 +170,7 @@ export class ScoreService {
       );
       await this.scoreRepository.update(
         score.id,
-        updateLastUpdatedBy({
-          scoreStatus: ScoreStatusEnum.approved as any,
-        })
+        updateLastUpdatedBy({ idScoreStatus: ScoreStatusEnum.approved })
       );
     }
     return score;
@@ -208,11 +206,13 @@ export class ScoreService {
     scoreVw.isCharacterWorldRecord = scoreVw.scorePlayers.reduce(
       (acc, sp) => ({
         ...acc,
-        [sp.idCharacter]: scoreVw.characterWorldRecords.some(
-          charWr =>
-            charWr.id === sp.idScore &&
-            charWr.scorePlayers[0].idCharacter === sp.idCharacter
-        ),
+        [sp.idCharacter]:
+          !scoreVw.characterWorldRecords.length ||
+          scoreVw.characterWorldRecords.some(
+            charWr =>
+              charWr.id === sp.idScore &&
+              charWr.scorePlayers[0].idCharacter === sp.idCharacter
+          ),
       }),
       {}
     );
@@ -258,27 +258,31 @@ export class ScoreService {
     const isWr = new ScoreIsWrViewModel();
     isWr.wordRecord = await this.getTopScore(dto);
     isWr.isWorldRecord = score >= (isWr.wordRecord?.score ?? 0);
-    isWr.characterWorldRecords = await Promise.all(
-      (idCharacters ?? []).map(
-        async idCharacter =>
-          await this.getTopScore({
-            ...dto,
-            idCharacter,
-          })
-      )
-    );
-    // TODO fix no character world records found
-    isWr.isCharacterWorldRecords = isWr.characterWorldRecords.some(
-      cwr => score >= (cwr?.score ?? 0)
-    );
+    isWr.characterWorldRecords = !idCharacters?.length
+      ? []
+      : (
+          await Promise.all(
+            idCharacters.map(idCharacter =>
+              this.getTopScore({
+                ...dto,
+                idCharacter,
+              })
+            )
+          )
+        ).filter(Boolean);
+    isWr.isCharacterWorldRecords =
+      !isWr.characterWorldRecords?.length ||
+      isWr.characterWorldRecords.some(cwr => score >= (cwr?.score ?? 0));
     isWr.isCharacterWorldRecord = (idCharacters ?? []).reduce(
       (acc, idCharacter) => ({
         ...acc,
-        [idCharacter]: isWr.characterWorldRecords.some(
-          charWr =>
-            score >= (charWr?.score ?? 0) &&
-            charWr.scorePlayers[0].idCharacter === idCharacter
-        ),
+        [idCharacter]:
+          !isWr.characterWorldRecords?.length ||
+          (isWr.characterWorldRecords ?? []).some(
+            charWr =>
+              score >= (charWr?.score ?? 0) &&
+              charWr.scorePlayers[0].idCharacter === idCharacter
+          ),
       }),
       {}
     );
