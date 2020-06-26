@@ -27,6 +27,7 @@ import { ScoreApprovalService } from './score-approval/score-approval.service';
 import { ScoreApprovalStatusEnum } from './score-approval/score-approval-status.enum';
 import { updateCreatedBy } from '../shared/pipes/created-by.pipe';
 import { updateLastUpdatedBy } from '../shared/pipes/updated-by.pipe';
+import { OrderByDirection } from '../util/types';
 
 @Injectable()
 export class ScoreService {
@@ -200,9 +201,18 @@ export class ScoreService {
         )
       )
     ).filter(charWr => !!charWr);
+    if (!scoreVw.characterWorldRecords.length) {
+      const copy = new ScoreViewModel().extendDto({
+        ...scoreVw,
+        characterWorldRecords: [],
+      });
+      scoreVw.characterWorldRecords.push(copy);
+    }
     scoreVw.isCharacterWorldRecords =
       !scoreVw.characterWorldRecords.length ||
-      scoreVw.characterWorldRecords.some(cwr => cwr.id === scoreVw.id);
+      scoreVw.characterWorldRecords.some(
+        cwr => cwr.id === scoreVw.id || scoreVw.score > (cwr.score ?? 0)
+      );
     scoreVw.isCharacterWorldRecord = scoreVw.scorePlayers.reduce(
       (acc, sp) => ({
         ...acc,
@@ -223,8 +233,9 @@ export class ScoreService {
       idGame: score.gameModePlatform.gameMode.idGame,
       idStage: score.gameModeStage.idStage,
     });
-    scoreVw.isWorldRecord = !wr?.id || wr.id === score.id;
-    scoreVw.wordRecord = wr;
+    scoreVw.isWorldRecord =
+      !wr?.id || wr.id === score.id || scoreVw.score > (wr.score ?? 0);
+    scoreVw.worldRecord = wr;
     if (score.idType === 2) {
       const combinationWr = await this.getTopScore({
         idPlatform: score.gameModePlatform.idPlatform,
@@ -236,7 +247,9 @@ export class ScoreService {
         idCharactersAnd: true,
       });
       scoreVw.isCombinationWorldRecord =
-        !combinationWr?.id || combinationWr.id === score.id;
+        !combinationWr?.id ||
+        combinationWr.id === score.id ||
+        scoreVw.score > (combinationWr.score ?? 0);
       scoreVw.combinationWorldRecord = combinationWr;
     }
     return scoreVw;
@@ -256,8 +269,8 @@ export class ScoreService {
     ...dto
   }: ScoreIsWrDto): Promise<ScoreIsWrViewModel> {
     const isWr = new ScoreIsWrViewModel();
-    isWr.wordRecord = await this.getTopScore(dto);
-    isWr.isWorldRecord = score >= (isWr.wordRecord?.score ?? 0);
+    isWr.worldRecord = await this.getTopScore(dto);
+    isWr.isWorldRecord = score >= (isWr.worldRecord?.score ?? 0);
     isWr.characterWorldRecords = !idCharacters?.length
       ? []
       : (
@@ -300,13 +313,20 @@ export class ScoreService {
 
   async findScoresApproval(
     dto: ScoreApprovalParamsDto,
-    page: number
+    page: number,
+    orderBy?: string,
+    orderByDirection?: OrderByDirection
   ): Promise<Pagination<ScoreViewModel>> {
     const {
       items,
       links,
       meta,
-    } = await this.scoreRepository.findScoresApproval(dto, page);
+    } = await this.scoreRepository.findScoresApproval(
+      dto,
+      page,
+      orderBy,
+      orderByDirection
+    );
     return new Pagination(
       await Promise.all(items.map(score => this.fillWr(score))),
       meta,
@@ -328,5 +348,9 @@ export class ScoreService {
     return (
       dto.score < averageScore - percent5 || dto.score > averageScore + percent5
     );
+  }
+
+  async countApprovals(dto: ScoreApprovalParamsDto): Promise<number> {
+    return await this.scoreRepository.countScoresApproval(dto);
   }
 }

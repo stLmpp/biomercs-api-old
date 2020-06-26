@@ -20,6 +20,9 @@ import { GameModeStage } from '../game/game-mode-stage/game-mode-stage.entity';
 import { paginate, Pagination } from 'nestjs-typeorm-paginate/index';
 import { environment } from '../shared/env/env';
 import { ScoreStatusEnum } from './score-status/score-status.enum';
+import { OrderByDirection } from '../util/types';
+import { isString } from 'is-what';
+import { JoinType } from '../util/util';
 
 @EntityRepository(Score)
 export class ScoreRepository extends Repository<Score> {
@@ -281,25 +284,54 @@ export class ScoreRepository extends Repository<Score> {
   private includeAllRelations(
     tableName: string,
     qb: SelectQueryBuilder<Score>,
-    join: 'innerJoin' | 'innerJoinAndSelect' = 'innerJoinAndSelect'
+    join?: Record<string, JoinType>
+  );
+  private includeAllRelations(
+    tableName: string,
+    qb: SelectQueryBuilder<Score>,
+    join?: JoinType
+  ): SelectQueryBuilder<Score>;
+  private includeAllRelations(
+    tableName: string,
+    qb: SelectQueryBuilder<Score>,
+    join: JoinType | Record<string, JoinType> = 'innerJoinAndSelect'
   ): SelectQueryBuilder<Score> {
-    return qb[join](`${tableName}.gameModePlatform`, 'gmp')
-      [join]('gmp.gameMode', 'gm')
-      [join]('gm.game', 'g')
-      [join]('gm.mode', 'm')
-      [join]('gmp.platform', 'p')
-      [join](`${tableName}.gameModeStage`, 'gms')
+    let joinOptions: Record<string, JoinType>;
+    if (isString(join)) {
+      joinOptions = Score.allRelationQb.reduce(
+        (obj, item) => ({ ...obj, [item]: join }),
+        {}
+      );
+    } else {
+      joinOptions = Score.allRelationQb.reduce(
+        (obj, item) => ({ ...obj, [item]: join[item] ?? 'innerJoinAndSelect' }),
+        {}
+      );
+    }
+    return qb[joinOptions.gameModePlatform](
+      `${tableName}.gameModePlatform`,
+      'gmp'
+    )
+      [joinOptions.gameMode]('gmp.gameMode', 'gm')
+      [joinOptions.game]('gm.game', 'g')
+      [joinOptions.mode]('gm.mode', 'm')
+      [joinOptions.platform]('gmp.platform', 'p')
+      [joinOptions.gameModeStage](`${tableName}.gameModeStage`, 'gms')
       .andWhere('gms.idGameMode = gmp.idGameMode')
-      [join]('gms.stage', 's')
-      [join](`${tableName}.type`, 't')
-      [join](`${tableName}.scorePlayers`, 'sp')
-      [join]('sp.player', 'pl')
-      [join]('sp.character', 'c')
-      [join]('sp.scorePlayerProofs', 'spp')
-      [join]('score.scoreStatus', 'ss');
+      [joinOptions.stage]('gms.stage', 's')
+      [joinOptions.type](`${tableName}.type`, 't')
+      [joinOptions.scorePlayers](`${tableName}.scorePlayers`, 'sp')
+      [joinOptions.player]('sp.player', 'pl')
+      [joinOptions.character]('sp.character', 'c')
+      [joinOptions.scorePlayerProofs.replace('inner', 'left')](
+        'sp.scorePlayerProofs',
+        'spp'
+      )
+      [joinOptions.site.replace('inner', 'left')]('spp.site', 'site')
+      [joinOptions.scoreStatus]('score.scoreStatus', 'ss');
   }
 
-  async findScoresApproval(
+  private scoresApprovalQb(
     {
       endDate,
       idGame,
@@ -309,15 +341,28 @@ export class ScoreRepository extends Repository<Score> {
       idType,
       startDate,
       idScoreStatus,
+      idStage,
+      idCharacter,
+      idStages,
     }: ScoreApprovalParamsDto,
-    page: number
-  ): Promise<Pagination<Score>> {
-    const qb = this.createQueryBuilder('score')
-      .orderBy('score.id', 'DESC')
-      .andWhere('score.idScoreStatus = :idScoreStatus', {
+    orderBy?: string,
+    orderByDirection?: OrderByDirection
+  ): SelectQueryBuilder<Score> {
+    const qb = this.createQueryBuilder('score').orderBy(
+      `${orderBy ?? 'score.id'}`,
+      orderByDirection ?? 'ASC'
+    );
+    this.includeAllRelations('score', qb, {
+      game: 'innerJoin',
+      mode: 'innerJoin',
+      platform: 'innerJoin',
+      type: 'innerJoin',
+    });
+    if (idScoreStatus) {
+      qb.andWhere('score.idScoreStatus = :idScoreStatus', {
         idScoreStatus: idScoreStatus,
       });
-    this.includeAllRelations('score', qb);
+    }
     if (idGame) {
       qb.andWhere('g.id = :idGame', { idGame });
     }
@@ -328,7 +373,26 @@ export class ScoreRepository extends Repository<Score> {
       qb.andWhere('m.id = :idMode', { idMode });
     }
     if (idPlayer) {
-      qb.andWhere('pl.id = :idPlayer', { idPlayer });
+      qb.andExists(sb => {
+        sb.from(ScorePlayer, 'spExists')
+          .andWhere('spExists.idScore = score.id')
+          .andWhere('spExists.idPlayer = :idPlayer', { idPlayer });
+        if (
+          [ScoreStatusEnum.pendingUser, ScoreStatusEnum.rejectedUser].includes(
+            idScoreStatus
+          )
+        ) {
+          sb.andWhere(() => {
+            const sbb = qb
+              .subQuery()
+              .select('max(maxSp.id)', 'maxId')
+              .from(ScorePlayer, 'maxSp')
+              .andWhere('spExists.idScore = maxSp.idScore');
+            return `spExists.id = ${sbb.getQuery()}`;
+          });
+        }
+        return sb;
+      });
     }
     if (idType) {
       qb.andWhere('t.id = :idType', { idType });
@@ -339,10 +403,38 @@ export class ScoreRepository extends Repository<Score> {
     if (endDate) {
       qb.andWhere('score.creationDate < :endDate', { endDate });
     }
+    if (idStage) {
+      qb.andWhere('gms.idStage = :idStage', { idStage });
+    }
+    if (idStages) {
+      qb.andWhere('gms.idStages in ...:idStages', { idStages });
+    }
+    if (idCharacter) {
+      qb.andExists(sb => {
+        return sb
+          .from(ScorePlayer, 'charExists')
+          .andWhere('charExists.idScore = score.id')
+          .andWhere('charExists.idCharacter = :idCharacter', { idCharacter });
+      });
+    }
+    return qb;
+  }
+
+  async findScoresApproval(
+    dto: ScoreApprovalParamsDto,
+    page: number,
+    orderBy?: string,
+    orderByDirection?: OrderByDirection
+  ): Promise<Pagination<Score>> {
+    const qb = this.scoresApprovalQb(dto, orderBy, orderByDirection);
     return await paginate(qb, {
       page,
       limit: environment.defaultPaginationSize,
     });
+  }
+
+  async countScoresApproval(dto: ScoreApprovalParamsDto): Promise<number> {
+    return await this.scoresApprovalQb(dto).getCount();
   }
 
   async findAverage({
@@ -389,5 +481,5 @@ export class ScoreRepository extends Repository<Score> {
 }
 
 export function formatTime(time: string): string {
-  return `substr(${time}, 1, 2) * 100 * 60) + (substr(${time}, 4, 2) * 100) + substr(${time}, 7, 2)`;
+  return `(substr(${time}, 1, 2) * 100 * 60) + (substr(${time}, 4, 2) * 100) + substr(${time}, 7, 2)`;
 }

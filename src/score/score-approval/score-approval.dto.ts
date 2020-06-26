@@ -1,19 +1,20 @@
 import {
+  IsArray,
   IsDefined,
   IsEnum,
+  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
 } from 'class-validator';
-import { ScoreExists } from '../../validation/score/score-exists.validator';
 import { ScoreApprovalStatusEnum } from './score-approval-status.enum';
 import { ScoreApprovalRejectionMotiveEnum } from './score-approval-rejection-motive.enum';
 import { ScoreApprovalTypeEnum } from './score-approval-type.enum';
+import { OmitType } from '@nestjs/swagger';
 
 export class ScoreApprovalAddDto {
   @IsNumber()
   @IsDefined()
-  @ScoreExists()
   idScore: number;
 
   @IsDefined()
@@ -31,4 +32,14 @@ export class ScoreApprovalAddDto {
   @IsOptional()
   @IsEnum(ScoreApprovalTypeEnum)
   type?: ScoreApprovalTypeEnum;
+}
+
+export class ScoreApprovalAddManyDto extends OmitType<
+  ScoreApprovalAddDto,
+  'idScore'
+>(ScoreApprovalAddDto, ['idScore']) {
+  @IsArray()
+  @IsNotEmpty()
+  @IsDefined()
+  idScores: number[];
 }

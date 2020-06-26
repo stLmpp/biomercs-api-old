@@ -1,4 +1,4 @@
-import { Controller, Param, Post, UploadedFile } from '@nestjs/common';
+import { Controller, Param, Patch, Post, UploadedFile } from '@nestjs/common';
 import { Auth } from '../../auth/auth.decorator';
 import { Roles } from '../../auth/role/role.guard';
 import { RoleEnum } from '../../auth/role/role.enum';
@@ -12,7 +12,10 @@ import { GetUser } from '../../auth/get-user.decorator';
 import { User } from '../../auth/user/user.entity';
 import { RouteParamEnum } from '../../shared/types/route-enums';
 import { SuperController } from '../../shared/super/super-controller';
-import { ScorePlayerProofAddDto } from './score-player-proof.dto';
+import {
+  ScorePlayerProofAddDto,
+  ScorePlayerProofUpdateDto,
+} from './score-player-proof.dto';
 
 @ApiTags('Score player proof')
 @Roles(RoleEnum.user)
@@ -24,6 +27,7 @@ export class ScorePlayerProofController extends SuperController<
   entity: ScorePlayerProof,
   dto: {
     add: ScorePlayerProofAddDto,
+    update: ScorePlayerProofUpdateDto,
   },
   idKey: RouteParamEnum.idScorePlayerProof,
   excludeMethods: ['findAll'],
@@ -42,5 +46,21 @@ export class ScorePlayerProofController extends SuperController<
     @GetUser() user: User
   ): Promise<ScorePlayerProof> {
     return this.scorePlayerProofService.uploadImage(idScorePlayer, file, user);
+  }
+
+  @Patch(`:${RouteParamEnum.idScorePlayerProof}/image`)
+  @UseFileUpload({
+    filesAllowed: environment.imageExtensionsAllowed,
+  })
+  updateFile(
+    @Param(RouteParamEnum.idScorePlayerProof) idScorePlayerProof: number,
+    @UploadedFile('file') file: FileType,
+    @GetUser() user: User
+  ): Promise<ScorePlayerProof> {
+    return this.scorePlayerProofService.updateFile(
+      idScorePlayerProof,
+      file,
+      user
+    );
   }
 }

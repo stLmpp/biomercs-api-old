@@ -1,10 +1,15 @@
 import { isNullOrUndefined, isNumber } from 'is-what';
+import { SelectQueryBuilder } from 'typeorm';
 
 export function isNil<T = any>(value: T): value is null | undefined {
   return value == null;
 }
 
 export type RemoveNullObjectCheckType = 'strict' | 'loose';
+export type JoinType = keyof Pick<
+  SelectQueryBuilder<any>,
+  'innerJoinAndSelect' | 'innerJoin' | 'leftJoin' | 'leftJoinAndSelect'
+>;
 
 export function removeNullObject<T = any>(
   object: T,

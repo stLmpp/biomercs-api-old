@@ -31,6 +31,7 @@ import { GetUser } from '../auth/get-user.decorator';
 import { User } from '../auth/user/user.entity';
 import { ScoreStatusEnum } from './score-status/score-status.enum';
 import { ApiQueryEnum } from '../shared/decorator/api-query-enum';
+import { OrderByDirection } from '../util/types';
 
 @ApiTags('Score')
 @Roles(RoleEnum.user)
@@ -149,8 +150,17 @@ export class ScoreController {
   @ApiQuery({ name: RouteParamEnum.idMode, required: false })
   @ApiQuery({ name: RouteParamEnum.idType, required: false })
   @ApiQuery({ name: RouteParamEnum.idPlayer, required: false })
+  @ApiQuery({ name: RouteParamEnum.idCharacter, required: false })
+  @ApiQuery({ name: RouteParamEnum.idStage, required: false })
+  @ApiQuery({ name: RouteParamEnum.idStages, required: false })
   @ApiQuery({ name: RouteParamEnum.startDate, required: false })
   @ApiQuery({ name: RouteParamEnum.endDate, required: false })
+  @ApiQuery({ name: RouteParamEnum.orderBy, required: false })
+  @ApiQuery({
+    name: RouteParamEnum.orderByDirection,
+    required: false,
+    enum: ['ASC', 'DESC'],
+  })
   @ApiPagination(ScoreViewModel)
   @Roles(RoleEnum.admin)
   @Get('approval-list')
@@ -162,8 +172,14 @@ export class ScoreController {
     @Query(RouteParamEnum.idMode) idMode?: number,
     @Query(RouteParamEnum.idType) idType?: number,
     @Query(RouteParamEnum.idPlayer) idPlayer?: number,
+    @Query(RouteParamEnum.idCharacter) idCharacter?: number,
+    @Query(RouteParamEnum.idStage) idStage?: number,
+    @Query(RouteParamEnum.idStages, new ParseArrayPipe({ optional: true }))
+    idStages?: number[],
     @Query(RouteParamEnum.startDate, ParseDatePipe) startDate?: Date,
-    @Query(RouteParamEnum.endDate, ParseDatePipe) endDate?: Date
+    @Query(RouteParamEnum.endDate, ParseDatePipe) endDate?: Date,
+    @Query(RouteParamEnum.orderBy) orderBy?: string,
+    @Query(RouteParamEnum.orderByDirection) orderByDirection?: OrderByDirection
   ): Promise<Pagination<ScoreViewModel>> {
     return this.scoreService.findScoresApproval(
       {
@@ -175,8 +191,12 @@ export class ScoreController {
         startDate,
         endDate,
         idScoreStatus,
+        idStage,
+        idCharacter,
       },
-      page
+      page,
+      orderBy,
+      orderByDirection
     );
   }
 
@@ -185,8 +205,16 @@ export class ScoreController {
   @ApiQuery({ name: RouteParamEnum.idGame, required: false })
   @ApiQuery({ name: RouteParamEnum.idMode, required: false })
   @ApiQuery({ name: RouteParamEnum.idType, required: false })
+  @ApiQuery({ name: RouteParamEnum.idCharacter, required: false })
+  @ApiQuery({ name: RouteParamEnum.idStage, required: false })
   @ApiQuery({ name: RouteParamEnum.startDate, required: false })
   @ApiQuery({ name: RouteParamEnum.endDate, required: false })
+  @ApiQuery({ name: RouteParamEnum.orderBy, required: false })
+  @ApiQuery({
+    name: RouteParamEnum.orderByDirection,
+    required: false,
+    enum: ['ASC', 'DESC'],
+  })
   @ApiPagination(ScoreViewModel)
   @Roles(RoleEnum.admin)
   @Get('approval-list/user')
@@ -198,8 +226,12 @@ export class ScoreController {
     @Query(RouteParamEnum.idGame) idGame?: number,
     @Query(RouteParamEnum.idMode) idMode?: number,
     @Query(RouteParamEnum.idType) idType?: number,
+    @Query(RouteParamEnum.idCharacter) idCharacter?: number,
+    @Query(RouteParamEnum.idStage) idStage?: number,
     @Query(RouteParamEnum.startDate, ParseDatePipe) startDate?: Date,
-    @Query(RouteParamEnum.endDate, ParseDatePipe) endDate?: Date
+    @Query(RouteParamEnum.endDate, ParseDatePipe) endDate?: Date,
+    @Query(RouteParamEnum.orderBy) orderBy?: string,
+    @Query(RouteParamEnum.orderByDirection) orderByDirection?: OrderByDirection
   ): Promise<Pagination<ScoreViewModel>> {
     return this.scoreService.findScoresApproval(
       {
@@ -211,8 +243,12 @@ export class ScoreController {
         startDate,
         endDate,
         idScoreStatus,
+        idCharacter,
+        idStage,
       },
-      page
+      page,
+      orderBy,
+      orderByDirection
     );
   }
 
@@ -256,6 +292,46 @@ export class ScoreController {
       time,
       score,
       idCharactersAnd,
+    });
+  }
+
+  @ApiQueryEnum({
+    name: RouteParamEnum.idScoreStatus,
+    enum: ScoreStatusEnum,
+    required: false,
+  })
+  @ApiQuery({ name: RouteParamEnum.idPlatform, required: false })
+  @ApiQuery({ name: RouteParamEnum.idGame, required: false })
+  @ApiQuery({ name: RouteParamEnum.idMode, required: false })
+  @ApiQuery({ name: RouteParamEnum.idType, required: false })
+  @ApiQuery({ name: RouteParamEnum.idCharacter, required: false })
+  @ApiQuery({ name: RouteParamEnum.idStage, required: false })
+  @ApiQuery({ name: RouteParamEnum.startDate, required: false })
+  @ApiQuery({ name: RouteParamEnum.endDate, required: false })
+  @Get('count-approval')
+  async countApproval(
+    @GetUser() user: User,
+    @Query(RouteParamEnum.idScoreStatus) idScoreStatus?: number,
+    @Query(RouteParamEnum.idPlatform) idPlatform?: number,
+    @Query(RouteParamEnum.idGame) idGame?: number,
+    @Query(RouteParamEnum.idMode) idMode?: number,
+    @Query(RouteParamEnum.idType) idType?: number,
+    @Query(RouteParamEnum.idCharacter) idCharacter?: number,
+    @Query(RouteParamEnum.idStage) idStage?: number,
+    @Query(RouteParamEnum.startDate, ParseDatePipe) startDate?: Date,
+    @Query(RouteParamEnum.endDate, ParseDatePipe) endDate?: Date
+  ): Promise<number> {
+    return this.scoreService.countApprovals({
+      idStage,
+      idPlatform,
+      idGame,
+      idType,
+      idCharacter,
+      idScoreStatus,
+      endDate,
+      startDate,
+      idMode,
+      idPlayer: user.id,
     });
   }
 

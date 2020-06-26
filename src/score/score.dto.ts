@@ -22,6 +22,7 @@ import { OmitType } from '@nestjs/swagger';
 import { IsLessThan } from '../validation/is-less-than';
 import { IsGreaterThan } from '../validation/is-greater-than';
 import { ScoreStatusEnum } from './score-status/score-status.enum';
+import { Transform } from 'class-transformer';
 
 export class ScoreAddDto {
   @IsDefined()
@@ -68,6 +69,11 @@ export class ScoreAddDto {
   @MaxLength(8)
   @ValidTime()
   time?: string;
+
+  @IsOptional()
+  @Transform(date => (date ? new Date(date) : null))
+  @IsDate()
+  dateAchieved?: Date;
 }
 
 export class ScoreTopScoreDto {
@@ -133,6 +139,8 @@ export class ScoreIsWrDto extends OmitType(ScoreTopScoreDto, [
   score: number;
 }
 
+export class ScoreWrsDto extends OmitType(ScoreIsWrDto, ['score']) {}
+
 export class ScoreRandomDto {
   @IsOptional()
   @IsNumber()
@@ -187,6 +195,11 @@ export class ScoreApprovalParamsDto {
   @IsOptional()
   @IsNumber()
   idStage?: number;
+
+  @IsOptional()
+  @IsArray()
+  @IsNotEmpty()
+  idStages?: number[];
 
   @IsOptional()
   @IsNumber()

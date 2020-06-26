@@ -21,6 +21,8 @@ export interface CustomValidationArguments<T = Record<string, any>>
   object: T;
 }
 
+export type OrderByDirection = 'ASC' | 'DESC';
+
 export class UpdateResultRaw {
   @ApiProperty() fieldCount: number;
   @ApiProperty() affectedRows: number;

@@ -13,7 +13,7 @@ export class ScoreTable {
 
 export class ScoreViewModel extends Score {
   isWorldRecord?: boolean;
-  wordRecord?: Score;
+  worldRecord?: Score;
   isCharacterWorldRecords?: boolean;
   @ApiPropertyOptional({
     name: 'isCharacterWorldRecord',
@@ -27,7 +27,7 @@ export class ScoreViewModel extends Score {
 
 export class ScoreIsWrViewModel {
   isWorldRecord?: boolean;
-  wordRecord?: Score;
+  worldRecord?: Score;
   isCharacterWorldRecords?: boolean;
   @ApiPropertyOptional({
     name: 'isCharacterWorldRecord',

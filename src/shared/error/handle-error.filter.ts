@@ -37,6 +37,8 @@ export class HandleErrorFilter extends BaseExceptionFilter {
       .json(
         (error as any)?.response ? flattenObject(error, 'response') : error
       );
+    // TODO better than this
+    throw error;
   }
 
   handleSqlError(exception: MySqlError): HttpException {

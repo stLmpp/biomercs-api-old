@@ -22,6 +22,7 @@ export enum RouteParamEnum {
   idScoreStatus = 'idScoreStatus',
   idSite = 'idSite',
   idStage = 'idStage',
+  idStages = 'idStages',
   idUser = 'idUser',
   idUserFollower = 'idUserFollower',
   idUserLink = 'idUserLink',
@@ -44,4 +45,6 @@ export enum RouteParamEnum {
   score = 'score',
   maxCombo = 'maxCombo',
   time = 'time',
+  orderBy = 'orderBy',
+  orderByDirection = 'orderByDirection',
 }

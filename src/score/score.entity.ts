@@ -29,6 +29,10 @@ export class Score extends CommonColumns {
     ];
   }
 
+  static get allRelationQb(): string[] {
+    return Score.allRelations.map(o => o.split('.').pop());
+  }
+
   @Column()
   idGameModePlatform: number;
 
