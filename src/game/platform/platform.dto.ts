@@ -1,4 +1,10 @@
-import { IsDefined, IsEnum, IsOptional, IsString } from 'class-validator';
+import {
+  IsDefined,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { PlatformTypeEnum } from './platform-type.enum';
 
 export class PlatformAddDto {
@@ -13,6 +19,10 @@ export class PlatformAddDto {
   @IsDefined()
   @IsEnum(PlatformTypeEnum)
   type: PlatformTypeEnum;
+
+  @IsOptional()
+  @IsNumber()
+  order?: number;
 }
 
 export class PlatformUpdateDto {

@@ -16,6 +16,10 @@ export class GameAddDto {
   @IsString()
   @MaxLength(10)
   shortName: string;
+
+  @IsOptional()
+  @IsNumber()
+  order?: number;
 }
 
 export class GameUpdateDto {

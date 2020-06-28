@@ -5,6 +5,10 @@ export class ModeAddDto {
   @IsString()
   @IsDefined()
   name: string;
+
+  @IsOptional()
+  @IsNumber()
+  order?: number;
 }
 
 export class ModeUpdateDto {

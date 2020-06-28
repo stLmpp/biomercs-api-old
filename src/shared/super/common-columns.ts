@@ -29,6 +29,8 @@ export abstract class CommonColumns {
   @Column({ nullable: true })
   lastUpdatedBy: number;
 
+  order?: number;
+
   extendDto(dto: DeepPartial<this>): this {
     Object.assign(this, dto);
     return this;

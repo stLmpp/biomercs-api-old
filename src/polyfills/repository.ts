@@ -1,18 +1,26 @@
-import {
-  FindConditions,
-  ObjectLiteral,
-  Repository,
-  SelectQueryBuilder,
-} from 'typeorm';
+import { FindConditions, Repository, SelectQueryBuilder } from 'typeorm';
+import { ObjectID } from 'typeorm/driver/mongodb/typings';
+import { FindOneOptions } from 'typeorm/find-options/FindOneOptions';
+import { isPrimitive } from 'is-what';
 
 declare module 'typeorm/repository/Repository' {
   interface Repository<Entity> {
     exists(
-      where?:
-        | FindConditions<Entity>[]
-        | FindConditions<Entity>
-        | ObjectLiteral
+      id?: string | number | Date | ObjectID,
+      options?: FindOneOptions<Entity>
+    ): Promise<boolean>;
+    exists(
+      options?: FindConditions<Entity> | FindConditions<Entity>[]
+    ): Promise<boolean>;
+    exists(
+      idOrOptions?:
         | string
+        | number
+        | Date
+        | ObjectID
+        | FindConditions<Entity>
+        | FindConditions<Entity>[],
+      options?: FindOneOptions<Entity>
     ): Promise<boolean>;
     fillAndWhere(
       name: string,
@@ -23,10 +31,10 @@ declare module 'typeorm/repository/Repository' {
 }
 
 Repository.prototype.exists = async function(where) {
-  try {
-    return !!(await this.findOne({ where, select: ['id' as any] }));
-  } catch (e) {
-    return !!(await this.findOne({ where }));
+  if (isPrimitive(where)) {
+    return !!(await this.findOne(where, { select: ['id'] }));
+  } else {
+    return !!(await this.findOne({ select: ['id'], where }));
   }
 };
 

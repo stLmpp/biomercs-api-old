@@ -7,14 +7,8 @@ import {
   IsUrl,
   MaxLength,
 } from 'class-validator';
-import { GameExists } from '../../validation/game/game-exists.validator';
 
 export class StageAddDto {
-  @IsDefined()
-  @IsNumber()
-  @GameExists()
-  idGame: number;
-
   @IsString()
   @IsDefined()
   name: string;
@@ -31,6 +25,10 @@ export class StageAddDto {
   @IsOptional()
   @IsUrl()
   customUrl?: string;
+
+  @IsOptional()
+  @IsNumber()
+  order?: number;
 }
 
 export class StageUpdateDto {
@@ -51,10 +49,9 @@ export class StageUpdateDto {
   @IsUrl()
   customUrl?: string;
 
-  @IsNumber()
   @IsOptional()
-  @GameExists()
-  idGame?: number;
+  @IsNumber()
+  order?: number;
 }
 
 export class StageParamsDto {

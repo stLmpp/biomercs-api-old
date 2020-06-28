@@ -41,4 +41,7 @@ export class Stage extends CommonColumns {
   )
   @JoinColumn()
   gameModeStages: GameModeStage[];
+
+  @Column({ nullable: true })
+  order?: number;
 }

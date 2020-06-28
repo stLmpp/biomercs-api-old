@@ -1,4 +1,4 @@
-import { CommonColumns } from './common-columns';
+import { allColumns, CommonColumns } from './common-columns';
 import { SuperService } from './super-service';
 import {
   Body,
@@ -53,6 +53,7 @@ export interface ISuperController<
   search: (term: string) => Promise<Entity[]>;
   findById: (id: number) => Promise<Entity>;
   countByParams: (dto: FindConditions<Entity>) => Promise<number>;
+  updateOrder: (ids: number[]) => Promise<void>;
 }
 
 export class SuperControllerRole {
@@ -74,6 +75,7 @@ export class SuperControllerRole {
   search?: RoleEnum[] = [];
   findById?: RoleEnum[] = [];
   countByParams?: RoleEnum[] = [];
+  updateOrder?: RoleEnum[] = [];
 }
 
 export interface SuperControllerOptions<
@@ -124,6 +126,7 @@ export const ROLE_METADATA: Partial<Record<
   findOneByParams: 'find',
   search: 'find',
   countByParams: 'find',
+  updateOrder: 'persist',
 };
 
 export function SuperController<
@@ -165,6 +168,8 @@ export function SuperController<
       }
     };
   }
+
+  const hasOrder = allColumns<any>(entity).includes('order');
 
   class SuperController implements ISuperController<Entity, AddDto, UpdateDto> {
     constructor(private __service: SuperService<Entity, AddDto, UpdateDto>) {}
@@ -241,6 +246,16 @@ export function SuperController<
       @Body(CheckParamsPipe) dto: FindConditions<Entity>
     ): Promise<number> {
       return this.__service.countByParams(dto);
+    }
+
+    @ApplyIf(hasOrder, [
+      Post('order'),
+      ApiBody({ type: Number, isArray: true }),
+      HttpCode(200),
+    ])
+    @ApplyRoles()
+    updateOrder(@Body() order: number[]): Promise<void> {
+      return this.__service.updateOrder(order);
     }
 
     @ApplyIf(!!dto?.update, [

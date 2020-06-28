@@ -6,8 +6,8 @@ import {
   Repository,
 } from 'typeorm';
 import { removeNullObject } from '../../util/util';
-import { CommonColumns } from './common-columns';
-import { isAnyObject, isArray, isNumber } from 'is-what';
+import { allColumns, CommonColumns } from './common-columns';
+import { isAnyObject, isArray } from 'is-what';
 import { FileUploadService } from '../../file-upload/file-upload.service';
 import { FileType } from '../../file-upload/file-type.interface';
 import { User } from '../../auth/user/user.entity';
@@ -28,7 +28,11 @@ export class SuperService<
     private __repository: Repository<Entity>,
     private __fileUploadService?: FileUploadService,
     private options: SuperServiceOptions<Entity> = {}
-  ) {}
+  ) {
+    this.__hasOrder = allColumns<any>(entity).includes('order');
+  }
+
+  private readonly __hasOrder: boolean;
 
   async add(
     dto: AddDto,
@@ -90,14 +94,22 @@ export class SuperService<
         entities.map(entity => entity[this.options.idFileKey as string])
       );
     }
+    if (this.__hasOrder) {
+      await this.reOrderAll();
+    }
     return entities;
   }
 
-  async exists(id: number): Promise<boolean>;
-  async exists(where: FindConditions<Entity>): Promise<boolean>;
-  async exists(idOrWhere: number | FindConditions<Entity>): Promise<boolean> {
-    const where = isNumber(idOrWhere) ? { id: idOrWhere } : idOrWhere;
-    return await this.__repository.exists(removeNullObject(where));
+  async exists(id?: number): Promise<boolean>;
+  async exists(where?: FindConditions<Entity>): Promise<boolean>;
+  async exists(where?: FindConditions<Entity>[]): Promise<boolean>;
+  async exists(
+    idOrWhere?: number | FindConditions<Entity> | FindConditions<Entity>[]
+  ): Promise<boolean> {
+    if (isAnyObject(idOrWhere)) {
+      idOrWhere = removeNullObject(idOrWhere);
+    }
+    return await this.__repository.exists(idOrWhere);
   }
 
   async findAll(
@@ -171,6 +183,25 @@ export class SuperService<
 
   async countByParams(where: FindConditions<Entity>): Promise<number> {
     return await this.__repository.count(where);
+  }
+
+  async updateOrder(id: number, order: number): Promise<void>;
+  async updateOrder(ids: number[]): Promise<void>;
+  async updateOrder(ids: number[] | number, order?: number): Promise<void> {
+    if (isArray(ids)) {
+      await Promise.all(
+        ids.map((id, index) => this.update(id, { order: index + 1 } as any))
+      );
+    } else {
+      await this.update(ids, { order } as any);
+    }
+  }
+
+  async reOrderAll(): Promise<void> {
+    const ids = (
+      await this.__repository.find({ select: ['id'], order: { order: 'ASC' } })
+    ).map(entity => entity.id);
+    return await this.updateOrder(ids);
   }
 
   preAdd(dto: AddDto): AddDto {

@@ -12,4 +12,7 @@ export class Mode extends CommonColumns {
   )
   @JoinColumn()
   gameModes: GameMode[];
+
+  @Column({ nullable: true })
+  order?: number;
 }

@@ -28,6 +28,7 @@ import { ScoreApprovalStatusEnum } from './score-approval/score-approval-status.
 import { updateCreatedBy } from '../shared/pipes/created-by.pipe';
 import { updateLastUpdatedBy } from '../shared/pipes/updated-by.pipe';
 import { OrderByDirection } from '../util/types';
+import { FindConditions } from 'typeorm';
 
 @Injectable()
 export class ScoreService {
@@ -185,6 +186,13 @@ export class ScoreService {
     );
   }
 
+  async canActivateScore(idScore: number, idUser: number): Promise<boolean> {
+    return await this.exists([
+      { id: idScore, idScoreStatus: ScoreStatusEnum.approved },
+      { id: idScore, createdBy: idUser },
+    ]);
+  }
+
   async fillWr(score: Score): Promise<ScoreViewModel> {
     const scoreVw = new ScoreViewModel().extendDto(score);
     scoreVw.characterWorldRecords = (
@@ -237,7 +245,7 @@ export class ScoreService {
       !wr?.id || wr.id === score.id || scoreVw.score > (wr.score ?? 0);
     scoreVw.worldRecord = wr;
     if (score.idType === 2) {
-      const combinationWr = await this.getTopScore({
+      let combinationWr = await this.getTopScore({
         idPlatform: score.gameModePlatform.idPlatform,
         idType: score.idType,
         idMode: score.gameModePlatform.gameMode.idMode,
@@ -246,6 +254,12 @@ export class ScoreService {
         idCharacters: score.scorePlayers.map(sp => sp.idCharacter),
         idCharactersAnd: true,
       });
+      if (!combinationWr) {
+        combinationWr = new ScoreViewModel().extendDto({
+          ...scoreVw,
+          characterWorldRecords: [],
+        });
+      }
       scoreVw.isCombinationWorldRecord =
         !combinationWr?.id ||
         combinationWr.id === score.id ||
@@ -255,8 +269,13 @@ export class ScoreService {
     return scoreVw;
   }
 
-  async exists(idScore: number): Promise<boolean> {
-    return await this.scoreRepository.exists({ id: idScore });
+  async exists(idScore: number): Promise<boolean>;
+  async exists(where: FindConditions<Score>): Promise<boolean>;
+  async exists(where: FindConditions<Score>[]): Promise<boolean>;
+  async exists(
+    idOrWhere: number | FindConditions<Score> | FindConditions<Score>[]
+  ): Promise<boolean> {
+    return await this.scoreRepository.exists(idOrWhere);
   }
 
   async random(dto: ScoreRandomDto): Promise<number> {

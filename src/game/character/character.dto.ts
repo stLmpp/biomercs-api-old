@@ -16,6 +16,10 @@ export class CharacterAddDto {
   @IsDefined()
   @MaxLength(15)
   shortName: string;
+
+  @IsOptional()
+  @IsNumber()
+  order?: number;
 }
 
 export class CharacterUpdateDto {

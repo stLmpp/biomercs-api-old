@@ -9,6 +9,10 @@ export class TypeAddDto {
   @IsNumber()
   @IsDefined()
   playerQuantity: number;
+
+  @IsOptional()
+  @IsNumber()
+  order?: number;
 }
 
 export class TypeUpdateDto {

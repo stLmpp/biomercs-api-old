@@ -28,4 +28,7 @@ export class Platform extends CommonColumns {
   @OneToOne(() => FileUpload, { nullable: true })
   @JoinColumn({ name: 'idLogo' })
   logo: FileUpload;
+
+  @Column({ nullable: true })
+  order?: number;
 }

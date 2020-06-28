@@ -24,4 +24,7 @@ export class Character extends CommonColumns {
   )
   @JoinColumn()
   gameModeCharacters: GameModeCharacter[];
+
+  @Column({ nullable: true })
+  order?: number;
 }

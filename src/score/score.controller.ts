@@ -32,6 +32,7 @@ import { User } from '../auth/user/user.entity';
 import { ScoreStatusEnum } from './score-status/score-status.enum';
 import { ApiQueryEnum } from '../shared/decorator/api-query-enum';
 import { OrderByDirection } from '../util/types';
+import { isAdmin } from '../auth/role/role.service';
 
 @ApiTags('Score')
 @Roles(RoleEnum.user)
@@ -340,5 +341,16 @@ export class ScoreController {
     @Param(RouteParamEnum.idScore) idScore: number
   ): Promise<ScoreViewModel> {
     return this.scoreService.findById(idScore);
+  }
+
+  @Get(`:${RouteParamEnum.idScore}/can-activate`)
+  async canActivateScore(
+    @GetUser() user: User,
+    @Param(RouteParamEnum.idScore) idScore: number
+  ): Promise<boolean> {
+    return (
+      isAdmin(user) ||
+      (await this.scoreService.canActivateScore(idScore, user.id))
+    );
   }
 }
