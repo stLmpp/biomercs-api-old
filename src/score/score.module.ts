@@ -17,6 +17,7 @@ import { ScoreApprovalRepository } from './score-approval/score-approval.reposit
 import { ScoreStatusRepository } from './score-status/score-status.repository';
 import { ScoreStatusController } from './score-status/score-status.controller';
 import { ScoreStatusService } from './score-status/score-status.service';
+import { UserModule } from '../auth/user/user.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { ScoreStatusService } from './score-status/score-status.service';
     ]),
     GameModule,
     FileUploadModule,
+    UserModule,
   ],
   controllers: [
     ScoreController,

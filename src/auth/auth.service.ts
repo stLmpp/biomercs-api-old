@@ -1,6 +1,4 @@
 import { User } from './user/user.entity';
-import { UserRepository } from './user/user.repository';
-import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
 import {
@@ -22,25 +20,25 @@ import {
 } from './user/user.dto';
 import { RouteParamEnum } from '../shared/types/route-enums';
 import { UserShowcaseService } from './user/user-showcase/user-showcase.service';
+import { UserService } from './user/user.service';
 
 export class AuthService {
   constructor(
-    @InjectRepository(UserRepository)
-    private userRepository: UserRepository,
     private jwtService: JwtService,
     private mailerService: MailerService,
     private userRoleService: UserRoleService,
     private roleService: RoleService,
-    private userShowcaseService: UserShowcaseService
+    private userShowcaseService: UserShowcaseService,
+    private userService: UserService
   ) {}
 
   async register(dto: UserRegisterDto): Promise<UserRegisterViewModel> {
-    let user = await this.userRepository.findOne({
+    let user = await this.userService.userRepository.findOne({
       where: [{ email: dto.email }, { username: dto.username }],
       select: ['id', 'email', 'emailToken'],
     });
     if (!user) {
-      user = await this.userRepository.register(dto);
+      user = await this.userService.userRepository.register(dto);
     } else if (!user.emailToken) {
       throw new ConflictException('Usuário ou e-mail já cadastrado!');
     }
@@ -56,7 +54,7 @@ export class AuthService {
     ignorePasswordValidation?: boolean,
     ignoreEmailToken?: boolean
   ): Promise<User> {
-    const user = await this.userRepository.login(
+    const user = await this.userService.userRepository.login(
       dto,
       ignorePasswordValidation,
       ignoreEmailToken
@@ -77,12 +75,14 @@ export class AuthService {
   }
 
   async confirmEmail(idUser: number, emailToken: string): Promise<User> {
-    const user = await this.userRepository.findOne({
+    const user = await this.userService.userRepository.findOne({
       select: ['id', 'emailToken', 'username'],
       where: { id: idUser },
     });
     if (user.emailToken === emailToken) {
-      await this.userRepository.update(user.id, { emailToken: null });
+      await this.userService.userRepository.update(user.id, {
+        emailToken: null,
+      });
       const userRole = await this.roleService.findByName(RoleEnum.user);
       await this.userRoleService.add(
         updateCreatedBy({ idUser: user.id, idRole: userRole.id }, user)
@@ -103,13 +103,13 @@ export class AuthService {
   }
 
   async forgotPassword(email: string): Promise<string> {
-    const user = await this.userRepository.findOne({
+    const user = await this.userService.userRepository.findOne({
       where: { email: email },
       select: ['id', 'password', 'salt', 'email'],
     });
     if (user) {
       const resetToken = await hash(user.password, user.salt);
-      await this.userRepository.update(user.id, { resetToken });
+      await this.userService.userRepository.update(user.id, { resetToken });
       const url = `http://localhost:4200/auth/reset-password/${user.id}?${RouteParamEnum.token}=${resetToken}`; // TODO url
       await this.mailerService.sendMail({
         to: user.email,
@@ -123,14 +123,14 @@ export class AuthService {
   }
 
   async confirmForgotPassword(idUser: number, token: string): Promise<boolean> {
-    const user = await this.userRepository.findOne(idUser, {
+    const user = await this.userService.userRepository.findOne(idUser, {
       select: ['resetToken'],
     });
     return user?.resetToken === token;
   }
 
   async resetPassword(idUser: number): Promise<void> {
-    const user = await this.userRepository.findOne(idUser, {
+    const user = await this.userService.userRepository.findOne(idUser, {
       select: ['id', 'email', 'salt', 'password'],
     });
     const newPassword = Math.random()
@@ -138,7 +138,7 @@ export class AuthService {
       .slice(-8);
     const newHash = await hash(newPassword, user.salt);
     const resetToken = await hash(user.password, user.salt);
-    await this.userRepository.update(idUser, {
+    await this.userService.userRepository.update(idUser, {
       password: newHash,
       expired: true,
       resetToken,
@@ -153,7 +153,7 @@ export class AuthService {
   }
 
   async changePassword(idUser: number, newPassword: string): Promise<User> {
-    const user = await this.userRepository.findOne(idUser, {
+    const user = await this.userService.userRepository.findOne(idUser, {
       select: ['salt', 'password', 'username'],
     });
     if (!user) {
@@ -163,7 +163,7 @@ export class AuthService {
     if (newPasswordHash === user.password) {
       throw new ConflictException(`Password can't be the same as previous`);
     }
-    await this.userRepository.update(idUser, {
+    await this.userService.userRepository.update(idUser, {
       password: newPasswordHash,
       resetToken: null,
       expired: false,

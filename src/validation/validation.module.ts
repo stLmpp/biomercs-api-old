@@ -19,6 +19,7 @@ import { RegionModule } from '../region/region.module';
 import { StageExistsValidator } from './score/stage-exists-validator';
 import { ReasonExistsValidator } from './report/reason-exists.validator';
 import { ReportModule } from '../report/report.module';
+import { UserModule } from '../auth/user/user.module';
 
 @Global()
 @Module({
@@ -29,6 +30,7 @@ import { ReportModule } from '../report/report.module';
     ScoreModule,
     RegionModule,
     ReportModule,
+    UserModule,
   ],
   providers: [
     UserExistsValidator,

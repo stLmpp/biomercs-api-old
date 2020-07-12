@@ -20,6 +20,7 @@ import { CHECK_PARAMS_DEFAULT } from './shared/pipes/check-params.pipe';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { AppService } from './app.service';
 import { RegionModule } from './region/region.module';
+import { UserModule } from './auth/user/user.module';
 
 @Module({
   imports: [
@@ -53,6 +54,7 @@ import { RegionModule } from './region/region.module';
     ScoreModule,
     ReportModule,
     RegionModule,
+    UserModule,
   ],
   controllers: [AppController],
   providers: [

@@ -12,7 +12,7 @@ import { FindConditions, Not } from 'typeorm';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectRepository(UserRepository) private userRepository: UserRepository,
+    @InjectRepository(UserRepository) public userRepository: UserRepository,
     private fileUploadService: FileUploadService
   ) {}
 
