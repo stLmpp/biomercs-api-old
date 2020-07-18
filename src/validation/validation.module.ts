@@ -20,6 +20,7 @@ import { StageExistsValidator } from './score/stage-exists-validator';
 import { ReasonExistsValidator } from './report/reason-exists.validator';
 import { ReportModule } from '../report/report.module';
 import { UserModule } from '../auth/user/user.module';
+import { PlayerModule } from '../player/player.module';
 
 @Global()
 @Module({
@@ -31,6 +32,7 @@ import { UserModule } from '../auth/user/user.module';
     RegionModule,
     ReportModule,
     UserModule,
+    PlayerModule,
   ],
   providers: [
     UserExistsValidator,

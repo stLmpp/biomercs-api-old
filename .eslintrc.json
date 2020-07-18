@@ -62,6 +62,20 @@
     ],
     "@typescript-eslint/prefer-nullish-coalescing": ["warn"],
     "@typescript-eslint/prefer-optional-chain": ["warn"],
-    "@typescript-eslint/explicit-module-boundary-types": ["off"]
+    "@typescript-eslint/explicit-module-boundary-types": ["off"],
+    "quotes": ["error", "single", { "allowTemplateLiterals": true }],
+    "no-shadow": ["error"],
+    "object-shorthand": ["error"],
+    "comma-dangle": [
+      "error",
+      {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "always-multiline",
+        "exports": "never",
+        "functions": "never"
+      }
+    ],
+    "object-curly-spacing": ["error", "always"]
   }
 }

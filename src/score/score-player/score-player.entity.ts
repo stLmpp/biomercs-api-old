@@ -1,9 +1,9 @@
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { CommonColumns } from '../../shared/super/common-columns';
 import { Score } from '../score.entity';
-import { User } from '../../auth/user/user.entity';
 import { Character } from '../../game/character/character.entity';
 import { ScorePlayerProof } from '../score-player-proof/score-player-proof.entity';
+import { Player } from '../../player/player.entity';
 
 @Entity()
 export class ScorePlayer extends CommonColumns {
@@ -20,9 +20,9 @@ export class ScorePlayer extends CommonColumns {
   @Column()
   idPlayer: number;
 
-  @ManyToOne(() => User)
-  @JoinColumn({ name: 'idPlayer' })
-  player: User;
+  @ManyToOne(() => Player)
+  @JoinColumn()
+  player: Player;
 
   @Column()
   idCharacter: number;

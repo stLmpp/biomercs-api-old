@@ -8,5 +8,6 @@
   "CONFIG_FILE_UPLOAD_PATH": "./uploads",
   "CONFIG_FILE_IMAGE_EXTENSIONS_ALLOWED": ["jpg", "png", "gif"],
   "DEFAULT_PAGINATION_SIZE": 15,
-  "HEADER_RECAPTCHA_TOKEN": "Biomercs-reCAPTCHA-Token"
+  "HEADER_RECAPTCHA_TOKEN": "Biomercs-reCAPTCHA-Token",
+  "STEAM_OPENID_URL": "https://steamcommunity.com/openid"
 }

@@ -27,12 +27,13 @@ import { Pagination } from 'nestjs-typeorm-paginate/index';
 import { ParseDatePipe } from '../shared/pipes/parse-date.pipe';
 import { ApiPagination } from '../shared/decorator/api-pagination';
 import { matrixSchema } from '../shared/decorator/api-matrix';
-import { GetUser } from '../auth/get-user.decorator';
+import { GetPlayer, GetUser } from '../auth/get-user.decorator';
 import { User } from '../auth/user/user.entity';
 import { ScoreStatusEnum } from './score-status/score-status.enum';
 import { ApiQueryEnum } from '../shared/decorator/api-query-enum';
 import { OrderByDirection } from '../util/types';
 import { isAdmin } from '../auth/role/role.service';
+import { Player } from '../player/player.entity';
 
 @ApiTags('Score')
 @Roles(RoleEnum.user)
@@ -220,7 +221,7 @@ export class ScoreController {
   @Roles(RoleEnum.admin)
   @Get('approval-list/user')
   async findScoresApprovalUser(
-    @GetUser() user: User,
+    @GetPlayer() player: Player,
     @Query(RouteParamEnum.idScoreStatus) idScoreStatus: number,
     @Query(RouteParamEnum.page) page: number,
     @Query(RouteParamEnum.idPlatform) idPlatform?: number,
@@ -236,7 +237,7 @@ export class ScoreController {
   ): Promise<Pagination<ScoreViewModel>> {
     return this.scoreService.findScoresApproval(
       {
-        idPlayer: user.id,
+        idPlayer: player.id,
         idType,
         idPlatform,
         idMode,
@@ -311,7 +312,7 @@ export class ScoreController {
   @ApiQuery({ name: RouteParamEnum.endDate, required: false })
   @Get('count-approval')
   async countApproval(
-    @GetUser() user: User,
+    @GetPlayer() player: Player,
     @Query(RouteParamEnum.idScoreStatus) idScoreStatus?: number,
     @Query(RouteParamEnum.idPlatform) idPlatform?: number,
     @Query(RouteParamEnum.idGame) idGame?: number,
@@ -332,7 +333,7 @@ export class ScoreController {
       endDate,
       startDate,
       idMode,
-      idPlayer: user.id,
+      idPlayer: player.id,
     });
   }
 

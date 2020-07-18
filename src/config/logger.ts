@@ -17,8 +17,8 @@ export class CustomLogger extends AdvancedConsoleLogger {
     return new Promise(resolve => {
       access(path, err => {
         if (err) {
-          mkdir(process.cwd() + '/log/' + path, err => {
-            if (err) throw err;
+          mkdir(process.cwd() + '/log/' + path, err2 => {
+            if (err2) throw err2;
             else resolve();
           });
         } else {

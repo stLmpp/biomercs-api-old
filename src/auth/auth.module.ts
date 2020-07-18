@@ -12,6 +12,7 @@ import { RoleController } from './role/role.controller';
 import { RequestService } from './user/request.service';
 import { FileUploadModule } from '../file-upload/file-upload.module';
 import { UserModule } from './user/user.module';
+import { PlayerModule } from '../player/player.module';
 
 @Global()
 @Module({
@@ -26,6 +27,7 @@ import { UserModule } from './user/user.module';
     TypeOrmModule.forFeature([RoleRepository]),
     FileUploadModule,
     UserModule,
+    PlayerModule,
   ],
   providers: [AuthService, RequestService, JwtStrategy, RoleService],
   exports: [

@@ -44,13 +44,13 @@ export function flattenObject(
   obj: { [key: string]: any },
   propertyToFlatten: string
 ): { [key: string]: any } {
-  return Object.entries(obj).reduce((obj, [key, value]) => {
+  return Object.entries(obj).reduce((acc, [key, value]) => {
     if (key === propertyToFlatten) {
-      obj = { ...obj, ...value };
+      acc = { ...acc, ...value };
     } else {
-      obj = { ...obj, [key]: value };
+      acc = { ...acc, [key]: value };
     }
-    return obj;
+    return acc;
   }, {});
 }
 

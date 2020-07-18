@@ -1,13 +1,13 @@
 import { Score } from './score.entity';
 import { Stage } from '../game/stage/stage.entity';
 import { Character } from '../game/character/character.entity';
-import { User } from '../auth/user/user.entity';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { Player } from '../player/player.entity';
 
 export class ScoreTable {
   stage: Stage;
   character?: Character;
-  player?: User;
+  player?: Player;
   score: ScoreViewModel;
 }
 

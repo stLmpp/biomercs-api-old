@@ -47,6 +47,7 @@
     "mysql": "^2.18.1",
     "nestjs-typeorm-paginate": "^2.0.3",
     "nodemailer": "^6.4.10",
+    "openid": "^2.0.6",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "reflect-metadata": "^0.1.13",

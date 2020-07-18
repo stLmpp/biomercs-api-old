@@ -170,7 +170,7 @@ export class ScoreRepository extends Repository<Score> {
               .andWhere(`spsb.idScore = ${score}.id`)
               .andWhere(`spsb.idCharacter = :i${i}`, { ['i' + i]: id });
             const otherIds = idCharacters.filter((_, index) => index !== i);
-            for (let j = 0, len = otherIds.length; j < len; j++) {
+            for (let j = 0, len2 = otherIds.length; j < len2; j++) {
               sb.andExists(sb1 =>
                 sb1
                   .from(ScorePlayer, 'spsb2')
@@ -359,9 +359,7 @@ export class ScoreRepository extends Repository<Score> {
       type: 'innerJoin',
     });
     if (idScoreStatus) {
-      qb.andWhere('score.idScoreStatus = :idScoreStatus', {
-        idScoreStatus: idScoreStatus,
-      });
+      qb.andWhere('score.idScoreStatus = :idScoreStatus', { idScoreStatus });
     }
     if (idGame) {
       qb.andWhere('g.id = :idGame', { idGame });

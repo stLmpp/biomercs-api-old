@@ -17,4 +17,9 @@ export class ScorePlayerService extends SuperService<
   ) {
     super(ScorePlayer, scorePlayerRepository);
   }
+
+  async updatePlayer(idPlayerOld: number, idPlayerNew: number): Promise<void> {
+    await this.scorePlayerRepository.update({ idPlayer: idPlayerOld }, { idPlayer: idPlayerNew });
+  }
+
 }

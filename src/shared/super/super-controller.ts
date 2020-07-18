@@ -145,7 +145,7 @@ export function SuperController<
     idKey,
     relations,
     entity,
-    dto,
+    dto: _dto,
     searchBy,
     excludeMethods,
     roles,
@@ -171,12 +171,13 @@ export function SuperController<
 
   const hasOrder = allColumns<any>(entity).includes('order');
 
-  class SuperController implements ISuperController<Entity, AddDto, UpdateDto> {
+  class SuperControllerClazz
+    implements ISuperController<Entity, AddDto, UpdateDto> {
     constructor(private __service: SuperService<Entity, AddDto, UpdateDto>) {}
 
-    @ApplyIf(!excludeMethods.includes('add') && !!dto?.add, [
+    @ApplyIf(!excludeMethods.includes('add') && !!_dto?.add, [
       Post(),
-      ApiBody({ type: dto?.add }),
+      ApiBody({ type: _dto?.add }),
       ApiCreatedResponse({ type: entity }),
     ])
     @ApplyRoles()
@@ -184,9 +185,9 @@ export function SuperController<
       return this.__service.add(dto, relations);
     }
 
-    @ApplyIf(!excludeMethods.includes('addMany') && !!dto?.add, [
+    @ApplyIf(!excludeMethods.includes('addMany') && !!_dto?.add, [
       Post('batch'),
-      ApiBody({ type: dto?.add, isArray: true }),
+      ApiBody({ type: _dto?.add, isArray: true }),
       ApiCreatedResponse({ type: entity, isArray: true }),
     ])
     @ApplyRoles()
@@ -194,10 +195,10 @@ export function SuperController<
       return this.__service.addMany(dto, relations);
     }
 
-    @ApplyIf(!!dto?.exists, [
+    @ApplyIf(!!_dto?.exists, [
       Post('exists'),
       HttpCode(200),
-      ApiBody({ type: dto?.exists }),
+      ApiBody({ type: _dto?.exists }),
       ApiOkResponse({ type: Boolean }),
     ])
     @ApplyRoles()
@@ -207,11 +208,11 @@ export function SuperController<
       return this.__service.exists(dto);
     }
 
-    @ApplyIf(!!dto?.params, [
+    @ApplyIf(!!_dto?.params, [
       Post('params'),
       HttpCode(200),
       ApiOkResponse({ type: entity, isArray: true }),
-      ApiBody({ type: dto?.params }),
+      ApiBody({ type: _dto?.params }),
       ApiQuery({ name: RouteParamEnum.limit, type: Number, required: false }),
     ])
     @ApplyRoles()
@@ -222,11 +223,11 @@ export function SuperController<
       return this.__service.findByParams(dto, relations ?? [], limit);
     }
 
-    @ApplyIf(!!dto?.params, [
+    @ApplyIf(!!_dto?.params, [
       Post('one-params'),
       HttpCode(200),
       ApiOkResponse({ type: entity }),
-      ApiBody({ type: dto?.params }),
+      ApiBody({ type: _dto?.params }),
     ])
     @ApplyRoles()
     findOneByParams(
@@ -235,11 +236,11 @@ export function SuperController<
       return this.__service.findOneByParams(dto);
     }
 
-    @ApplyIf(!!dto?.count, [
+    @ApplyIf(!!_dto?.count, [
       Post('count'),
       HttpCode(200),
       ApiOkResponse({ type: Number }),
-      ApiBody({ type: dto?.count }),
+      ApiBody({ type: _dto?.count }),
     ])
     @ApplyRoles()
     countByParams(
@@ -258,9 +259,9 @@ export function SuperController<
       return this.__service.updateOrder(order);
     }
 
-    @ApplyIf(!!dto?.update, [
+    @ApplyIf(!!_dto?.update, [
       Patch(`:${idKey}`),
-      ApiBody({ type: dto?.update }),
+      ApiBody({ type: _dto?.update }),
       ApiOkResponse({ type: entity }),
     ])
     @ApplyRoles()
@@ -285,9 +286,9 @@ export function SuperController<
       return this.__service.uploadFile(id, file, user);
     }
 
-    @ApplyIf(!!dto?.delete, [
+    @ApplyIf(!!_dto?.delete, [
       Delete(),
-      ApiBody({ type: dto.delete }),
+      ApiBody({ type: _dto.delete }),
       ApiOkResponse({ type: DeleteResult }),
     ])
     deleteParams(
@@ -333,5 +334,5 @@ export function SuperController<
     }
   }
 
-  return SuperController;
+  return SuperControllerClazz;
 }

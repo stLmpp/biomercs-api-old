@@ -2,6 +2,7 @@ import { get } from 'config';
 import { isArray } from 'is-what';
 import { KeyValue } from '../../util/types';
 import { MysqlConnectionOptions } from 'typeorm/driver/mysql/MysqlConnectionOptions';
+import { version } from '../../../package.json';
 
 function _getEnvVar(property: string): any {
   try {
@@ -91,6 +92,18 @@ class Env {
 
   get reCaptchaToken(): string {
     return this.get('HEADER_RECAPTCHA_TOKEN');
+  }
+
+  get steamKey(): string {
+    return this.get('STEAM_API_KEY');
+  }
+
+  get steamOpenIDUrl(): string {
+    return this.get('STEAM_OPENID_URL');
+  }
+
+  get appVersion(): string {
+    return version;
   }
 }
 

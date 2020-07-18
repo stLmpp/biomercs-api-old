@@ -13,6 +13,9 @@ export enum RouteParamEnum {
   idMode = 'idMode',
   idPlatform = 'idPlatform',
   idPlayer = 'idPlayer',
+  idPlayerFollower = 'idUserFollower',
+  idPlayerLink = 'idUserLink',
+  idPlayerShowcase = 'idUserShowcase',
   idReference = 'idReference',
   idReport = 'idReport',
   idRole = 'idRole',
@@ -23,11 +26,9 @@ export enum RouteParamEnum {
   idSite = 'idSite',
   idStage = 'idStage',
   idStages = 'idStages',
+  idSteamProfile = 'idSteamProfile',
   idUser = 'idUser',
-  idUserFollower = 'idUserFollower',
-  idUserLink = 'idUserLink',
   idUserRole = 'idUserRole',
-  idUserShowcase = 'idUserShowcase',
   idType = 'idType',
 
   term = 'term',
@@ -47,4 +48,5 @@ export enum RouteParamEnum {
   time = 'time',
   orderBy = 'orderBy',
   orderByDirection = 'orderByDirection',
+  code = 'code',
 }

@@ -1,12 +1,8 @@
 import {
   Body,
   Controller,
-  Get,
-  HttpCode,
   Param,
   Post,
-  Query,
-  Redirect,
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -18,7 +14,6 @@ import { RouteParamEnum } from '../shared/types/route-enums';
 import { Auth } from './auth.decorator';
 import {
   UserChangePasswordDto,
-  UserConfirmForgotPasswordDto,
   UserCredentialsDto,
   UserForgotPasswordDto,
   UserRegisterDto,
@@ -65,13 +60,9 @@ export class AuthController {
     return newUser.removePasswordAndSalt();
   }
 
-  @Get(`confirm-email/:${RouteParamEnum.idUser}`)
-  @Redirect('http://localhost:4200/') // TODO real url
-  async confirmEmail(
-    @Param(RouteParamEnum.idUser) idUser: number,
-    @Query(RouteParamEnum.emailToken) emailToken: string
-  ): Promise<User> {
-    return this.authService.confirmEmail(idUser, emailToken);
+  @Post(`confirm-email/:${RouteParamEnum.code}`)
+  async confirmEmail(@Param(RouteParamEnum.code) code: number): Promise<User> {
+    return this.authService.confirmEmail(code);
   }
 
   @Post('forgot-password')
@@ -79,12 +70,19 @@ export class AuthController {
     return this.authService.forgotPassword(dto.email);
   }
 
-  @Post('confirm-forgot-password')
-  @HttpCode(200)
+  @Post(`confirm-forgot-password/:${RouteParamEnum.code}`)
   async confirmForgotPassword(
-    @Body() dto: UserConfirmForgotPasswordDto
+    @Param(RouteParamEnum.code) code: number
   ): Promise<boolean> {
-    return this.authService.confirmForgotPassword(dto.idUser, dto.token);
+    return this.authService.confirmForgotPassword(code);
+  }
+
+  @Post(`change-password/code`)
+  async changePasswordCode(
+    @Body(UpdatedByPipe) dto: UserChangePasswordDto
+  ): Promise<User> {
+    const user = await this.authService.findUserByCode(dto.code);
+    return this.authService.changePassword(user.id, dto.password);
   }
 
   @Roles(RoleEnum.user)
@@ -101,17 +99,7 @@ export class AuthController {
     return this.authService.changePassword(idUser, dto.password);
   }
 
-  @Post(`change-password/:${RouteParamEnum.idUser}/token`)
-  async changePasswordToken(
-    @Param(RouteParamEnum.idUser) idUser: number,
-    @Query(RouteParamEnum.token) token: string,
-    @Body() dto: UserChangePasswordDto
-  ): Promise<User> {
-    await this.authService.confirmForgotPassword(idUser, token);
-    return this.authService.changePassword(idUser, dto.password);
-  }
-
-  @Roles(RoleEnum.admin)
+  @Roles(RoleEnum.owner)
   @Auth()
   @Post(`reset-password/:${RouteParamEnum.idUser}`)
   async resetPassword(

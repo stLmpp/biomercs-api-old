@@ -7,8 +7,8 @@ import {
   MaxLength,
 } from 'class-validator';
 import { ScoreExists } from '../../validation/score/score-exists.validator';
-import { UserExists } from '../../validation/user/user-exists.validator';
 import { CharacterExists } from '../../validation/game/character-exists.validator';
+import { PlayerExists } from '../../validation/player/player-exists.validator';
 
 export class ScorePlayerAddDto {
   @IsOptional()
@@ -18,7 +18,7 @@ export class ScorePlayerAddDto {
 
   @IsDefined()
   @IsNumber()
-  @UserExists()
+  @PlayerExists()
   idPlayer: number;
 
   @IsDefined()

@@ -18,7 +18,6 @@ import {
   ScoreTopScoreDto,
 } from './score.dto';
 import { GameModePlatformService } from '../game/game-mode-platform/game-mode-platform.service';
-import { UserService } from '../auth/user/user.service';
 import { GameModeStageService } from '../game/game-mode-stage/game-mode-stage.service';
 import { TypeEnum } from '../game/type/type.enum';
 import { Pagination } from 'nestjs-typeorm-paginate/index';
@@ -29,6 +28,7 @@ import { updateCreatedBy } from '../shared/pipes/created-by.pipe';
 import { updateLastUpdatedBy } from '../shared/pipes/updated-by.pipe';
 import { OrderByDirection } from '../util/types';
 import { FindConditions } from 'typeorm';
+import { PlayerService } from '../player/player.service';
 
 @Injectable()
 export class ScoreService {
@@ -37,9 +37,9 @@ export class ScoreService {
     private characterService: CharacterService,
     private stageService: StageService,
     private gameModePlatformService: GameModePlatformService,
-    private userService: UserService,
     private gameModeStageService: GameModeStageService,
-    private scoreApprovalService: ScoreApprovalService
+    private scoreApprovalService: ScoreApprovalService,
+    private playerService: PlayerService
   ) {}
 
   async fake(): Promise<void> {
@@ -96,7 +96,7 @@ export class ScoreService {
       limit,
       idCharacter
     );
-    const players = await this.userService.findByIds(idsPlayer);
+    const players = await this.playerService.findByIds(idsPlayer);
     return Promise.all(
       idsPlayer.map(async idPlayer => {
         return (

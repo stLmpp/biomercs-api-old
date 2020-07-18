@@ -18,6 +18,7 @@ import { ScoreStatusRepository } from './score-status/score-status.repository';
 import { ScoreStatusController } from './score-status/score-status.controller';
 import { ScoreStatusService } from './score-status/score-status.service';
 import { UserModule } from '../auth/user/user.module';
+import { PlayerModule } from '../player/player.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { UserModule } from '../auth/user/user.module';
     GameModule,
     FileUploadModule,
     UserModule,
+    PlayerModule,
   ],
   controllers: [
     ScoreController,

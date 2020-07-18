@@ -5,10 +5,10 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { SiteExists } from '../../../validation/site/site.validator';
-import { UserExists } from '../../../validation/user/user-exists.validator';
+import { SiteExists } from '../../validation/site/site.validator';
+import { PlayerExists } from '../../validation/player/player-exists.validator';
 
-export class UserLinkAddDto {
+export class PlayerLinkAddDto {
   @IsString()
   @IsNotEmpty()
   @IsDefined()
@@ -26,11 +26,11 @@ export class UserLinkAddDto {
 
   @IsNumber()
   @IsDefined()
-  @UserExists()
+  @PlayerExists()
   idUser: number;
 }
 
-export class UserLinkUpdateDto {
+export class PlayerLinkUpdateDto {
   @IsString()
   @IsOptional()
   url?: string;
@@ -41,7 +41,7 @@ export class UserLinkUpdateDto {
   name?: string;
 }
 
-export class UserLinkParamsDto {
+export class PlayerLinkParamsDto {
   @IsString()
   @IsOptional()
   url?: string;

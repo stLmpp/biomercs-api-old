@@ -1,4 +1,4 @@
-import { EntityRepository, FindConditions, IsNull, Repository } from 'typeorm';
+import { EntityRepository, FindConditions, Repository } from 'typeorm';
 import { genSalt, hash } from 'bcryptjs';
 import { UnauthorizedException } from '@nestjs/common';
 import { User } from './user.entity';
@@ -10,33 +10,18 @@ export class UserRepository extends Repository<User> {
     const user = new User().extendDto(dto);
     user.salt = await genSalt();
     user.password = await hash(dto.password, user.salt);
-    user.emailToken = await hash(dto.email, user.salt);
     return (await this.save(user)).removePasswordAndSalt();
   }
 
   async login(
     dto: UserCredentialsDto,
-    ignorePasswordValidation?: boolean,
-    ignoreEmailToken?: boolean
+    ignorePasswordValidation?: boolean
   ): Promise<User> {
     const { username, password, rememberMe } = dto;
-    let where: FindConditions<User>[] = [{ username }, { email: username }];
-    if (!ignoreEmailToken) {
-      where = where.map(w => ({ ...w, emailToken: IsNull() }));
-    }
+    const where: FindConditions<User>[] = [{ username }, { email: username }];
     const user = await this.findOne({
       where,
-      relations: [
-        'userRoles',
-        'userRoles.role',
-        'userFollowed',
-        'userFollowed.followed',
-        'userFollowed.follower',
-        'userFollowers',
-        'userFollowers.follower',
-        'userFollowers.followed',
-      ],
-      select: [...User.all, 'resetToken'],
+      relations: ['userRoles', 'userRoles.role'],
     });
     const errorMessage = 'Login or password invalid';
     if (!user) {
@@ -50,9 +35,6 @@ export class UserRepository extends Repository<User> {
     }
     const lastOnline = new Date();
     const update: Partial<User> = { lastOnline, rememberMe };
-    if (!user.expired) {
-      update.resetToken = null;
-    }
     await this.update(user.id, update);
     user.lastOnline = lastOnline;
     user.rememberMe = rememberMe;

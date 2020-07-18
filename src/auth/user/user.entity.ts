@@ -1,25 +1,14 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { hash } from 'bcryptjs';
 import { allColumns, CommonColumns } from '../../shared/super/common-columns';
-import { UserLink } from './user-link/user-link.entity';
 import { ApiHideProperty } from '@nestjs/swagger';
 import { UserRole } from './user-role/user-role.entity';
-import { FileUpload } from '../../file-upload/file-upload.entity';
-import { Region } from '../../region/region.entity';
-import { UserFollower } from './user-follower/user-follower.entity';
-import { UserShowcase } from './user-showcase/user-showcase.entity';
+import { Player } from '../../player/player.entity';
 
 @Entity()
 export class User extends CommonColumns {
   static get all(): (keyof User)[] {
-    return allColumns<User>(User, ['resetToken', 'emailToken']);
+    return allColumns(User);
   }
 
   @Column({ unique: true })
@@ -39,16 +28,6 @@ export class User extends CommonColumns {
   @Column({ nullable: true })
   lastOnline?: Date;
 
-  @OneToMany(
-    () => UserLink,
-    userLink => userLink.user
-  )
-  @JoinColumn()
-  userLinks: UserLink[];
-
-  @Column({ select: false, nullable: true })
-  emailToken?: string;
-
   @Column({ nullable: true })
   rememberMe?: boolean;
 
@@ -60,53 +39,19 @@ export class User extends CommonColumns {
   userRoles: UserRole[];
 
   @Column({ nullable: true })
-  idAvatar: number;
-
-  @OneToOne(() => FileUpload)
-  @JoinColumn({ name: 'idAvatar' })
-  avatar: FileUpload;
-
-  @Column({ select: false, nullable: true })
-  resetToken?: string;
-
-  @Column({ nullable: true })
   expired?: boolean;
 
   @Column({ nullable: true })
   banDate?: Date;
 
-  @Column({ length: 1000, nullable: true })
-  aboutMe?: string;
-
-  @Column({ nullable: true, length: 50 })
-  title?: string;
-
-  @Column({ nullable: true })
-  idRegion?: number;
-
-  @ManyToOne(() => Region)
-  @JoinColumn()
-  region?: Region;
-
-  @OneToMany(
-    () => UserFollower,
-    userFollower => userFollower.followed
-  )
-  @JoinColumn()
-  userFollowers?: UserFollower[];
-
-  @OneToMany(
-    () => UserFollower,
-    userFollower => userFollower.follower
-  )
-  @JoinColumn()
-  userFollowed?: UserFollower[];
-
   @OneToOne(
-    () => UserShowcase,
-    userShowcase => userShowcase.user
+    () => Player,
+    player => player.user
   )
-  userShowcase: UserShowcase;
+  player: Player;
+
+  @Column({ nullable: true, unique: true })
+  confirmationCode?: number;
 
   token?: string;
 
